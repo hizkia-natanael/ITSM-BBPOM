@@ -85,9 +85,7 @@
                     <p class="text-[11px] text-slate-400 mt-1">Keseluruhan tiket dibuat</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <i class="ri-file-list-3-line text-2xl"></i>
                 </div>
             </div>
 
@@ -99,9 +97,7 @@
                     <p class="text-[11px] text-amber-600/70 mt-1">Menunggu respon tim IT</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <i class="ri-time-line text-2xl"></i>
                 </div>
             </div>
 
@@ -113,9 +109,7 @@
                     <p class="text-[11px] text-blue-600/70 mt-1">Dalam penanganan teknisi</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+                    <i class="ri-tools-line text-2xl"></i>
                 </div>
             </div>
 
@@ -127,26 +121,32 @@
                     <p class="text-[11px] text-emerald-600/70 mt-1">Telah terselesaikan</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <i class="ri-checkbox-circle-line text-2xl"></i>
                 </div>
             </div>
         </div>
 
         <!-- Recent Tickets Table -->
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-5 sm:px-6 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
-                <div>
-                    <h3 class="font-bold text-slate-900 text-sm sm:text-base">Pengaduan Terbaru Anda</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Daftar 5 tiket pengaduan terakhir yang Anda ajukan</p>
+            <div class="p-5 sm:px-6 border-b border-slate-100 flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i class="ri-history-line text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base">Pengaduan Terbaru Anda</h3>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                {{ $recentTickets->count() }} Terkini
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">Daftar 5 tiket pengaduan terakhir yang Anda ajukan</p>
+                    </div>
                 </div>
                 <div>
-                    <a href="{{ route('tickets.index') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition">
-                        Lihat Seluruh Tiket
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
+                    <a href="{{ route('tickets.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 hover:text-emerald-700 bg-slate-50 hover:bg-emerald-50/70 border border-slate-200/80 hover:border-emerald-300 transition duration-150">
+                        <span>Lihat Semua Riwayat</span>
+                        <i class="ri-arrow-right-line text-sm"></i>
                     </a>
                 </div>
             </div>
@@ -156,42 +156,77 @@
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-50/80 text-slate-600 font-semibold border-b border-slate-200/60 uppercase tracking-wider">
                             <tr>
-                                <th scope="col" class="py-3 px-4 sm:px-6">No. Tiket</th>
-                                <th scope="col" class="py-3 px-4">Kategori</th>
-                                <th scope="col" class="py-3 px-4">Subjek / Masalah</th>
-                                <th scope="col" class="py-3 px-4">Status</th>
-                                <th scope="col" class="py-3 px-4">Tanggal Pengajuan</th>
-                                <th scope="col" class="py-3 px-4 sm:px-6 text-right">Aksi</th>
+                                <th scope="col" class="py-3.5 px-4 sm:px-6">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <i class="ri-hashtag text-slate-400 text-xs"></i>
+                                        <span>No. Tiket</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="py-3.5 px-4">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <i class="ri-price-tag-3-line text-slate-400 text-xs"></i>
+                                        <span>Kategori</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="py-3.5 px-4">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <i class="ri-file-text-line text-slate-400 text-xs"></i>
+                                        <span>Subjek Kendala</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="py-3.5 px-4">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <i class="ri-pulse-line text-slate-400 text-xs"></i>
+                                        <span>Status Progres</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="py-3.5 px-4">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <i class="ri-calendar-line text-slate-400 text-xs"></i>
+                                        <span>Waktu Pengajuan</span>
+                                    </span>
+                                </th>
+                                <th scope="col" class="py-3.5 px-4 sm:px-6 text-right">
+                                    <span class="inline-flex items-center gap-1.5 justify-end">
+                                        <i class="ri-flashlight-line text-slate-400 text-xs"></i>
+                                        <span>Aksi</span>
+                                    </span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @foreach($recentTickets as $ticket)
-                                <tr class="hover:bg-slate-50/70 transition">
-                                    <td class="py-3.5 px-4 sm:px-6 font-bold text-slate-900">
-                                        <a href="{{ route('tickets.show', $ticket) }}" class="text-emerald-700 hover:underline">
-                                            {{ $ticket->ticket_number }}
+                                <tr class="hover:bg-slate-50/70 transition group">
+                                    <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 font-mono font-bold text-slate-900 group-hover:text-emerald-700 transition">
+                                            <span>{{ $ticket->ticket_number }}</span>
                                         </a>
                                     </td>
-                                    <td class="py-3.5 px-4 text-slate-600">
+                                    <td class="py-3.5 px-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
                                             {{ $ticket->category->name }}
                                         </span>
                                     </td>
-                                    <td class="py-3.5 px-4 text-slate-900 font-medium max-w-xs truncate">
-                                        {{ $ticket->subject }}
+                                    <td class="py-3.5 px-4 max-w-xs sm:max-w-sm">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-slate-900 font-semibold truncate">{{ $ticket->subject }}</span>
+                                            @if($ticket->attachment)
+                                                <span class="inline-flex items-center gap-0.5 text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded shrink-0" title="Memiliki lampiran">
+                                                    <i class="ri-attachment-2 text-xs"></i>
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
-                                    <td class="py-3.5 px-4">
+                                    <td class="py-3.5 px-4 whitespace-nowrap">
                                         <x-ticket-status-badge :status="$ticket->status" />
                                     </td>
-                                    <td class="py-3.5 px-4 text-slate-500">
-                                        {{ $ticket->created_at->translatedFormat('d M Y, H:i') }}
+                                    <td class="py-3.5 px-4 whitespace-nowrap text-slate-500">
+                                        {{ $ticket->created_at->translatedFormat('d M Y, H:i') }} WIB
                                     </td>
-                                    <td class="py-3.5 px-4 sm:px-6 text-right">
-                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition border border-emerald-200/50">
-                                            Detail & Tracking
-                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                            </svg>
+                                    <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-emerald-600 text-slate-700 hover:text-white border border-slate-200 hover:border-emerald-600 shadow-2xs hover:shadow-xs transition-all duration-150">
+                                            <span>Detail</span>
+                                            <i class="ri-arrow-right-s-line text-sm"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -201,21 +236,17 @@
                 </div>
             @else
                 <div class="py-12 px-4 text-center">
-                    <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
-                        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center mb-3">
+                        <i class="ri-inbox-archive-line text-2xl"></i>
                     </div>
                     <h4 class="font-bold text-slate-900 text-sm">Belum Ada Pengaduan</h4>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
                         Anda belum pernah membuat tiket pengaduan kendala TI. Jika membutuhkan bantuan teknisi, silakan klik tombol di bawah.
                     </p>
                     <div class="mt-4">
-                        <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Buat Pengaduan Pertama Anda
+                        <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition">
+                            <i class="ri-add-line text-base"></i>
+                            <span>Buat Pengaduan Pertama Anda</span>
                         </a>
                     </div>
                 </div>
