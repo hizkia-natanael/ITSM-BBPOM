@@ -74,8 +74,8 @@
                             </button>
                         </div>
 
-                        <!-- Group Tabs Filter (Strictly Single Row) -->
-                        <div class="mt-3.5 flex items-center gap-1.5 pt-3 border-t border-slate-700/50 flex-nowrap overflow-x-auto pb-1 no-scrollbar">
+                        <!-- Group Tabs Filter (Strictly Single Row, Scrollbar Hidden) -->
+                        <div class="mt-3.5 flex items-center gap-1.5 pt-3 border-t border-slate-700/50 flex-nowrap overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                             <span class="text-[11px] text-slate-400 font-medium me-0.5 shrink-0 flex items-center gap-1">
                                 <i class="ri-filter-3-line text-xs text-slate-400"></i>
                                 <span>Kategori:</span>
