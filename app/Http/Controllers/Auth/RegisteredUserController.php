@@ -46,6 +46,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        $request->session()->flash('welcome_toast', $user->name);
+
         return redirect(route('dashboard', absolute: false));
     }
 }

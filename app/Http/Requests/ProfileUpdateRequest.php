@@ -18,6 +18,9 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'nip' => ['nullable', 'string', 'max:25'],
+            'nik' => ['nullable', 'string', 'max:25'],
+            'phone_number' => ['nullable', 'string', 'max:25'],
             'email' => [
                 'required',
                 'string',

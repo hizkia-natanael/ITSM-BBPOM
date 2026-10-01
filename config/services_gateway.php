@@ -6,8 +6,7 @@ return [
     | App Gateway: Katalog Layanan TIK BBPOM di Semarang
     |--------------------------------------------------------------------------
     | Konfigurasi daftar 12 menu layanan utama yang tersedia pada portal helpdesk.
-    | Layanan 1, 2, 3, 7, 8, dan 9 telah dikonfigurasi dengan sub kategori resmi.
-    | Rekan pengembang dapat mengisi array 'subcategories' untuk layanan 4, 5, 6, 10, 11, 12.
+    | Lengkap dengan konfigurasi sub kategori resmi untuk seluruh layanan.
     */
 
     'groups' => [
@@ -79,24 +78,26 @@ return [
             ],
         ],
 
-        // 4. Sertifikat BSrE (Bagian Teman)
+        // 4. Sertifikat BSrE
         'sertifikat_bse' => [
             'id' => 'sertifikat_bse',
-            'name' => 'Sertifikat BSE',
-            'long_name' => 'Balai Sertifikasi Elektronik / TTE',
+            'name' => 'Sertifikat BSRE',
+            'long_name' => 'Balai Sertifikasi Elektronik / TTE (BSrE)',
             'group' => 'akun',
             'badge' => 'Keamanan & TTE',
             'icon' => 'ri-shield-keyhole-line',
-            'description' => 'Penerbitan baru, perpanjangan masa berlaku sertifikat elektronik, lupa passphrase, dan verifikasi dokumen.',
-            'keywords' => ['bse', 'sertifikat', 'elektronik', 'tte', 'tanda tangan', 'passphrase', 'pin', 'bsre'],
+            'description' => 'Layanan resmi terkait Sertifikat Elektronik BSrE: Reset Password BSRE, Permintaan Kode OTP, dan pengaduan lainnya.',
+            'keywords' => ['bsre', 'bse', 'sertifikat', 'elektronik', 'tte', 'tanda tangan', 'passphrase', 'pin', 'otp', 'reset password'],
             'color' => 'amber',
-            'default_category_id' => 7,
+            'default_category_id' => 5,
             'subcategories' => [
-                // Bagian Rekan Kerja
+                'reset_password' => 'Reset password BSRE',
+                'permintaan_otp' => 'Permintaan OTP',
+                'lainnya' => 'Lainnya',
             ],
         ],
 
-        // 5. Zoom (Bagian Teman)
+        // 5. Zoom
         'zoom' => [
             'id' => 'zoom',
             'name' => 'Zoom Meeting / Webinar',
@@ -109,11 +110,12 @@ return [
             'color' => 'cyan',
             'default_category_id' => 5,
             'subcategories' => [
-                // Bagian Rekan Kerja
+                'permintaan_link_zoom' => 'Permintaan Link Zoom',
+                'lainnya' => 'Lainnya',
             ],
         ],
 
-        // 6. Formulir & Kegiatan (Bagian Teman)
+        // 6. Formulir & Kegiatan
         'formulir_kegiatan' => [
             'id' => 'formulir_kegiatan',
             'name' => 'Formulir & Kegiatan',
@@ -126,7 +128,11 @@ return [
             'color' => 'emerald',
             'default_category_id' => 5,
             'subcategories' => [
-                // Bagian Rekan Kerja
+                'permintaan_daftar_hadir' => 'Permintaan Daftar Hadir',
+                'permintaan_qrcode' => 'Permintaan QRCODE',
+                'survey' => 'Survey',
+                'post_test_pretest' => 'Post Test / Pretest',
+                'lainnya' => 'Lainnya',
             ],
         ],
 
@@ -185,7 +191,7 @@ return [
             ],
         ],
 
-        // 10. Install Ulang Windows (Bagian Teman)
+        // 10. Install Ulang Windows
         'install_windows' => [
             'id' => 'install_windows',
             'name' => 'Install Ulang Windows',
@@ -198,11 +204,12 @@ return [
             'color' => 'slate',
             'default_category_id' => 4,
             'subcategories' => [
-                // Bagian Rekan Kerja
+                'permintaan_install_windows' => 'Permintaan Install Ulang Windows',
+                'lainnya' => 'Lainnya',
             ],
         ],
 
-        // 11. Lisensi Microsoft Office (Bagian Teman)
+        // 11. Lisensi Microsoft Office
         'lisensi_office' => [
             'id' => 'lisensi_office',
             'name' => 'Lisensi Microsoft Office',
@@ -215,11 +222,12 @@ return [
             'color' => 'orange',
             'default_category_id' => 5,
             'subcategories' => [
-                // Bagian Rekan Kerja
+                'permintaan_lisensi_office' => 'Permintaan Lisensi Microsoft Office',
+                'lainnya' => 'Lainnya',
             ],
         ],
 
-        // 12. Lainnya (Bagian Teman)
+        // 12. Lainnya
         'lainnya' => [
             'id' => 'lainnya',
             'name' => 'Lainnya',
@@ -232,7 +240,7 @@ return [
             'color' => 'gray',
             'default_category_id' => 6,
             'subcategories' => [
-                // Bagian Rekan Kerja
+                'lainnya' => 'Lainnya',
             ],
         ],
     ],

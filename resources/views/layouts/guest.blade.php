@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Helpdesk BBPOM Semarang') }}</title>
+        <title>{{ config('app.name', 'Layanan TIK BBPOM di Semarang') }}</title>
 
         <!-- Fonts (Inter) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
                 <x-application-logo class="w-auto h-12" />
             </a>
             <h2 class="mt-4 text-center text-xl font-bold tracking-tight text-gray-900">
-                Portal Helpdesk & Layanan TI
+                Layanan TIK BBPOM di Semarang
             </h2>
             <p class="mt-1 text-center text-xs text-gray-500">
                 Balai Besar Pengawas Obat dan Makanan di Semarang

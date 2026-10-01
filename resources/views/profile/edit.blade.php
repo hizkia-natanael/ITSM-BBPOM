@@ -1,28 +1,108 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <nav class="flex text-xs text-slate-500 mb-1" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1">
+                        <li>
+                            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1 font-semibold text-emerald-800 hover:text-emerald-900">
+                                <i class="ri-home-4-line text-sm"></i>
+                                Beranda
+                            </a>
+                        </li>
+                        <li>
+                            <span class="mx-1 text-slate-400">/</span>
+                        </li>
+                        <li class="text-slate-500 font-medium">
+                            Profil Pengguna
+                        </li>
+                    </ol>
+                </nav>
+                <h2 class="font-bold text-xl text-slate-900 leading-tight flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                    Profil Pengguna & Akun Pegawai
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Layanan TIK BBPOM di Semarang
+                </p>
+            </div>
+            <div>
+                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
+                    &larr; Kembali ke Dashboard
+                </a>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
+    <div class="space-y-6">
+        <!-- User Overview Hero Card -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-slate-700/50">
+            <!-- Decorative Ambient Glows -->
+            <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div class="flex items-start sm:items-center gap-4">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center text-2xl sm:text-3xl font-extrabold shadow-xl shadow-emerald-950/50 ring-4 ring-white/10 shrink-0">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                                {{ $user->name }}
+                            </h3>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                {{ $user->role === 'admin' ? 'Administrator TIK' : 'Pegawai / Pemohon' }}
+                            </span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-300 mt-1 flex items-center gap-1.5">
+                            <i class="ri-mail-line text-emerald-400"></i>
+                            {{ $user->email }}
+                        </p>
+                        <p class="text-xs text-emerald-300/80 mt-1 flex items-center gap-1">
+                            <i class="ri-shield-check-line text-emerald-400"></i>
+                            Balai Besar Pengawas Obat dan Makanan di Semarang
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Metadata Chips -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs shrink-0">
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">NIP</span>
+                        <span class="font-mono text-slate-100 font-semibold mt-0.5 block truncate">{{ $user->nip ?: '-' }}</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">NIK</span>
+                        <span class="font-mono text-slate-100 font-semibold mt-0.5 block truncate">{{ $user->nik ?: '-' }}</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10 col-span-2 sm:col-span-1">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Telepon</span>
+                        <span class="font-mono text-slate-100 font-semibold mt-0.5 block truncate">{{ $user->phone_number ?: '-' }}</span>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
+        <!-- Section 1: Informasi Profil & Data Kepegawaian -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
+            <div class="max-w-2xl">
+                @include('profile.partials.update-profile-information-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
+        <!-- Section 2: Keamanan Akun & Perbarui Password -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
+            <div class="max-w-2xl">
+                @include('profile.partials.update-password-form')
+            </div>
+        </div>
+
+        <!-- Section 3: Hapus Akun (Zona Berbahaya) -->
+        <div class="bg-white rounded-2xl border border-rose-200/80 shadow-sm p-6 sm:p-8">
+            <div class="max-w-2xl">
+                @include('profile.partials.delete-user-form')
             </div>
         </div>
     </div>

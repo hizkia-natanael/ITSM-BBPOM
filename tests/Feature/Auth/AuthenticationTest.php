@@ -28,6 +28,29 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertSessionHas('welcome_toast', $user->name);
+    }
+
+    public function test_login_displays_welcome_toast_notification(): void
+    {
+        $user = User::factory()->create(['name' => 'Bambang Sudiro']);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertSessionHas('welcome_toast', 'Bambang Sudiro');
+
+        $dashboardResponse = $this->actingAs($user)
+            ->withSession(['welcome_toast' => 'Bambang Sudiro'])
+            ->get('/dashboard');
+
+        $dashboardResponse->assertSuccessful();
+        $dashboardResponse->assertSee('Selamat Datang, Bambang Sudiro!');
+        $dashboardResponse->assertSee('Login Berhasil');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

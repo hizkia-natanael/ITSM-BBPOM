@@ -43,6 +43,31 @@ class ProfileTest extends TestCase
         $this->assertNull($user->email_verified_at);
     }
 
+    public function test_user_can_update_nip_nik_and_phone_number(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => 'Bambang Sudiro',
+                'email' => $user->email,
+                'nip' => '198501012010121001',
+                'nik' => '3374012345678001',
+                'phone_number' => '081234567890',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+
+        $this->assertSame('198501012010121001', $user->nip);
+        $this->assertSame('3374012345678001', $user->nik);
+        $this->assertSame('081234567890', $user->phone_number);
+    }
+
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
         $user = User::factory()->create();
