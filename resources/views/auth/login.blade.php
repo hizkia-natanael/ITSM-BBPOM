@@ -202,15 +202,7 @@
                                                     :class="highlightedId === user.id ? 'bg-emerald-50' : 'hover:bg-slate-50'"
                                                     class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors border-b border-slate-50/80"
                                                 >
-                                                    <div class="flex items-center gap-2.5 min-w-0">
-                                                        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-sm">
-                                                            <i class="ri-shield-user-line text-white text-xs"></i>
-                                                        </div>
-                                                        <div class="min-w-0">
-                                                            <p class="text-xs font-semibold text-slate-800 truncate" x-text="user.name"></p>
-                                                            <p class="text-[10px] text-slate-400 font-mono tracking-wide" x-text="user.nip ? user.nip : '—'"></p>
-                                                        </div>
-                                                    </div>
+                                                    <p class="text-xs font-medium text-slate-800 truncate" x-text="user.name"></p>
                                                     <span class="flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Admin</span>
                                                 </div>
                                             </template>
@@ -230,15 +222,7 @@
                                                     :class="highlightedId === user.id ? 'bg-emerald-50' : 'hover:bg-slate-50'"
                                                     class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors border-b border-slate-50/80 last:border-0"
                                                 >
-                                                    <div class="flex items-center gap-2.5 min-w-0">
-                                                        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-sm">
-                                                            <i class="ri-user-line text-white text-xs"></i>
-                                                        </div>
-                                                        <div class="min-w-0">
-                                                            <p class="text-xs font-semibold text-slate-800 truncate" x-text="user.name"></p>
-                                                            <p class="text-[10px] text-slate-400 font-mono tracking-wide" x-text="user.nip ? user.nip : '—'"></p>
-                                                        </div>
-                                                    </div>
+                                                    <p class="text-xs font-medium text-slate-800 truncate" x-text="user.name"></p>
                                                     <span class="flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Pegawai</span>
                                                 </div>
                                             </template>
