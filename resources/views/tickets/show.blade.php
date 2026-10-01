@@ -374,120 +374,189 @@
                     @endif
                 </div>
 
-                <!-- Card 2: Diskusi & Riwayat Tanggapan -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8 print:hidden">
-                    <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-                                <i class="ri-chat-3-line text-sm"></i>
-                                Komunikasi & Riwayat Penanganan
-                            </span>
-                            <h3 class="text-base font-bold text-slate-900 mt-0.5">
-                                Kolom Diskusi Tiket
-                            </h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Catatan resmi respon penanganan antara pemohon dan tim Helpdesk TIK BBPOM di Semarang
-                            </p>
+                <!-- Card 2: Percakapan WhatsApp Style -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-7 print:hidden">
+                    <!-- WhatsApp Header -->
+                    <div class="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <i class="ri-whatsapp-line text-emerald-600 text-2xl"></i>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-base font-bold text-slate-900">
+                                    Percakapan Diskusi Tiket
+                                </h3>
+                                @if($ticket->status === 'selesai')
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
+                                        Selesai
+                                    </span>
+                                @elseif($ticket->status === 'diproses')
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
+                                        Diproses
+                                    </span>
+                                @elseif($ticket->status === 'ditolak')
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800">
+                                        Ditolak
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800">
+                                        Pending
+                                    </span>
+                                @endif
+                            </div>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 self-start sm:self-auto">
-                            {{ $ticket->responses->count() }} Balasan
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                            {{ $ticket->responses->count() }} Pesan
                         </span>
                     </div>
 
-                    <!-- Conversation Stream -->
-                    <div class="space-y-4 mb-8">
-                        @forelse($ticket->responses as $response)
+                    <!-- WhatsApp Chat Stream Container -->
+                    <div 
+                        x-data 
+                        x-init="$el.scrollTop = $el.scrollHeight"
+                        class="bg-slate-50/70 rounded-2xl p-4 sm:p-6 border border-slate-200/70 min-h-[320px] max-h-[520px] overflow-y-auto space-y-4 scroll-smooth"
+                    >
+                        @php
+                            $responses = $ticket->responses;
+                        @endphp
+
+                        @if($responses->isEmpty())
+                            <!-- Date Divider -->
+                            <div class="flex justify-center my-2">
+                                <span class="px-3 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200/80 text-slate-500 shadow-2xs">
+                                    Hari Ini
+                                </span>
+                            </div>
+
+                            <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
+                            <div class="flex items-end justify-end gap-2.5 max-w-[85%] sm:max-w-[75%] ml-auto">
+                                <div class="bg-white rounded-2xl rounded-br-xs px-4 py-2.5 border border-slate-200 shadow-2xs">
+                                    <div class="mb-1">
+                                        <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                            Petugas IT
+                                        </span>
+                                    </div>
+                                    <p class="text-xs sm:text-sm text-slate-800 leading-relaxed">
+                                        Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan informasi tambahan di kolom chat ini jika diperlukan.
+                                    </p>
+                                    <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
+                                        {{ $ticket->created_at->format('H.i') }}
+                                    </div>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
+                                    IT
+                                </div>
+                            </div>
+                        @else
                             @php
-                                $isAdmin = $response->user->isAdmin();
+                                $grouped = $responses->groupBy(function($item) {
+                                    return $item->created_at->format('Y-m-d');
+                                });
                             @endphp
 
-                            <div class="rounded-2xl p-5 transition-all {{ $isAdmin ? 'bg-emerald-50/70 border border-emerald-200 shadow-xs' : 'bg-slate-50/80 border border-slate-200' }}">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shadow-xs {{ $isAdmin ? 'bg-emerald-700 text-white' : 'bg-slate-800 text-white' }}">
-                                            @if($isAdmin)
-                                                <i class="ri-customer-service-2-fill text-base"></i>
-                                            @else
-                                                {{ strtoupper(substr($response->user->name, 0, 1)) }}
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <div class="flex items-center gap-2 flex-wrap">
-                                                <span class="font-bold text-xs sm:text-sm text-slate-900">{{ $response->user->name }}</span>
-                                                @if($isAdmin)
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                                        <i class="ri-shield-check-fill text-emerald-700"></i>
-                                                        Tim Helpdesk TIK BBPOM
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-200 text-slate-700">
-                                                        <i class="ri-user-3-line text-slate-500"></i>
-                                                        Pemohon Layanan
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <span class="text-[11px] text-slate-500 block mt-0.5">
-                                                {{ $response->created_at->translatedFormat('l, d F Y - H:i') }} WIB
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <span class="text-[10px] font-mono text-slate-400 hidden sm:inline-block">
-                                        {{ $response->created_at->diffForHumans() }}
+                            @foreach($grouped as $dateKey => $items)
+                                @php
+                                    $today = now()->format('Y-m-d');
+                                    $yesterday = now()->subDay()->format('Y-m-d');
+                                    if ($dateKey === $today) {
+                                        $label = 'Hari Ini';
+                                    } elseif ($dateKey === $yesterday) {
+                                        $label = 'Kemarin';
+                                    } else {
+                                        $label = \Carbon\Carbon::parse($dateKey)->translatedFormat('d F Y');
+                                    }
+                                @endphp
+
+                                <!-- Date Separator Pill (e.g. Kemarin / Hari Ini) -->
+                                <div class="flex justify-center my-3">
+                                    <span class="px-3 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200/80 text-slate-500 shadow-2xs">
+                                        {{ $label }}
                                     </span>
                                 </div>
 
-                                <div class="text-xs sm:text-sm text-slate-800 leading-relaxed ps-0 sm:ps-12 whitespace-pre-line bg-white/70 p-3.5 rounded-xl border border-slate-200/50">
-                                    {{ $response->response_text }}
-                                </div>
-                            </div>
-                        @empty
-                            <div class="py-10 text-center bg-slate-50/70 rounded-2xl border border-dashed border-slate-200">
-                                <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 shadow-xs">
-                                    <i class="ri-chat-voice-line text-2xl text-slate-400"></i>
-                                </div>
-                                <h4 class="text-sm font-bold text-slate-800">Belum Ada Tanggapan</h4>
-                                <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
-                                    Tim Helpdesk TIK BBPOM di Semarang sedang meninjau pengaduan Anda. Anda juga dapat memberikan pesan tambahan atau informasi pelengkap melalui form di bawah.
-                                </p>
-                            </div>
-                        @endforelse
+                                @foreach($items as $response)
+                                    @php
+                                        $isAdmin = $response->user->isAdmin();
+                                    @endphp
+
+                                    @if(!$isAdmin)
+                                        <!-- Pelapor Bubble (LEFT SIDE - matching user FZ in screenshot) -->
+                                        <div class="flex items-end gap-2.5 max-w-[85%] sm:max-w-[75%]">
+                                            <!-- Avatar Circle with User Initials -->
+                                            <div class="w-8 h-8 rounded-full bg-slate-200/90 border border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
+                                                {{ strtoupper(substr($response->user->name, 0, 2)) }}
+                                            </div>
+
+                                            <!-- Message Bubble -->
+                                            <div class="bg-slate-100/95 rounded-2xl rounded-bl-xs px-4 py-2.5 border border-slate-200/60 shadow-2xs">
+                                                <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+                                                    {{ $response->response_text }}
+                                                </p>
+                                                <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
+                                                    {{ $response->created_at->format('H.i') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <!-- Petugas IT Bubble (RIGHT SIDE - matching Bot in screenshot) -->
+                                        <div class="flex items-end justify-end gap-2.5 max-w-[85%] sm:max-w-[75%] ml-auto">
+                                            <!-- Message Bubble -->
+                                            <div class="bg-white rounded-2xl rounded-br-xs px-4 py-2.5 border border-slate-200 shadow-2xs">
+                                                <!-- Role Pill inside bubble -->
+                                                <div class="mb-1">
+                                                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                                        Petugas IT
+                                                    </span>
+                                                </div>
+                                                <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+                                                    {{ $response->response_text }}
+                                                </p>
+                                                <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
+                                                    {{ $response->created_at->format('H.i') }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Avatar Circle IT -->
+                                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
+                                                IT
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        @endif
                     </div>
 
-                    <!-- Form Balasan / Kirim Tanggapan -->
-                    <form method="POST" action="{{ route('tickets.reply', $ticket) }}" class="pt-6 border-t border-slate-100">
+                    <!-- WhatsApp Style Bottom Input Bar -->
+                    <form method="POST" action="{{ route('tickets.reply', $ticket) }}" class="mt-4 pt-3 border-t border-slate-100">
                         @csrf
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <label for="response_text" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                                    <i class="ri-reply-line text-emerald-700"></i>
-                                    Berikan Tanggapan / Informasi Tambahan:
-                                </label>
-                                <span class="text-[11px] text-slate-400">Tercatat ke sistem Helpdesk</span>
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex-1 relative">
+                                <textarea 
+                                    id="response_text" 
+                                    name="response_text" 
+                                    rows="1" 
+                                    class="w-full rounded-2xl border-slate-300 py-3 px-4 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs resize-none max-h-32"
+                                    placeholder="Ketik tanggapan Anda di sini..."
+                                    required
+                                    @keydown.enter.prevent="if(!$event.shiftKey && $el.value.trim().length > 0) $el.form.submit()"
+                                >{{ old('response_text') }}</textarea>
                             </div>
 
-                            <textarea 
-                                id="response_text" 
-                                name="response_text" 
-                                rows="3" 
-                                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-xs placeholder:text-slate-400"
-                                placeholder="Tuliskan keterangan tambahan, konfirmasi status, atau pertanyaan untuk tim IT BBPOM..."
-                                required
-                            >{{ old('response_text') }}</textarea>
-                            <x-input-error :messages="$errors->get('response_text')" />
-                            
-                            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-                                <p class="text-[11px] text-slate-500 flex items-center gap-1">
-                                    <i class="ri-information-line text-slate-400"></i>
-                                    Tanggapan Anda akan langsung dapat dibaca oleh staf penanggung jawab tiket.
-                                </p>
-                                <button 
-                                    type="submit" 
-                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all"
-                                >
-                                    <i class="ri-send-plane-2-fill text-sm"></i>
-                                    <span>Kirim Tanggapan</span>
-                                </button>
-                            </div>
+                            <button 
+                                type="submit" 
+                                class="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white flex items-center justify-center transition-all shadow-xs shrink-0 hover:scale-105"
+                                title="Kirim Pesan"
+                            >
+                                <i class="ri-send-plane-2-fill text-lg"></i>
+                            </button>
+                        </div>
+                        <x-input-error :messages="$errors->get('response_text')" class="mt-1" />
+                        
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-1">
+                            <span>Tekan <strong>Enter</strong> untuk mengirim, <strong>Shift + Enter</strong> untuk baris baru</span>
+                            <span class="flex items-center gap-1">
+                                <i class="ri-shield-check-line text-emerald-600"></i>
+                                Percakapan resmi Helpdesk TIK
+                            </span>
                         </div>
                     </form>
                 </div>

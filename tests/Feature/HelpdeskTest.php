@@ -155,7 +155,7 @@ class HelpdeskTest extends TestCase
         $response->assertSee('Aplikasi SIPT Error');
         $response->assertSee('Sedang Diproses');
         $response->assertSee('Kembali ke Riwayat');
-        $response->assertSee('Kolom Diskusi Tiket');
+        $response->assertSee('Percakapan Diskusi Tiket');
     }
 
     public function test_user_cannot_view_other_users_ticket(): void
