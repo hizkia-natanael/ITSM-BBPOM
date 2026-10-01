@@ -35,9 +35,9 @@
                 <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-center">
                     <!-- Left: Title, Search & Filter -->
-                    <div class="lg:col-span-7 flex flex-col justify-between">
+                    <div class="lg:col-span-8 flex flex-col justify-between">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -64,7 +64,7 @@
                                 class="w-full pl-10 pr-9 py-2.5 bg-white/95 focus:bg-white text-slate-900 rounded-xl text-xs sm:text-sm placeholder:text-slate-400 shadow-md border border-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition"
                             >
                             <button 
-                                x-show="search.length > 0" 
+                                x-show="search" 
                                 @click="search = ''" 
                                 type="button" 
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
@@ -94,51 +94,51 @@
                         </div>
                     </div>
 
-                    <!-- Right: Helpdesk Information Panel -->
-                    <div class="lg:col-span-5">
-                        <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-4 sm:p-4.5 shadow-xl relative overflow-hidden">
-                            <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
-                                <div class="flex items-center gap-2">
-                                    <i class="ri-customer-service-2-line text-emerald-400 text-base"></i>
-                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Informasi Helpdesk TIK</span>
+                    <!-- Right: Helpdesk Information Panel (Narrower 4-column card) -->
+                    <div class="lg:col-span-4">
+                        <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-3.5 sm:p-4 shadow-xl relative overflow-hidden">
+                            <div class="flex items-center justify-between pb-2.5 border-b border-white/10 mb-2.5">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="ri-customer-service-2-line text-emerald-400 text-sm"></i>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-200">Helpdesk TIK</span>
                                 </div>
                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    Siaga Melayani
+                                    Siaga
                                 </span>
                             </div>
 
-                            <div class="space-y-2.5 text-xs">
+                            <div class="space-y-2 text-xs">
                                 <!-- 1. Jam Layanan -->
-                                <div class="flex items-start gap-3">
-                                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
-                                        <i class="ri-time-line text-sm"></i>
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-md bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-time-line text-xs"></i>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Jam Layanan Operasional</p>
-                                        <p class="text-[11px] text-slate-300/90 mt-0.5">Senin &ndash; Jumat, 08.00 &ndash; 16.00 WIB</p>
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Jam Layanan</p>
+                                        <p class="text-[10.5px] text-slate-300/90 mt-0.5">Senin &ndash; Jumat, 08.00 &ndash; 16.00</p>
                                     </div>
                                 </div>
 
                                 <!-- 2. SLA Penanganan -->
-                                <div class="flex items-start gap-3">
-                                    <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
-                                        <i class="ri-flashlight-line text-sm"></i>
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-md bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-flashlight-line text-xs"></i>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">SLA Respons Cepat</p>
-                                        <p class="text-[11px] text-slate-300/90 mt-0.5">Target respon tiket awal kurang dari 2 Jam</p>
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">SLA Respons Awal</p>
+                                        <p class="text-[10.5px] text-slate-300/90 mt-0.5">Target respon dalam &le; 2 Jam</p>
                                     </div>
                                 </div>
 
                                 <!-- 3. Bantuan & Lokasi -->
-                                <div class="flex items-start gap-3">
-                                    <div class="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center shrink-0 mt-0.5">
-                                        <i class="ri-building-4-line text-sm"></i>
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-md bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-building-4-line text-xs"></i>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Ruang Pelayanan &amp; Telepon</p>
-                                        <p class="text-[11px] text-slate-300/90 mt-0.5">Subbag Tata Usaha / Tim TI Lt. 2 (Ext. 104)</p>
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Ruang Tim TI &amp; Ext</p>
+                                        <p class="text-[10.5px] text-slate-300/90 mt-0.5">Tata Usaha Lt. 2 (Ext. 104)</p>
                                     </div>
                                 </div>
                             </div>
