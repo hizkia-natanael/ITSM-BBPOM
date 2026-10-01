@@ -6,9 +6,8 @@ return [
     | App Gateway: Katalog Layanan TIK BBPOM di Semarang
     |--------------------------------------------------------------------------
     | Konfigurasi daftar 12 menu layanan utama yang tersedia pada portal helpdesk.
-    | Rekan pengembang dapat mengisi array 'subcategories' untuk masing-masing
-    | layanan di bawah ini sesuai kebutuhan pembagian tugas.
-    | Ikon menggunakan icon library resmi (Remix Icon).
+    | Layanan 1, 2, 3, 7, 8, dan 9 telah dikonfigurasi dengan sub kategori resmi.
+    | Rekan pengembang dapat mengisi array 'subcategories' untuk layanan 4, 5, 6, 10, 11, 12.
     */
 
     'groups' => [
@@ -20,6 +19,7 @@ return [
     ],
 
     'services' => [
+        // 1. SIPT
         'sipt' => [
             'id' => 'sipt',
             'name' => 'SIPT',
@@ -31,9 +31,16 @@ return [
             'keywords' => ['sipt', 'laporan', 'pelaporan', 'pengujian', 'data', 'bpom', 'sistem'],
             'color' => 'indigo',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'reset_password' => 'Reset Password',
+                'rollback_sampel' => 'Rollback Sampel',
+                'perbaikan_sampel' => 'Perbaikan Data Sampel',
+                'cek_posisi_sampel' => 'Cek Posisi Sampel',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
+        // 2. Srikandi
         'srikandi' => [
             'id' => 'srikandi',
             'name' => 'Srikandi',
@@ -45,9 +52,16 @@ return [
             'keywords' => ['srikandi', 'surat', 'arsip', 'tte', 'naskah dinas', 'kearsipan', 'persuratan'],
             'color' => 'blue',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'reset_password' => 'Reset Password',
+                'buat_akun' => 'Pembuatan Akun Baru',
+                'nonaktif_akun' => 'Penonaktifan Akun',
+                'reset_mfa' => 'Reset MFA',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
+        // 3. Email Corporate
         'email_corporate' => [
             'id' => 'email_corporate',
             'name' => 'Email Corporate',
@@ -59,9 +73,13 @@ return [
             'keywords' => ['email', 'mail', 'corporate', 'webmail', 'password', 'bbpom.go.id', 'kuota', 'inbox'],
             'color' => 'sky',
             'default_category_id' => 7,
-            'subcategories' => [],
+            'subcategories' => [
+                'reset_password' => 'Reset Password',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
+        // 4. Sertifikat BSrE (Bagian Teman)
         'sertifikat_bse' => [
             'id' => 'sertifikat_bse',
             'name' => 'Sertifikat BSE',
@@ -73,9 +91,12 @@ return [
             'keywords' => ['bse', 'sertifikat', 'elektronik', 'tte', 'tanda tangan', 'passphrase', 'pin', 'bsre'],
             'color' => 'amber',
             'default_category_id' => 7,
-            'subcategories' => [],
+            'subcategories' => [
+                // Bagian Rekan Kerja
+            ],
         ],
 
+        // 5. Zoom (Bagian Teman)
         'zoom' => [
             'id' => 'zoom',
             'name' => 'Zoom Meeting / Webinar',
@@ -87,9 +108,12 @@ return [
             'keywords' => ['zoom', 'meeting', 'webinar', 'virtual', 'rapat', 'breakout', 'streaming'],
             'color' => 'cyan',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                // Bagian Rekan Kerja
+            ],
         ],
 
+        // 6. Formulir & Kegiatan (Bagian Teman)
         'formulir_kegiatan' => [
             'id' => 'formulir_kegiatan',
             'name' => 'Formulir & Kegiatan',
@@ -101,9 +125,12 @@ return [
             'keywords' => ['daftar hadir', 'presensi', 'qrcode', 'qr code', 'survey', 'kuesioner', 'pretest', 'posttest', 'link tree', 'linktree', 'formulir'],
             'color' => 'emerald',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                // Bagian Rekan Kerja
+            ],
         ],
 
+        // 7. Internet
         'internet' => [
             'id' => 'internet',
             'name' => 'Internet & Jaringan',
@@ -115,9 +142,14 @@ return [
             'keywords' => ['internet', 'wifi', 'wi-fi', 'lan', 'kabel', 'jaringan', 'koneksi', 'vpn', 'hotspot', 'rto', 'router'],
             'color' => 'teal',
             'default_category_id' => 3,
-            'subcategories' => [],
+            'subcategories' => [
+                'lemot_mati' => 'Keluhan Internet Lemot / Mati',
+                'tambah_ap' => 'Request Penambahan Access Point',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
+        // 8. Subsite
         'subsite' => [
             'id' => 'subsite',
             'name' => 'Subsite BBPOM',
@@ -129,9 +161,14 @@ return [
             'keywords' => ['subsite', 'website', 'web', 'artikel', 'berita', 'menu', 'portal', 'semarang', 'laman'],
             'color' => 'violet',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'upload_berita' => 'Upload Berita Internal',
+                'upload_dokumen' => 'Upload Dokumen',
+                'hapus_dokumen' => 'Hapus Dokumen',
+            ],
         ],
 
+        // 9. Infografis
         'infografis' => [
             'id' => 'infografis',
             'name' => 'Infografis & Media',
@@ -143,9 +180,12 @@ return [
             'keywords' => ['infografis', 'desain', 'grafis', 'banner', 'spanduk', 'poster', 'flyer', 'publikasi', 'media', 'canva'],
             'color' => 'rose',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'pembuatan_infografis' => 'Pembuatan Infografis',
+            ],
         ],
 
+        // 10. Install Ulang Windows (Bagian Teman)
         'install_windows' => [
             'id' => 'install_windows',
             'name' => 'Install Ulang Windows',
@@ -157,9 +197,12 @@ return [
             'keywords' => ['install', 'windows', 'os', 'format', 'laptop', 'pc', 'komputer', 'virus', 'lambat', 'reinstall', 'win 11'],
             'color' => 'slate',
             'default_category_id' => 4,
-            'subcategories' => [],
+            'subcategories' => [
+                // Bagian Rekan Kerja
+            ],
         ],
 
+        // 11. Lisensi Microsoft Office (Bagian Teman)
         'lisensi_office' => [
             'id' => 'lisensi_office',
             'name' => 'Lisensi Microsoft Office',
@@ -171,9 +214,12 @@ return [
             'keywords' => ['lisensi', 'license', 'microsoft', 'office', 'word', 'excel', 'powerpoint', 'ms office', 'unlicensed', 'aktivasi'],
             'color' => 'orange',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                // Bagian Rekan Kerja
+            ],
         ],
 
+        // 12. Lainnya (Bagian Teman)
         'lainnya' => [
             'id' => 'lainnya',
             'name' => 'Lainnya',
@@ -185,7 +231,9 @@ return [
             'keywords' => ['lainnya', 'printer', 'scanner', 'proyektor', 'audio', 'hardware', 'bantuan', 'kendala', 'konsultasi', 'mati'],
             'color' => 'gray',
             'default_category_id' => 6,
-            'subcategories' => [],
+            'subcategories' => [
+                // Bagian Rekan Kerja
+            ],
         ],
     ],
 ];

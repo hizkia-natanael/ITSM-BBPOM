@@ -111,4 +111,27 @@ class HelpdeskTest extends TestCase
             'response_text' => 'Sudah dicoba colok ke stopkontak lain dan masih tetap mati.',
         ]);
     }
+
+    public function test_user_can_submit_dynamic_service_ticket(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Aplikasi', 'slug' => 'aplikasi']);
+
+        $response = $this->actingAs($user)->post('/tickets', [
+            'service_key' => 'sipt',
+            'subcategory_key' => 'rollback_sampel',
+            'category_id' => $category->id,
+            'sipt_sample_number' => 'SMP-2026-X99',
+            'sipt_commodity' => 'Pangan',
+        ]);
+
+        $ticket = Ticket::where('user_id', $user->id)
+            ->where('subject', 'like', '%SIPT%')
+            ->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertStringContainsString('SMP-2026-X99', $ticket->description);
+        $this->assertStringContainsString('Pangan', $ticket->description);
+        $response->assertRedirect(route('tickets.show', $ticket));
+    }
 }
