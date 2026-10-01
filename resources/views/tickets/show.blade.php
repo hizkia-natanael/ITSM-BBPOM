@@ -26,7 +26,7 @@
                         </button>
                     </div>
 
-                    <x-ticket-status-badge :status="$ticket->status" />
+                    <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
 
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
                         <i class="ri-apps-2-line text-slate-500 text-xs"></i>
@@ -840,7 +840,7 @@
                                                 Helpdesk TIK
                                             </span>
                                             <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-200/60">
-                                                Sistem
+                                                {{ $ticket->handledBy ? $ticket->handledBy->name : 'Sistem' }}
                                             </span>
                                         </div>
                                         <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5">
@@ -850,8 +850,8 @@
                                             {{ $ticket->created_at->format('H:i') }} WIB
                                         </div>
                                     </div>
-                                    <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
-                                        IT
+                                    <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
+                                        {{ $ticket->handledBy ? strtoupper(substr($ticket->handledBy->name, 0, 2)) : 'IT' }}
                                     </div>
                                 </div>
                             @endif
@@ -908,8 +908,9 @@
                                             </div>
 
                                             <!-- Avatar Circle IT -->
-                                            <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
-                                                IT
+                                            <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
+                                                {{ strtoupper(substr($response->user->name, 0, 2)) }}
+                                            </div>
                                             </div>
                                         </div>
                                     @endif
@@ -984,12 +985,12 @@
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
-                            <span class="text-slate-500 flex items-center gap-1.5">
+                        <div class="flex items-center justify-between py-1.5 border-b border-slate-100/80 gap-2">
+                            <span class="text-slate-500 flex items-center gap-1.5 shrink-0">
                                 <i class="ri-pulse-line text-slate-400"></i>
                                 Status Saat Ini:
                             </span>
-                            <x-ticket-status-badge :status="$ticket->status" />
+                            <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" class="text-[11px] sm:text-xs py-0.5" />
                         </div>
 
                         <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
@@ -1063,6 +1064,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 3: Profil Petugas IT Penanggung Jawab -->
+                <x-ticket-handler-card :handler="$ticket->handledBy" :status="$ticket->status" />
             </div>
         </div>
 
@@ -1078,8 +1082,13 @@
                 <div>
                     <p class="text-slate-600 mb-1">Petugas Penerima Layanan TIK,</p>
                     <p class="text-[10px] text-slate-400 mb-16">Tanggal: {{ now()->format('d/m/Y') }}</p>
-                    <p class="font-bold text-slate-900 underline">( ............................................ )</p>
-                    <p class="text-[11px] text-slate-500">Tim Teknologi Informasi BBPOM</p>
+                    @if($ticket->handledBy)
+                        <p class="font-bold text-slate-900 underline">{{ $ticket->handledBy->name }}</p>
+                        <p class="text-[11px] text-slate-500">{{ $ticket->handledBy->nip ? 'NIP. ' . $ticket->handledBy->nip : 'Tim Teknologi Informasi BBPOM' }}</p>
+                    @else
+                        <p class="font-bold text-slate-900 underline">( ............................................ )</p>
+                        <p class="text-[11px] text-slate-500">Tim Teknologi Informasi BBPOM</p>
+                    @endif
                 </div>
             </div>
             <div class="mt-12 text-center text-[10px] text-slate-400 italic">

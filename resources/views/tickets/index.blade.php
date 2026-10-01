@@ -138,7 +138,7 @@
                                         </div>
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
-                                        <x-ticket-status-badge :status="$ticket->status" />
+                                        <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60">

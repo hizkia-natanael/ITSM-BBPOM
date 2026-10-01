@@ -20,18 +20,39 @@ class TicketForm
                 Section::make('Status Penanganan Layanan')
                     ->description('Kelola progres penanganan tiket ITSM oleh tim teknisi IT BBPOM Semarang.')
                     ->schema([
-                        Select::make('status')
-                            ->label('Status Pengaduan')
-                            ->options([
-                                'pending' => 'Pending (Menunggu Antrian IT)',
-                                'diproses' => 'Diproses (Sedang Ditangani Teknisi)',
-                                'selesai' => 'Selesai (Kendala Tuntas Diperbaiki)',
-                                'ditolak' => 'Ditolak (Dibatalkan / Di Luar Wewenang)',
-                            ])
-                            ->required()
-                            ->native(false)
-                            ->selectablePlaceholder(false)
-                            ->helperText('Perbarui status tiket ini agar pelapor dapat melihat progres langsung di dashboard.'),
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('status')
+                                    ->label('Status Pengaduan')
+                                    ->options([
+                                        'pending' => 'Pending (Menunggu Antrian IT)',
+                                        'diproses' => 'Diproses (Sedang Ditangani Teknisi)',
+                                        'selesai' => 'Selesai (Kendala Tuntas Diperbaiki)',
+                                        'ditolak' => 'Ditolak (Dibatalkan / Di Luar Wewenang)',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->selectablePlaceholder(false)
+                                    ->helperText('Perbarui status tiket ini agar pelapor dapat melihat progres langsung di dashboard.'),
+
+                                TextInput::make('handled_by_display')
+                                    ->label('Petugas Penanggung Jawab (Teknisi IT)')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(function ($record) {
+                                        if ($record && $record->handledBy) {
+                                            return $record->handledBy->name;
+                                        }
+                                        return (auth()->user()?->name ?? 'Admin') . ' (Otomatis akun login)';
+                                    })
+                                    ->helperText(function ($record) {
+                                        $currentUser = auth()->user()?->name ?? 'Admin';
+                                        if ($record && $record->handledBy && $record->handledBy->id !== auth()->id()) {
+                                            return "Saat ini: {$record->handledBy->name}. Akan otomatis berganti ke {$currentUser} jika Anda memperbarui status.";
+                                        }
+                                        return "Otomatis terisi akun login Anda ({$currentUser}) saat mengubah status tiket.";
+                                    }),
+                            ]),
                     ]),
 
                 Section::make('Rincian Laporan Pegawai (Read-only)')

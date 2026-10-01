@@ -80,4 +80,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(TicketResponse::class);
     }
+
+    public function handledTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'handled_by_id');
+    }
 }

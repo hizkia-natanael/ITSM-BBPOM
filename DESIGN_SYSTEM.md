@@ -63,7 +63,8 @@ resources/views/components/
 ├── secondary-button.blade.php           # Atom: Tombol sekunder slate
 ├── text-input.blade.php                 # Atom: Input form standar
 ├── input-label.blade.php                # Atom: Label teks input
-├── ticket-status-badge.blade.php        # Molecule: Badge status tiket warna-warni
+├── ticket-status-badge.blade.php        # Molecule: Badge status tiket warna-warni & identitas admin penangan
+├── ticket-handler-card.blade.php         # Molecule: Kartu profil & status teknisi/admin penanggung jawab
 ├── sla-info-card.blade.php              # Molecule: Kartu aturan SLA layanan
 ├── draft-recovery-alert.blade.php       # Organism: Modal glassmorphism draf tersimpan
 ├── leave-form-confirmation-modal.blade.php # Organism: Modal konfirmasi keluar halaman

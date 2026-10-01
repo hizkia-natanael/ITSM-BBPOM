@@ -27,7 +27,7 @@ class TicketController extends Controller
         ];
 
         $recentTickets = $user->tickets()
-            ->with(['category', 'responses'])
+            ->with(['category', 'responses', 'handledBy'])
             ->latest()
             ->take(5)
             ->get();
@@ -45,7 +45,7 @@ class TicketController extends Controller
     {
         $user = $request->user();
 
-        $query = $user->tickets()->with('category');
+        $query = $user->tickets()->with(['category', 'handledBy']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -1057,7 +1057,7 @@ class TicketController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk melihat tiket ini.');
         }
 
-        $ticket->load(['category', 'user', 'responses.user', 'bsreDetail']);
+        $ticket->load(['category', 'user', 'handledBy', 'responses.user', 'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail']);
 
         return view('tickets.show', [
             'ticket' => $ticket,
@@ -1083,6 +1083,16 @@ class TicketController extends Controller
             'user_id' => $request->user()->id,
             'response_text' => trim($validated['response_text']),
         ]);
+
+        if ($request->user()->isAdmin()) {
+            if (empty($ticket->handled_by_id)) {
+                $ticket->handled_by_id = $request->user()->id;
+            }
+            if ($ticket->status === 'pending') {
+                $ticket->status = 'diproses';
+            }
+            $ticket->save();
+        }
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Tanggapan Anda telah berhasil dikirim ke tim IT BBPOM.');

@@ -188,9 +188,8 @@
                                                 </span>
                                             @endif
                                         </div>
-                                    </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
-                                        <x-ticket-status-badge :status="$ticket->status" />
+                                        <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap text-xs text-slate-500">
                                         {{ $ticket->created_at->translatedFormat('d M Y, H:i') }} WIB
