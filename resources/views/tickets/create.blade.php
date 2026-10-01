@@ -33,60 +33,117 @@
         <!-- VIEW 1: APP GATEWAY CATALOG (Shown when no service is selected) -->
         <div x-show="!selectedServiceKey" x-transition.opacity.duration.300ms class="space-y-6">
 
-            <!-- Hero Search & Filter Section -->
-            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-slate-700/50">
-                <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- Hero Search & Helpdesk Info Banner (Konsep A: Split Banner) -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 rounded-3xl p-5 sm:p-6 lg:p-7 text-white shadow-lg relative overflow-hidden border border-slate-700/50">
+                <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 max-w-3xl">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        App Gateway Layanan TI
-                    </span>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                        Pilih Menu Layanan yang Ingin Anda Laporkan
-                    </h3>
-                    <p class="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        Cari aplikasi, akun dinas, kebutuhan acara, fasilitas jaringan, atau perbaikan sistem operasi PC di bawah ini untuk langsung terhubung dengan formulir spesifik.
-                    </p>
-
-                    <!-- Instant Search Bar -->
-                    <div class="mt-6 relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            <i class="ri-search-line text-lg"></i>
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
+                    <!-- Left: Title, Search & Filter -->
+                    <div class="lg:col-span-7 flex flex-col justify-between">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                App Gateway Layanan TI
+                            </span>
                         </div>
-                        <input 
-                            type="text" 
-                            x-model="search" 
-                            placeholder="Cari layanan, misal: zoom, sertifikat bsre, formulir presensi, survey, windows, lisensi office..."
-                            class="w-full pl-12 pr-10 py-3.5 bg-white/95 focus:bg-white text-slate-900 rounded-2xl text-xs sm:text-sm placeholder:text-slate-400 shadow-xl border border-transparent focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition"
-                        >
-                        <button 
-                            x-show="search.length > 0" 
-                            @click="search = ''" 
-                            type="button" 
-                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600"
-                        >
-                            <i class="ri-close-line text-lg"></i>
-                        </button>
-                    </div>
-                </div>
+                        <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-tight">
+                            Pilih Menu Layanan yang Ingin Anda Laporkan
+                        </h3>
+                        <p class="mt-1.5 text-xs text-slate-300 leading-relaxed max-w-xl">
+                            Cari aplikasi, fasilitas jaringan, atau perbaikan sistem dinas untuk terhubung langsung dengan formulir permohonan.
+                        </p>
 
-                <!-- Group Tabs Filter -->
-                <div class="relative z-10 mt-6 pt-5 border-t border-slate-700/60 flex flex-wrap items-center gap-2">
-                    <span class="text-xs text-slate-400 font-medium me-1">Kategori:</span>
-                    <template x-for="(label, key) in groups" :key="key">
-                        <button 
-                            type="button" 
-                            @click="activeGroup = key"
-                            :class="activeGroup === key 
-                                ? 'bg-emerald-600 text-white font-semibold shadow-sm' 
-                                : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 font-medium'"
-                            class="px-3.5 py-1.5 rounded-xl text-xs transition duration-150"
-                            x-text="label"
-                        ></button>
-                    </template>
-                    <span class="ms-auto text-xs text-slate-400 font-medium" x-text="visibleCount + ' Layanan Tersedia'"></span>
+                        <!-- Instant Search Bar -->
+                        <div class="mt-4 relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="ri-search-line text-base"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                x-model="search" 
+                                placeholder="Cari layanan, misal: zoom, bsre, presensi, survey, windows, lisensi..."
+                                class="w-full pl-10 pr-9 py-2.5 bg-white/95 focus:bg-white text-slate-900 rounded-xl text-xs sm:text-sm placeholder:text-slate-400 shadow-md border border-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition"
+                            >
+                            <button 
+                                x-show="search.length > 0" 
+                                @click="search = ''" 
+                                type="button" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                                title="Reset"
+                            >
+                                <i class="ri-close-line text-base"></i>
+                            </button>
+                        </div>
+
+                        <!-- Group Tabs Filter -->
+                        <div class="mt-3.5 flex flex-wrap items-center gap-1.5 pt-3 border-t border-slate-700/50">
+                            <span class="text-[11px] text-slate-400 font-medium me-1">Kategori:</span>
+                            <template x-for="(label, key) in groups" :key="key">
+                                <button 
+                                    type="button" 
+                                    @click="activeGroup = key"
+                                    :class="activeGroup === key 
+                                        ? 'bg-emerald-600 text-white font-bold shadow-xs' 
+                                        : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 font-medium'"
+                                    class="px-2.5 py-1 rounded-lg text-[11px] transition duration-150"
+                                    x-text="label"
+                                ></button>
+                            </template>
+                            <span class="ms-auto text-[11px] text-slate-400 font-medium hidden sm:inline" x-text="visibleCount + ' Layanan Tersedia'"></span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Helpdesk Information Panel -->
+                    <div class="lg:col-span-5">
+                        <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-4 sm:p-4.5 shadow-xl relative overflow-hidden">
+                            <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="ri-customer-service-2-line text-emerald-400 text-base"></i>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Informasi Helpdesk TIK</span>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Siaga Melayani
+                                </span>
+                            </div>
+
+                            <div class="space-y-2.5 text-xs">
+                                <!-- 1. Jam Layanan -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-time-line text-sm"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Jam Layanan Operasional</p>
+                                        <p class="text-[11px] text-slate-300/90 mt-0.5">Senin &ndash; Jumat, 08.00 &ndash; 16.00 WIB</p>
+                                    </div>
+                                </div>
+
+                                <!-- 2. SLA Penanganan -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-flashlight-line text-sm"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">SLA Respons Cepat</p>
+                                        <p class="text-[11px] text-slate-300/90 mt-0.5">Target respon tiket awal kurang dari 2 Jam</p>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Bantuan & Lokasi -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-building-4-line text-sm"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Ruang Pelayanan &amp; Telepon</p>
+                                        <p class="text-[11px] text-slate-300/90 mt-0.5">Subbag Tata Usaha / Tim TI Lt. 2 (Ext. 104)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
