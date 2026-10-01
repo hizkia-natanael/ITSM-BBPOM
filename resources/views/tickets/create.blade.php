@@ -764,9 +764,6 @@
 
                     <!-- SLA & Rules (Atomic Component) -->
                     <x-sla-info-card />
-
-                    <!-- Emergency Contact (Atomic Component) -->
-                    <x-emergency-contact-card />
                 </div>
 
             </div>

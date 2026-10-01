@@ -665,9 +665,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Card 3: Helpdesk & Kontak Darurat TIK BBPOM (Atomic Component) -->
-                <x-emergency-contact-card />
             </div>
         </div>
 
