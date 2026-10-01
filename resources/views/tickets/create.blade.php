@@ -762,35 +762,11 @@
                         </div>
                     </div>
 
-                    <!-- SLA & Rules -->
-                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                            <i class="ri-time-line text-emerald-700 text-base"></i>
-                            SLA Tindak Lanjut TI
-                        </h4>
-                        <ul class="mt-3 space-y-2 text-xs text-slate-600 leading-relaxed">
-                            <li class="flex items-start gap-1.5">
-                                <span class="text-emerald-700 font-bold">&bull;</span>
-                                <span>Verifikasi tiket maks. <strong>1 - 2 jam kerja</strong>.</span>
-                            </li>
-                            <li class="flex items-start gap-1.5">
-                                <span class="text-emerald-700 font-bold">&bull;</span>
-                                <span>Reset password & MFA diproses cepat oleh admin sistem.</span>
-                            </li>
-                        </ul>
-                    </div>
+                    <!-- SLA & Rules (Atomic Component) -->
+                    <x-sla-info-card />
 
-                    <!-- Emergency Contact -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200/60 p-6 text-emerald-950">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-900">Kontak Darurat TI BBPOM</h4>
-                        <p class="text-xs text-emerald-800/90 mt-1.5 leading-relaxed">
-                            Bila sistem perkantoran lumpuh total atau acara mendesak, silakan hubungi tim IT di Ruang Pengelola TI.
-                        </p>
-                        <div class="mt-3 text-xs font-bold text-emerald-900 flex items-center gap-2">
-                            <i class="ri-phone-line text-emerald-700 text-base"></i>
-                            Ekstensi Internal: 104 / 105
-                        </div>
-                    </div>
+                    <!-- Emergency Contact (Atomic Component) -->
+                    <x-emergency-contact-card />
                 </div>
 
             </div>

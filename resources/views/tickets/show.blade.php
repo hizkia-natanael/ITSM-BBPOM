@@ -666,38 +666,8 @@
                     </div>
                 </div>
 
-                <!-- Card 3: Helpdesk & Layanan Dukungan BBPOM -->
-                <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm space-y-4 print:hidden">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                            <i class="ri-customer-service-2-line text-lg"></i>
-                        </div>
-                        <div>
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Pusat Bantuan TIK</h5>
-                            <p class="text-[11px] text-slate-400">Helpdesk & Tim Teknis</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2.5 text-xs text-slate-300">
-                        <div class="flex items-start gap-2">
-                            <i class="ri-map-pin-2-line text-emerald-400 mt-0.5 shrink-0"></i>
-                            <span>Subbag Tata Usaha / Tim TIK Lt. 2, BBPOM Semarang</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="ri-phone-line text-emerald-400 shrink-0"></i>
-                            <span>(024) 7612305 &bull; Ext. TIK</span>
-                        </div>
-                        <div class="flex items-start gap-2">
-                            <i class="ri-time-line text-emerald-400 mt-0.5 shrink-0"></i>
-                            <span>Senin - Kamis: 07.30 - 16.00 WIB<br>Jumat: 07.30 - 16.30 WIB</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400 leading-relaxed">
-                        Jika kendala bersifat darurat yang menghentikan operasional pelayanan publik, segera hubungi kontak ekstensi TIK.
-                    </div>
-                </div>
-
+                <!-- Card 3: Helpdesk & Kontak Darurat TIK BBPOM (Atomic Component) -->
+                <x-emergency-contact-card />
             </div>
         </div>
 
