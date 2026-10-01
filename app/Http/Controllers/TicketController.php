@@ -839,6 +839,7 @@ class TicketController extends Controller
             'subject' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'min:5'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ], [
             'category_id.required' => 'Silakan pilih kategori pengaduan.',
             'category_id.exists' => 'Kategori yang dipilih tidak valid.',
@@ -846,12 +847,12 @@ class TicketController extends Controller
             'description.required' => 'Deskripsi kendala atau isian formulir wajib diisi.',
             'attachment.max' => 'Ukuran lampiran maksimal 5MB.',
             'attachment.mimes' => 'Format file lampiran harus berupa JPG, PNG, PDF, DOC, DOCX, ZIP, atau TXT.',
+            'file_lampiran.max' => 'Ukuran lampiran maksimal 5MB.',
+            'file_lampiran.mimes' => 'Format file lampiran harus berupa JPG, PNG, PDF, DOC, DOCX, ZIP, atau TXT.',
         ]);
 
-        $attachmentPath = null;
-        if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('attachments', 'public');
-        }
+        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
+        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
