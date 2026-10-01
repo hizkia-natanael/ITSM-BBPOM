@@ -2,36 +2,25 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <nav class="flex text-xs text-slate-500 mb-1" aria-label="Breadcrumb">
-                    <ol class="inline-flex items-center space-x-1">
-                        <li>
-                            <span class="inline-flex items-center gap-1 font-semibold text-emerald-800">
-                                <i class="ri-home-4-line text-sm"></i>
-                                Beranda
-                            </span>
-                        </li>
-                        <li>
-                            <span class="mx-1 text-slate-400">/</span>
-                        </li>
-                        <li class="text-slate-500">
-                            Portal Layanan Utama
-                        </li>
-                    </ol>
+                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
+                    <span class="flex items-center gap-1 font-semibold text-emerald-800">
+                        <i class="ri-home-4-line text-xs"></i>
+                        <span>Beranda</span>
+                    </span>
+                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
+                    <span class="font-semibold text-emerald-800">Dashboard</span>
                 </nav>
-                <h2 class="font-bold text-xl text-slate-900 leading-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                     Dashboard Layanan TI Pegawai
                 </h2>
-                <p class="text-xs text-slate-500 mt-0.5">
+                <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
                     Balai Besar Pengawas Obat dan Makanan di Semarang
                 </p>
             </div>
-            <div>
-                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition active:scale-[0.99]">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Buat Pengaduan Baru
+            <div class="shrink-0">
+                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all">
+                    <i class="ri-add-circle-line text-base"></i>
+                    <span>Buat Pengaduan Baru</span>
                 </a>
             </div>
         </div>
