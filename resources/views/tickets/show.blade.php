@@ -798,64 +798,66 @@
                             $responses = $ticket->responses;
                         @endphp
 
-                        @if($responses->isEmpty())
-                            <!-- Date Divider -->
-                            <div class="flex justify-center my-2">
+                        @php
+                            $ticketDateKey = $ticket->created_at->format('Y-m-d');
+                            $grouped = $responses->groupBy(function($item) {
+                                return $item->created_at->format('Y-m-d');
+                            });
+
+                            $allDateKeys = $grouped->keys()->all();
+                            if (!in_array($ticketDateKey, $allDateKeys)) {
+                                array_unshift($allDateKeys, $ticketDateKey);
+                            }
+                        @endphp
+
+                        @foreach($allDateKeys as $dateKey)
+                            @php
+                                $today = now()->format('Y-m-d');
+                                $yesterday = now()->subDay()->format('Y-m-d');
+                                if ($dateKey === $today) {
+                                    $label = 'Hari Ini';
+                                } elseif ($dateKey === $yesterday) {
+                                    $label = 'Kemarin';
+                                } else {
+                                    $label = \Carbon\Carbon::parse($dateKey)->translatedFormat('d F Y');
+                                }
+                            @endphp
+
+                            <!-- Date Separator Pill (e.g. Kemarin / Hari Ini) -->
+                            <div class="flex justify-center my-2.5">
                                 <span class="px-3 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200/80 text-slate-500 shadow-2xs">
-                                    Hari Ini
+                                    {{ $label }}
                                 </span>
                             </div>
 
-                            <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
-                            <div class="flex items-end justify-end gap-2 max-w-[80%] sm:max-w-[65%] ml-auto">
-                                <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2 border border-slate-200 shadow-2xs">
-                                    <div class="flex items-center justify-end gap-1.5 mb-0">
-                                        <span class="text-[11px] font-bold text-slate-900 leading-tight">
-                                            Helpdesk TIK
-                                        </span>
-                                        <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-200/60">
-                                            Sistem
-                                        </span>
+                            {{-- Always show Helpdesk TIK Bot greeting under the ticket's creation date --}}
+                            @if($dateKey === $ticketDateKey)
+                                <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
+                                <div class="flex items-end justify-end gap-2 max-w-[80%] sm:max-w-[65%] ml-auto">
+                                    <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2 border border-slate-200 shadow-2xs">
+                                        <div class="flex items-center justify-end gap-1.5 mb-0">
+                                            <span class="text-[11px] font-bold text-slate-900 leading-tight">
+                                                Helpdesk TIK
+                                            </span>
+                                            <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-200/60">
+                                                Sistem
+                                            </span>
+                                        </div>
+                                        <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5">
+                                            Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan informasi tambahan di kolom chat ini jika diperlukan.
+                                        </p>
+                                        <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
+                                            {{ $ticket->created_at->format('H:i') }} WIB
+                                        </div>
                                     </div>
-                                    <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5">
-                                        Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan informasi tambahan di kolom chat ini jika diperlukan.
-                                    </p>
-                                    <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
-                                        {{ $ticket->created_at->format('H:i') }} WIB
+                                    <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
+                                        IT
                                     </div>
                                 </div>
-                                <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
-                                    IT
-                                </div>
-                            </div>
-                        @else
-                            @php
-                                $grouped = $responses->groupBy(function($item) {
-                                    return $item->created_at->format('Y-m-d');
-                                });
-                            @endphp
+                            @endif
 
-                            @foreach($grouped as $dateKey => $items)
-                                @php
-                                    $today = now()->format('Y-m-d');
-                                    $yesterday = now()->subDay()->format('Y-m-d');
-                                    if ($dateKey === $today) {
-                                        $label = 'Hari Ini';
-                                    } elseif ($dateKey === $yesterday) {
-                                        $label = 'Kemarin';
-                                    } else {
-                                        $label = \Carbon\Carbon::parse($dateKey)->translatedFormat('d F Y');
-                                    }
-                                @endphp
-
-                                <!-- Date Separator Pill (e.g. Kemarin / Hari Ini) -->
-                                <div class="flex justify-center my-2.5">
-                                    <span class="px-3 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200/80 text-slate-500 shadow-2xs">
-                                        {{ $label }}
-                                    </span>
-                                </div>
-
-                                @foreach($items as $response)
+                            @if($grouped->has($dateKey))
+                                @foreach($grouped->get($dateKey) as $response)
                                     @php
                                         $isAdmin = $response->user->isAdmin();
                                     @endphp
@@ -912,8 +914,8 @@
                                         </div>
                                     @endif
                                 @endforeach
-                            @endforeach
-                        @endif
+                            @endif
+                        @endforeach
                     </div>
 
                     <!-- WhatsApp Style Bottom Input Bar -->
