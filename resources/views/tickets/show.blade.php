@@ -804,7 +804,7 @@
                     <div 
                         x-data 
                         x-init="$el.scrollTop = $el.scrollHeight"
-                        class="bg-slate-50/70 rounded-2xl p-4 sm:p-6 border border-slate-200/70 min-h-[320px] max-h-[520px] overflow-y-auto space-y-4 scroll-smooth"
+                        class="bg-slate-50/70 rounded-2xl p-3.5 sm:p-5 border border-slate-200/70 min-h-[320px] max-h-[520px] overflow-y-auto space-y-2.5 scroll-smooth"
                     >
                         @php
                             $responses = $ticket->responses;
@@ -819,9 +819,9 @@
                             </div>
 
                             <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
-                            <div class="flex items-end justify-end gap-2.5 max-w-[85%] sm:max-w-[75%] ml-auto">
-                                <div class="bg-white rounded-2xl rounded-br-xs px-4 py-2.5 border border-slate-200 shadow-2xs">
-                                    <div class="flex items-center justify-end gap-1.5 mb-1">
+                            <div class="flex items-end justify-end gap-2 max-w-[80%] sm:max-w-[65%] ml-auto">
+                                <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2 border border-slate-200 shadow-2xs">
+                                    <div class="flex items-center justify-end gap-1.5 mb-0.5">
                                         <span class="text-[11px] font-bold text-slate-900 leading-tight">
                                             Helpdesk TIK
                                         </span>
@@ -832,11 +832,11 @@
                                     <p class="text-xs sm:text-sm text-slate-800 leading-relaxed">
                                         Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan informasi tambahan di kolom chat ini jika diperlukan.
                                     </p>
-                                    <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
+                                    <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
                                         {{ $ticket->created_at->format('H:i') }} WIB
                                     </div>
                                 </div>
-                                <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
+                                <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
                                     IT
                                 </div>
                             </div>
@@ -861,7 +861,7 @@
                                 @endphp
 
                                 <!-- Date Separator Pill (e.g. Kemarin / Hari Ini) -->
-                                <div class="flex justify-center my-3">
+                                <div class="flex justify-center my-2.5">
                                     <span class="px-3 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200/80 text-slate-500 shadow-2xs">
                                         {{ $label }}
                                     </span>
@@ -874,16 +874,16 @@
 
                                     @if(!$isAdmin)
                                         <!-- Pelapor Bubble (LEFT SIDE) -->
-                                        <div class="flex items-end gap-2.5 max-w-[85%] sm:max-w-[75%]">
+                                        <div class="flex items-end gap-2 max-w-[80%] sm:max-w-[65%]">
                                             <!-- Avatar Circle with User Initials -->
-                                            <div class="w-8 h-8 rounded-full bg-slate-200/90 border border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200/90 border border-slate-300 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
                                                 {{ strtoupper(substr($response->user->name, 0, 2)) }}
                                             </div>
 
                                             <!-- Message Bubble -->
-                                            <div class="bg-slate-100/95 rounded-2xl rounded-bl-xs px-4 py-2.5 border border-slate-200/60 shadow-2xs">
+                                            <div class="bg-slate-100/95 rounded-2xl rounded-bl-xs px-3.5 py-2 border border-slate-200/60 shadow-2xs">
                                                 <!-- Sender Name & Role Header -->
-                                                <div class="flex items-center gap-1.5 mb-1">
+                                                <div class="flex items-center gap-1.5 mb-0.5">
                                                     <span class="text-[11px] font-bold text-slate-900 leading-tight">
                                                         {{ $response->user->name }}
                                                     </span>
@@ -894,18 +894,18 @@
                                                 <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
                                                     {{ $response->response_text }}
                                                 </p>
-                                                <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
+                                                <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
                                                     {{ $response->created_at->format('H:i') }} WIB
                                                 </div>
                                             </div>
                                         </div>
                                     @else
                                         <!-- Petugas IT Bubble (RIGHT SIDE) -->
-                                        <div class="flex items-end justify-end gap-2.5 max-w-[85%] sm:max-w-[75%] ml-auto">
+                                        <div class="flex items-end justify-end gap-2 max-w-[80%] sm:max-w-[65%] ml-auto">
                                             <!-- Message Bubble -->
-                                            <div class="bg-white rounded-2xl rounded-br-xs px-4 py-2.5 border border-slate-200 shadow-2xs">
+                                            <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2 border border-slate-200 shadow-2xs">
                                                 <!-- Role Pill & Admin Name inside bubble -->
-                                                <div class="flex items-center justify-end gap-1.5 mb-1">
+                                                <div class="flex items-center justify-end gap-1.5 mb-0.5">
                                                     <span class="text-[11px] font-bold text-slate-900 leading-tight">
                                                         {{ $response->user->name }}
                                                     </span>
@@ -916,13 +916,13 @@
                                                 <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
                                                     {{ $response->response_text }}
                                                 </p>
-                                                <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
+                                                <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
                                                     {{ $response->created_at->format('H:i') }} WIB
                                                 </div>
                                             </div>
 
                                             <!-- Avatar Circle IT -->
-                                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
+                                            <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
                                                 IT
                                             </div>
                                         </div>
