@@ -68,12 +68,12 @@
             <div class="mt-4">
                 <div class="flex items-center gap-2 flex-wrap">
                     <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight" id="draft-modal-title">
-                        Draf Pengaduan Ditemukan
+                        <span x-text="draftService ? ('Lanjutkan Pengisian ' + draftService.name + '?') : 'Lanjutkan Pengisian Formulir?'"></span>
                     </h3>
                     <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200" x-text="draftTimeText"></span>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                    Sistem mendeteksi adanya formulir tiket yang sempat terputus atau termuat ulang. Anda dapat melanjutkan isian terakhir atau mulai baru dari awal.
+                    Halaman baru saja dimuat ulang atau tertutup sebelumnya. Isian formulir Anda berhasil kami amankan otomatis. Ingin melanjutkan pengisian terakhir atau mulai baru dari awal?
                 </p>
             </div>
 
@@ -81,7 +81,7 @@
             <div class="mt-5 rounded-2xl bg-slate-50/90 border border-slate-200/80 p-4 space-y-2.5">
                 <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <i class="ri-file-list-3-line text-slate-500"></i>
-                    <span>Ringkasan Draf Tersimpan</span>
+                    <span>Ringkasan Isian Sebelumnya</span>
                 </div>
 
                 <div class="flex items-center justify-between gap-3 pt-1 border-t border-slate-200/60">
@@ -110,8 +110,8 @@
                     @click="restoreDraft()" 
                     class="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-emerald-500/20"
                 >
-                    <i class="ri-restart-line text-base"></i>
-                    <span>Pulihkan Isian Saya</span>
+                    <i class="ri-play-circle-line text-base"></i>
+                    <span>Lanjutkan Pengisian</span>
                 </button>
 
                 <button 
@@ -120,7 +120,7 @@
                     class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 transition-colors"
                 >
                     <i class="ri-delete-bin-line text-sm"></i>
-                    <span>Mulai Baru</span>
+                    <span>Buang & Mulai Baru</span>
                 </button>
             </div>
         </div>
@@ -143,7 +143,7 @@
         <i class="ri-checkbox-circle-fill text-lg"></i>
     </div>
     <div>
-        <p class="font-bold text-white text-xs">Progress Berhasil Dipulihkan</p>
-        <p class="text-[11px] text-slate-300 font-normal">Isian formulir Anda telah dikembalikan seperti semula.</p>
+        <p class="font-bold text-white text-xs">Progress Berhasil Dilanjutkan</p>
+        <p class="text-[11px] text-slate-300 font-normal">Seluruh data isian formulir Anda telah dikembalikan seperti semula.</p>
     </div>
 </div>
