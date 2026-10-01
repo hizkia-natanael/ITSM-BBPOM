@@ -2,20 +2,24 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="font-bold text-xl text-gray-900 leading-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                        Portal Layanan TI
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-medium">BBPOM Semarang</span>
+                </div>
+                <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                     Dashboard Layanan TI Pegawai
                 </h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    Pantau status tindak lanjut kendala teknologi informasi BBPOM di Semarang
+                <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                    Pantau status tindak lanjut dan buat permohonan kendala teknologi informasi di lingkungan BBPOM di Semarang
                 </p>
             </div>
-            <div>
-                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-xl shadow-sm hover:shadow transition">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Buat Pengaduan Baru
+            <div class="shrink-0">
+                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all">
+                    <i class="ri-add-circle-line text-base"></i>
+                    <span>Buat Pengaduan Baru</span>
                 </a>
             </div>
         </div>

@@ -2,34 +2,29 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <nav class="flex text-xs text-slate-500 mb-1" aria-label="Breadcrumb">
-                    <ol class="inline-flex items-center space-x-1">
-                        <li>
-                            <a href="{{ route('dashboard') }}" class="hover:text-emerald-700">Dashboard</a>
-                        </li>
-                        <li>
-                            <span class="mx-1 text-slate-400">/</span>
-                        </li>
-                        <li>
-                            <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700">Daftar Pengaduan</a>
-                        </li>
-                        <li>
-                            <span class="mx-1 text-slate-400">/</span>
-                        </li>
-                        <li class="font-semibold text-emerald-800">App Gateway Layanan</li>
-                    </ol>
+                <!-- Modern Pill Breadcrumb -->
+                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
+                    <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
+                        <i class="ri-home-4-line text-xs"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
+                    <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700 transition-colors">Daftar Pengaduan</a>
+                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
+                    <span class="font-semibold text-emerald-800">App Gateway Layanan</span>
                 </nav>
-                <h2 class="font-bold text-xl text-slate-900 leading-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight flex items-center gap-2.5">
+                    <span class="w-3 h-3 rounded-full bg-emerald-600 ring-4 ring-emerald-100"></span>
                     Katalog Layanan & Pengaduan TIK
                 </h2>
-                <p class="text-xs text-slate-500 mt-0.5">
-                    Balai Besar Pengawas Obat dan Makanan di Semarang
+                <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                    Pilih modul layanan atau isi formulir pengaduan teknologi informasi Balai Besar POM di Semarang
                 </p>
             </div>
-            <div>
-                <a href="{{ route('tickets.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                    &larr; Riwayat Pengaduan
+            <div class="shrink-0">
+                <a href="{{ route('tickets.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold shadow-xs hover:shadow transition-all">
+                    <i class="ri-arrow-left-line text-sm"></i>
+                    <span>Riwayat Pengaduan</span>
                 </a>
             </div>
         </div>

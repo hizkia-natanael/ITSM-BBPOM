@@ -2,23 +2,23 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <!-- Breadcrumbs -->
-                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
+                <!-- Modern Breadcrumbs with Remix Icons -->
+                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2.5" aria-label="Breadcrumb">
                     <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
                         <i class="ri-home-4-line text-xs"></i>
                         <span>Dashboard</span>
                     </a>
-                    <span class="text-slate-300">/</span>
+                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
                     <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
                         <i class="ri-file-list-3-line text-xs"></i>
                         <span>Daftar Pengaduan</span>
                     </a>
-                    <span class="text-slate-300">/</span>
+                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
                     <span class="font-mono font-semibold text-emerald-800">{{ $ticket->ticket_number }}</span>
                 </nav>
 
                 <!-- Ticket Identifier & Subject Header -->
-                <div class="flex flex-wrap items-center gap-3">
+                <div class="flex flex-wrap items-center gap-2.5">
                     <div x-data="{ copied: false }" class="inline-flex items-center gap-1.5">
                         <span class="font-mono text-xs font-bold bg-slate-900 text-white px-3 py-1 rounded-lg tracking-wider shadow-xs">
                             {{ $ticket->ticket_number }}
@@ -26,7 +26,7 @@
                         <button 
                             @click="navigator.clipboard.writeText('{{ $ticket->ticket_number }}'); copied = true; setTimeout(() => copied = false, 2000)" 
                             type="button" 
-                            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-xs"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-xs"
                             title="Salin Nomor Tiket"
                         >
                             <i x-show="!copied" class="ri-file-copy-line text-xs"></i>
@@ -37,13 +37,13 @@
 
                     <x-ticket-status-badge :status="$ticket->status" />
 
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
                         <i class="ri-apps-2-line text-slate-500 text-xs"></i>
                         {{ $ticket->category->name }}
                     </span>
                 </div>
 
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-2">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-2.5">
                     {{ $ticket->subject }}
                 </h1>
             </div>
@@ -52,7 +52,7 @@
             <div class="flex items-center gap-2.5 self-start md:self-center shrink-0 print:hidden">
                 <a 
                     href="{{ route('tickets.index') }}" 
-                    class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 transition shadow-xs"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 transition-all shadow-xs hover:shadow"
                 >
                     <i class="ri-arrow-left-line text-sm"></i>
                     <span>Kembali ke Riwayat</span>

@@ -54,8 +54,8 @@
 
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white border-b border-gray-100 shadow-subtle">
-                <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
+            <header class="bg-gradient-to-b from-white via-white to-slate-50/70 border-b border-slate-200/80 shadow-xs relative">
+                <div class="max-w-7xl mx-auto py-7 sm:py-8 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
