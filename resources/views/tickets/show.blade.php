@@ -933,7 +933,12 @@
                     </div>
 
                     <!-- WhatsApp Style Bottom Input Bar -->
-                    <form method="POST" action="{{ route('tickets.reply', $ticket) }}" class="mt-4 pt-3 border-t border-slate-100">
+                    <form 
+                        id="chatReplyForm" 
+                        method="POST" 
+                        action="{{ route('tickets.reply', $ticket) }}" 
+                        class="mt-4 pt-3 border-t border-slate-100"
+                    >
                         @csrf
                         <div class="flex items-center gap-2.5">
                             <div class="flex-1 relative">
@@ -941,10 +946,9 @@
                                     id="response_text" 
                                     name="response_text" 
                                     rows="1" 
-                                    class="w-full rounded-2xl border-slate-300 py-3 px-4 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs resize-none max-h-32"
+                                    class="w-full rounded-2xl border-slate-300 py-3 px-4 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs resize-none max-h-32 transition-all"
                                     placeholder="Ketik tanggapan Anda di sini..."
                                     required
-                                    @keydown.enter.prevent="if(!$event.shiftKey && $el.value.trim().length > 0) $el.form.submit()"
                                 >{{ old('response_text') }}</textarea>
                             </div>
 
@@ -1096,4 +1100,43 @@
             </div>
         </div>
     </div>
+
+    <!-- Chat Textarea Keyboard Handling (Enter to Send, Shift+Enter for Newline) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const textarea = document.getElementById('response_text');
+            const form = document.getElementById('chatReplyForm');
+
+            if (!textarea || !form) return;
+
+            // Auto-expand textarea height as user types (up to max-h-32 / 128px)
+            function adjustHeight() {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+            }
+
+            textarea.addEventListener('input', adjustHeight);
+
+            // Handle keyboard shortcuts: Enter to submit, Shift + Enter for newline
+            textarea.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    if (e.shiftKey) {
+                        // Allow default behavior (insert newline)
+                        return;
+                    }
+
+                    // Plain Enter: prevent default newline and submit if non-empty
+                    e.preventDefault();
+
+                    if (this.value.trim().length > 0) {
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                        } else {
+                            form.submit();
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </x-app-layout>
