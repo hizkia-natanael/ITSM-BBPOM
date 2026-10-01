@@ -25,10 +25,7 @@
     </x-slot>
 
     <!-- Main Container with Alpine.js Reactive Gateway State -->
-    <div x-data="ticketGatewayData()" class="space-y-6">
-
-        <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
-        <x-leave-form-confirmation-modal />
+    <div x-data="ticketGatewayData()">
 
         <!-- VIEW 1: APP GATEWAY CATALOG (Shown when no service is selected) -->
         <div x-show="!selectedServiceKey" x-transition.opacity.duration.300ms class="space-y-6">
@@ -411,6 +408,9 @@
             </div>
 
         </div>
+
+        <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
+        <x-leave-form-confirmation-modal />
 
     </div>
 
