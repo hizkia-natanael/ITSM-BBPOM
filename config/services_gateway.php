@@ -64,16 +64,20 @@ return [
 
         'sertifikat_bse' => [
             'id' => 'sertifikat_bse',
-            'name' => 'Sertifikat BSE',
-            'long_name' => 'Balai Sertifikasi Elektronik / TTE',
+            'name' => 'Sertifikat BSRE',
+            'long_name' => 'Balai Sertifikasi Elektronik / TTE (BSrE)',
             'group' => 'akun',
             'badge' => 'Keamanan & TTE',
             'icon' => 'ri-shield-keyhole-line',
-            'description' => 'Penerbitan baru, perpanjangan masa berlaku sertifikat elektronik, lupa passphrase, dan verifikasi dokumen.',
-            'keywords' => ['bse', 'sertifikat', 'elektronik', 'tte', 'tanda tangan', 'passphrase', 'pin', 'bsre'],
+            'description' => 'Layanan resmi terkait Sertifikat Elektronik BSrE: Reset Password BSRE, Permintaan Kode OTP, dan pengaduan lainnya.',
+            'keywords' => ['bsre', 'bse', 'sertifikat', 'elektronik', 'tte', 'tanda tangan', 'passphrase', 'pin', 'otp', 'reset password'],
             'color' => 'amber',
-            'default_category_id' => 7,
-            'subcategories' => [],
+            'default_category_id' => 5,
+            'subcategories' => [
+                'reset_password' => 'Reset password BSRE',
+                'permintaan_otp' => 'Permintaan OTP',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
         'zoom' => [
@@ -87,7 +91,10 @@ return [
             'keywords' => ['zoom', 'meeting', 'webinar', 'virtual', 'rapat', 'breakout', 'streaming'],
             'color' => 'cyan',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'permintaan_link_zoom' => 'Permintaan Link Zoom',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
         'formulir_kegiatan' => [
@@ -101,7 +108,13 @@ return [
             'keywords' => ['daftar hadir', 'presensi', 'qrcode', 'qr code', 'survey', 'kuesioner', 'pretest', 'posttest', 'link tree', 'linktree', 'formulir'],
             'color' => 'emerald',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'permintaan_daftar_hadir' => 'Permintaan Daftar Hadir',
+                'permintaan_qrcode' => 'Permintaan QRCODE',
+                'survey' => 'Survey',
+                'post_test_pretest' => 'Post Test / Pretest',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
         'internet' => [
@@ -157,7 +170,10 @@ return [
             'keywords' => ['install', 'windows', 'os', 'format', 'laptop', 'pc', 'komputer', 'virus', 'lambat', 'reinstall', 'win 11'],
             'color' => 'slate',
             'default_category_id' => 4,
-            'subcategories' => [],
+            'subcategories' => [
+                'permintaan_install_windows' => 'Permintaan Install Ulang Windows',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
         'lisensi_office' => [
@@ -171,7 +187,10 @@ return [
             'keywords' => ['lisensi', 'license', 'microsoft', 'office', 'word', 'excel', 'powerpoint', 'ms office', 'unlicensed', 'aktivasi'],
             'color' => 'orange',
             'default_category_id' => 5,
-            'subcategories' => [],
+            'subcategories' => [
+                'permintaan_lisensi_office' => 'Permintaan Lisensi Microsoft Office',
+                'lainnya' => 'Lainnya',
+            ],
         ],
 
         'lainnya' => [

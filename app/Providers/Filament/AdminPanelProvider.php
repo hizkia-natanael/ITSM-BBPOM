@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Helpdesk BBPOM di Semarang')
+            ->brandName('Layanan TIK BBPOM di Semarang')
             ->colors([
                 'primary' => Color::Emerald,
                 'warning' => Color::Amber,

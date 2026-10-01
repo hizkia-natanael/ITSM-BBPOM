@@ -28,7 +28,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if ($request->user() && $request->user()->isAdmin()) {
+        $user = $request->user();
+        $userName = $user ? $user->name : '';
+
+        $request->session()->flash('welcome_toast', $userName);
+
+        if ($user && $user->isAdmin()) {
+            if (class_exists(\Filament\Notifications\Notification::class)) {
+                \Filament\Notifications\Notification::make()
+                    ->title('Selamat Datang')
+                    ->body("Selamat datang, {$userName}!")
+                    ->success()
+                    ->send();
+            }
+
             return redirect()->intended('/admin');
         }
 

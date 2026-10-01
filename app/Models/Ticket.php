@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Ticket extends Model
 {
@@ -15,6 +16,8 @@ class Ticket extends Model
         'ticket_number',
         'user_id',
         'category_id',
+        'service_key',
+        'subcategory',
         'subject',
         'description',
         'status',
@@ -53,6 +56,36 @@ class Ticket extends Model
     public function responses(): HasMany
     {
         return $this->hasMany(TicketResponse::class)->oldest();
+    }
+
+    public function bsreDetail(): HasOne
+    {
+        return $this->hasOne(TicketBsreDetail::class, 'ticket_id');
+    }
+
+    public function zoomDetail(): HasOne
+    {
+        return $this->hasOne(TicketZoomDetail::class, 'ticket_id');
+    }
+
+    public function kegiatanDetail(): HasOne
+    {
+        return $this->hasOne(TicketKegiatanDetail::class, 'ticket_id');
+    }
+
+    public function windowsDetail(): HasOne
+    {
+        return $this->hasOne(TicketWindowsDetail::class, 'ticket_id');
+    }
+
+    public function officeDetail(): HasOne
+    {
+        return $this->hasOne(TicketOfficeDetail::class, 'ticket_id');
+    }
+
+    public function lainnyaDetail(): HasOne
+    {
+        return $this->hasOne(TicketLainnyaDetail::class, 'ticket_id');
     }
 
     public function getStatusLabelAttribute(): string
