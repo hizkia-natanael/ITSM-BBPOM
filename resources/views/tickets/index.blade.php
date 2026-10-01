@@ -101,50 +101,15 @@
             @if($tickets->count() > 0)
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-50/80 text-slate-600 font-bold border-b border-slate-200/80 uppercase tracking-wider text-[11px]">
+                        <thead class="bg-slate-50/75 text-slate-500 font-semibold border-b border-slate-200/80 text-xs">
                             <tr>
-                                <th scope="col" class="py-3 px-4 sm:px-5">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-hashtag text-slate-400 text-xs"></i>
-                                        <span>No. Tiket</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="py-3 px-4">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-price-tag-3-line text-slate-400 text-xs"></i>
-                                        <span>Kategori</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="py-3 px-4">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-file-text-line text-slate-400 text-xs"></i>
-                                        <span>Subjek Kendala</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="py-3 px-4">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-pulse-line text-slate-400 text-xs"></i>
-                                        <span>Status Progres</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="py-3 px-4">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-chat-3-line text-slate-400 text-xs"></i>
-                                        <span>Tanggapan</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="py-3 px-4">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-calendar-line text-slate-400 text-xs"></i>
-                                        <span>Waktu Pengajuan</span>
-                                    </span>
-                                </th>
-                                <th scope="col" class="py-3 px-4 sm:px-5 text-right">
-                                    <span class="inline-flex items-center gap-1.5 justify-end">
-                                        <i class="ri-flashlight-line text-slate-400 text-xs"></i>
-                                        <span>Aksi</span>
-                                    </span>
-                                </th>
+                                <th scope="col" class="py-2.5 px-4 sm:px-5 font-semibold">No. Tiket</th>
+                                <th scope="col" class="py-2.5 px-4 font-semibold">Kategori</th>
+                                <th scope="col" class="py-2.5 px-4 font-semibold">Subjek Kendala</th>
+                                <th scope="col" class="py-2.5 px-4 font-semibold">Status Progres</th>
+                                <th scope="col" class="py-2.5 px-4 font-semibold">Tanggapan</th>
+                                <th scope="col" class="py-2.5 px-4 font-semibold">Waktu Pengajuan</th>
+                                <th scope="col" class="py-2.5 px-4 sm:px-5 text-right font-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
