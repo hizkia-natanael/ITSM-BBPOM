@@ -33,9 +33,6 @@
     <!-- Main Container with Alpine.js Reactive Gateway State -->
     <div x-data="ticketGatewayData()" class="space-y-6">
 
-        <!-- Alert Pemulihan Draf Isian Formulir (Atomic Component) -->
-        <x-draft-recovery-alert />
-
         <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
         <x-leave-form-confirmation-modal />
 
@@ -229,9 +226,7 @@
                             action="{{ route('tickets.store') }}" 
                             enctype="multipart/form-data" 
                             class="space-y-6"
-                            @submit="isSubmitting = true; discardDraft()"
-                            @input.debounce.500ms="saveDraft()"
-                            @change="saveDraft()"
+                            @submit="isSubmitting = true"
                         >
                             @csrf
                             <input type="hidden" name="service_key" :value="selectedServiceKey">
@@ -364,29 +359,12 @@
                 selectedSubCategory: @json(old('subcategory', old('subcategory_key', $initialSubcategory ?? ''))),
                 services: @json($services),
                 groups: @json($groups),
-                hasDraft: false,
-                draftTimeText: '',
-                draftServiceKey: '',
-                draftSubcategory: '',
-                draftFieldsCount: 0,
-                showRestoredToast: false,
                 isSubmitting: false,
                 showLeaveConfirm: false,
                 pendingLeaveTarget: null,
 
                 get currentService() {
                     return this.services[this.selectedServiceKey] || null;
-                },
-
-                get draftService() {
-                    return this.services[this.draftServiceKey] || null;
-                },
-
-                get draftSubcategoryLabel() {
-                    if (this.draftService && this.draftService.subcategories && this.draftSubcategory) {
-                        return this.draftService.subcategories[this.draftSubcategory] || this.draftSubcategory;
-                    }
-                    return '';
                 },
 
                 selectService(key) {
@@ -437,116 +415,6 @@
                     return Object.keys(this.services).filter(key => this.isMatch(key)).length;
                 },
 
-                checkDraft() {
-                    try {
-                        const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
-                        if (raw) {
-                            const data = JSON.parse(raw);
-                            if (data && data._saved_at) {
-                                const savedDate = new Date(data._saved_at);
-                                const timeStr = savedDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
-                                this.draftTimeText = 'Tersimpan ' + timeStr + ' WIB';
-                                this.draftServiceKey = data._service_key || '';
-                                this.draftSubcategory = data._subcategory_key || '';
-
-                                let count = 0;
-                                for (let k in data) {
-                                    if (!k.startsWith('_') && data[k] !== null && data[k] !== undefined && String(data[k]).trim().length > 0) {
-                                        count++;
-                                    }
-                                }
-                                this.draftFieldsCount = count;
-                                if (count > 0 || this.draftServiceKey) {
-                                    this.hasDraft = true;
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Error checking draft:', e);
-                    }
-                },
-
-                saveDraft() {
-                    if (this.isSubmitting) return;
-                    const form = document.querySelector('form[action*="tickets"]');
-                    if (!form) return;
-
-                    const formData = {};
-                    let hasContent = false;
-
-                    for (let el of form.elements) {
-                        if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                        if (el.type === 'checkbox' || el.type === 'radio') {
-                            if (el.checked) {
-                                formData[el.name] = el.value;
-                                hasContent = true;
-                            }
-                        } else if (el.value && el.value.trim().length > 0) {
-                            formData[el.name] = el.value;
-                            if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'subcategory' && el.name !== 'category_id') {
-                                hasContent = true;
-                            }
-                        }
-                    }
-
-                    if (this.selectedServiceKey || hasContent) {
-                        formData._service_key = this.selectedServiceKey;
-                        formData._subcategory_key = this.selectedSubcategory;
-                        formData._saved_at = new Date().toISOString();
-                        localStorage.setItem('bbpom_itsm_ticket_draft', JSON.stringify(formData));
-                    }
-                },
-
-                restoreDraft() {
-                    try {
-                        const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
-                        if (!raw) return;
-                        const data = JSON.parse(raw);
-
-                        if (data._service_key) {
-                            this.selectService(data._service_key);
-                        }
-                        if (data._subcategory_key) {
-                            this.selectedSubcategory = data._subcategory_key;
-                            this.selectedSubCategory = data._subcategory_key;
-                        }
-
-                        this.$nextTick(() => {
-                            const form = document.querySelector('form[action*="tickets"]');
-                            if (form) {
-                                for (let key in data) {
-                                    if (key.startsWith('_')) continue;
-                                    const el = form.elements[key];
-                                    if (el) {
-                                        if (el.type === 'checkbox' || el.type === 'radio') {
-                                            el.checked = (el.value === data[key]);
-                                        } else {
-                                            el.value = data[key];
-                                        }
-                                        el.dispatchEvent(new Event('input', { bubbles: true }));
-                                        el.dispatchEvent(new Event('change', { bubbles: true }));
-                                    }
-                                }
-                            }
-                            this.hasDraft = false;
-                            this.showRestoredToast = true;
-                            setTimeout(() => {
-                                this.showRestoredToast = false;
-                            }, 3500);
-                        });
-                    } catch (e) {
-                        console.error('Error restoring draft:', e);
-                    }
-                },
-
-                discardDraft() {
-                    localStorage.removeItem('bbpom_itsm_ticket_draft');
-                    this.hasDraft = false;
-                    this.draftServiceKey = '';
-                    this.draftSubcategory = '';
-                    this.draftFieldsCount = 0;
-                },
-
                 isDirty() {
                     if (this.isSubmitting) return false;
                     const form = document.querySelector('form[action*="tickets"]');
@@ -563,7 +431,6 @@
 
                 confirmLeave(target) {
                     if (this.isDirty() && !this.isSubmitting) {
-                        this.saveDraft();
                         this.pendingLeaveTarget = target;
                         this.showLeaveConfirm = true;
                     } else if (target === 'clearService') {
@@ -579,7 +446,6 @@
                 },
 
                 proceedLeave() {
-                    this.saveDraft();
                     this.showLeaveConfirm = false;
                     const target = this.pendingLeaveTarget;
                     this.pendingLeaveTarget = null;
@@ -599,6 +465,10 @@
                 },
 
                 init() {
+                    try {
+                        localStorage.removeItem('bbpom_itsm_ticket_draft');
+                    } catch (e) {}
+
                     if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
                         const s = this.services[this.selectedServiceKey];
                         if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
@@ -610,8 +480,6 @@
                         this.selectedSubCategory = this.selectedSubcategory;
                     }
 
-                    this.checkDraft();
-
                     // Intercept in-app navigation link clicks when form has unsaved content
                     document.addEventListener('click', (e) => {
                         const anchor = e.target.closest('a[href]');
@@ -622,13 +490,6 @@
                         if (this.isDirty() && !this.isSubmitting) {
                             e.preventDefault();
                             this.confirmLeave(anchor.href);
-                        }
-                    });
-
-                    // Silently auto-save draft on refresh/navigation without showing the basic native browser leave prompt
-                    window.addEventListener('beforeunload', () => {
-                        if (this.isDirty() && !this.isSubmitting) {
-                            this.saveDraft();
                         }
                     });
                 }
