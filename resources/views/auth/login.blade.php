@@ -315,17 +315,6 @@
                                 <i class="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-1"></i>
                             </button>
                         </div>
-
-                        @if (Route::has('register'))
-                            <div class="text-center pt-2">
-                                <p class="text-xs text-slate-500">
-                                    Belum memiliki akun?
-                                    <a href="{{ route('register') }}" class="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline">
-                                        Registrasi Pegawai
-                                    </a>
-                                </p>
-                            </div>
-                        @endif
                     </form>
                 </div>
 
