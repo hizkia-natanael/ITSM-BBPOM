@@ -114,6 +114,35 @@ class HelpdeskTest extends TestCase
         ]);
     }
 
+    public function test_user_ticket_index_is_paginated(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Hardware', 'slug' => 'hardware']);
+        $uniq = uniqid();
+
+        for ($i = 1; $i <= 15; $i++) {
+            $t = Ticket::create([
+                'user_id' => $user->id,
+                'category_id' => $category->id,
+                'ticket_number' => "TIK-PGN-{$uniq}-{$i}",
+                'subject' => "Masalah pengujian {$uniq} nomor {$i}",
+                'description' => "Deskripsi detail keluhan {$i}",
+                'status' => 'pending',
+            ]);
+            $t->created_at = now()->subMinutes(20 - $i);
+            $t->saveQuietly();
+        }
+
+        $response = $this->actingAs($user)->get(route('tickets.index'));
+        $response->assertSuccessful();
+        $response->assertSee("Masalah pengujian {$uniq} nomor 15");
+        $response->assertSee('page=2');
+
+        $page2Response = $this->actingAs($user)->get(route('tickets.index', ['page' => 2]));
+        $page2Response->assertSuccessful();
+        $page2Response->assertSee("Masalah pengujian {$uniq} nomor 1");
+    }
+
     public function test_user_can_submit_dynamic_service_ticket(): void
     {
         $user = User::factory()->create(['role' => 'user']);
