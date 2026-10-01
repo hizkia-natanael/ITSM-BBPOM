@@ -1,28 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
-                    <span class="flex items-center gap-1 font-semibold text-emerald-800">
-                        <i class="ri-home-4-line text-xs"></i>
-                        <span>Beranda</span>
-                    </span>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <span class="font-semibold text-emerald-800">Dashboard</span>
-                </nav>
-                <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
-                    Dashboard Layanan TI Pegawai
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                    Balai Besar Pengawas Obat dan Makanan di Semarang
-                </p>
-            </div>
-            <div class="shrink-0">
-                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all">
-                    <i class="ri-add-circle-line text-base"></i>
-                    <span>Buat Pengaduan Baru</span>
-                </a>
-            </div>
+        <div>
+            <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
+                <span class="flex items-center gap-1 font-semibold text-emerald-800">
+                    <i class="ri-home-4-line text-xs"></i>
+                    <span>Beranda</span>
+                </span>
+                <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
+                <span class="font-semibold text-emerald-800">Dashboard</span>
+            </nav>
+            <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+                Dashboard Layanan TI Pegawai
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                Balai Besar Pengawas Obat dan Makanan di Semarang
+            </p>
         </div>
     </x-slot>
 
@@ -46,15 +38,13 @@
                         Mengalami kendala koneksi jaringan, sertifikat BSrE, akun Zoom, perangkat PC/laptop, permohonan lisensi software, atau aplikasi dinas? Ajukan permohonan sekarang dan tim TIK BBPOM akan segera menanganinya.
                     </p>
                     <div class="mt-5 flex flex-wrap gap-3">
-                        <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-900/30 transition active:scale-[0.99]">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Laporkan Kendala TI
+                        <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-md shadow-emerald-900/30 transition-all duration-150 active:scale-[0.99]">
+                            <i class="ri-add-circle-line text-base"></i>
+                            <span>Laporkan Kendala TI</span>
                         </a>
                         <a href="{{ route('tickets.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 text-xs font-semibold transition">
                             <i class="ri-history-line text-sm"></i>
-                            Lihat Riwayat Tiket
+                            <span>Lihat Riwayat Tiket</span>
                         </a>
                     </div>
                 </div>

@@ -13,33 +13,19 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-4 sm:-my-px sm:ms-8 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="inline-flex items-center px-3 py-2 text-sm font-medium transition duration-150 {{ request()->routeIs('dashboard') ? 'text-emerald-800 border-b-2 border-emerald-600 font-semibold' : 'text-slate-600 hover:text-emerald-700' }}">
-                        <svg class="w-4 h-4 me-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
+                        <i class="ri-dashboard-line text-base me-1.5"></i>
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.index') || request()->routeIs('tickets.show')" class="inline-flex items-center px-3 py-2 text-sm font-medium transition duration-150 {{ (request()->routeIs('tickets.index') || request()->routeIs('tickets.show')) ? 'text-emerald-800 border-b-2 border-emerald-600 font-semibold' : 'text-slate-600 hover:text-emerald-700' }}">
-                        <svg class="w-4 h-4 me-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
+                        <i class="ri-file-list-3-line text-base me-1.5"></i>
                         {{ __('Daftar Pengaduan') }}
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('tickets.create')" :active="request()->routeIs('tickets.create')" class="inline-flex items-center px-3 py-2 text-sm font-medium transition duration-150 {{ request()->routeIs('tickets.create') ? 'text-emerald-800 border-b-2 border-emerald-600 font-semibold' : 'text-slate-600 hover:text-emerald-700' }}">
-                        <svg class="w-4 h-4 me-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        {{ __('Buat Pengaduan') }}
                     </x-nav-link>
 
                     @if(Auth::user()->isAdmin())
                         <a href="/admin" class="inline-flex items-center px-3 py-2 text-sm font-medium text-emerald-800 hover:text-emerald-950 transition duration-150 my-auto">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                                <i class="ri-shield-keyhole-line text-sm"></i>
                                 Panel Admin (Filament)
                             </span>
                         </a>
@@ -47,13 +33,11 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Settings Dropdown & Global CTA -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
-                <a href="{{ route('tickets.create') }}" class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition">
-                    <svg class="w-3.5 h-3.5 me-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Tiket Baru
+                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white shadow-xs hover:shadow-md transition-all duration-150 active:scale-[0.99]" title="Buat Pengaduan Baru">
+                    <i class="ri-add-line text-sm"></i>
+                    <span>Buat Pengaduan</span>
                 </a>
 
                 <x-dropdown align="right" width="56">
