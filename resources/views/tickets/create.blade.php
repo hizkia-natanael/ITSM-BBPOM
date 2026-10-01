@@ -90,45 +90,60 @@
                 </div>
             </div>
 
-            <!-- 12 Service Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+            <!-- 12 Service Cards Grid (Konsep 3: Compact Metric & Service Badge) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
                 @foreach($services as $key => $svc)
+                    @php
+                        $subCount = !empty($svc['subcategories']) ? count($svc['subcategories']) : 0;
+                        $colorClass = match($svc['color'] ?? 'slate') {
+                            'indigo' => 'from-indigo-600 to-indigo-700 shadow-indigo-500/25',
+                            'blue' => 'from-blue-600 to-cyan-600 shadow-blue-500/25',
+                            'emerald' => 'from-emerald-600 to-teal-600 shadow-emerald-500/25',
+                            'cyan' => 'from-cyan-600 to-blue-600 shadow-cyan-500/25',
+                            'sky' => 'from-sky-600 to-blue-700 shadow-sky-500/25',
+                            'teal' => 'from-teal-600 to-emerald-700 shadow-teal-500/25',
+                            'purple' => 'from-purple-600 to-indigo-600 shadow-purple-500/25',
+                            'violet' => 'from-violet-600 to-purple-700 shadow-violet-500/25',
+                            'amber' => 'from-amber-500 to-orange-600 shadow-amber-500/25',
+                            default => 'from-slate-700 to-slate-800 shadow-slate-500/25',
+                        };
+                    @endphp
                     <div 
                         x-show="isMatch('{{ $key }}')"
                         x-transition.opacity.duration.200ms
                         @click="selectService('{{ $key }}')"
-                        class="group relative bg-white rounded-2xl p-5 border border-slate-200/80 hover:border-emerald-400 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                        class="group relative bg-white rounded-2xl p-4 border border-slate-200/80 hover:border-emerald-500/60 shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center gap-3.5 sm:gap-4"
                     >
-                        <div>
-                            <!-- Header: Badge & Icon -->
-                            <div class="flex items-start justify-between gap-2 mb-3.5">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-slate-100 group-hover:bg-emerald-100 transition">
-                                    <span class="text-slate-700 group-hover:text-emerald-900">{{ $svc['badge'] }}</span>
-                                </span>
-
-                                <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-emerald-700 flex items-center justify-center transition shadow-sm">
-                                    <i class="{{ $svc['icon'] }} text-xl text-slate-700 group-hover:text-white"></i>
-                                </div>
-                            </div>
-
-                            <!-- Name & Long Name -->
-                            <h4 class="font-bold text-base text-slate-900 group-hover:text-emerald-800 transition">
-                                {{ $svc['name'] }}
-                            </h4>
-                            <p class="text-[11px] font-medium text-slate-400 mt-0.5 leading-snug">
-                                {{ $svc['long_name'] }}
-                            </p>
-
-                            <!-- Description -->
-                            <p class="mt-2.5 text-xs text-slate-600 line-clamp-3 leading-relaxed">
-                                {{ $svc['description'] }}
-                            </p>
+                        <!-- Service Icon Badge with Vibrant Color Gradient -->
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br {{ $colorClass }} flex items-center justify-center shrink-0 shadow-md transition-transform duration-200 group-hover:scale-105">
+                            <i class="{{ $svc['icon'] }} text-2xl text-white"></i>
                         </div>
 
-                        <!-- Card Footer Action -->
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-700 group-hover:text-emerald-800">
-                            <span>Pilih Layanan</span>
-                            <span class="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                        <!-- Service Details -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-800 transition truncate">
+                                    {{ $svc['name'] }}
+                                </h4>
+                                @if($subCount > 0)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200/60 group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-200 transition shrink-0">
+                                        {{ $subCount }} Modul
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-slate-500 truncate mt-0.5">
+                                {{ $svc['long_name'] }}
+                            </p>
+                            <div class="mt-1 flex items-center gap-2">
+                                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
+                                    {{ $svc['badge'] }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Micro-interaction Action Indicator -->
+                        <div class="w-8 h-8 rounded-xl bg-slate-50 group-hover:bg-emerald-600 text-slate-400 group-hover:text-white flex items-center justify-center transition-all duration-200 shrink-0">
+                            <i class="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-0.5"></i>
                         </div>
                     </div>
                 @endforeach
