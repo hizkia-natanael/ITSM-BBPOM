@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@bbpom.go.id'],
             [
                 'name' => 'Administrator IT BBPOM',
+                'nip' => '198503122010121001',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'user@bbpom.go.id'],
             [
                 'name' => 'Ahmad Pegawai BBPOM',
+                'nip' => '199104152015031002',
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'email_verified_at' => now(),
@@ -42,6 +44,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'siti@bbpom.go.id'],
             [
                 'name' => 'Siti Rahmawati (Lab Pengujian)',
+                'nip' => '199204152018012002',
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'email_verified_at' => now(),
@@ -52,6 +55,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'budi@bbpom.go.id'],
             [
                 'name' => 'Budi Santoso (Tata Usaha)',
+                'nip' => '198705112014031003',
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'email_verified_at' => now(),

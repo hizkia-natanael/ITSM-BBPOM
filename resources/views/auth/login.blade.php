@@ -129,50 +129,131 @@
                     @endif
 
                     <!-- Login Form -->
-                    <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                    <form method="POST" action="{{ route('login') }}" class="space-y-4" x-data="loginData()" @submit="onSubmit">
                         @csrf
 
-                        <!-- Email / Username Field -->
-                        <div>
-                            <label for="email" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span>Email / Akun Pegawai</span>
+                        {{-- Hidden email field — populated by Alpine when user selects a pegawai --}}
+                        <input type="hidden" name="email" x-model="selectedEmail">
+
+                        <!-- Pegawai Searchable Dropdown -->
+                        <div class="relative">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                                <i class="ri-user-line text-slate-500 text-sm"></i>
+                                <span>Nama Pegawai</span>
                             </label>
+
+                            <!-- Search Input -->
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
+                                    <i class="ri-search-line text-sm"></i>
                                 </div>
-                                <input 
-                                    id="email" 
-                                    type="email" 
-                                    name="email" 
-                                    value="{{ old('email') }}" 
-                                    required 
-                                    autofocus 
-                                    autocomplete="username"
-                                    placeholder="Ketik email pegawai Anda..."
-                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50/90 hover:bg-white focus:bg-white border border-slate-300 focus:border-slate-800 focus:ring-2 focus:ring-slate-800/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition"
+                                <input
+                                    type="text"
+                                    x-model="search"
+                                    @focus="open = true"
+                                    @input="open = true"
+                                    @keydown.escape="open = false"
+                                    @keydown.enter.prevent="selectFirst"
+                                    @keydown.arrow-down.prevent="highlightNext"
+                                    @keydown.arrow-up.prevent="highlightPrev"
+                                    placeholder="Ketik nama untuk mencari pegawai..."
+                                    autocomplete="off"
+                                    :class="selectedEmail ? 'border-emerald-500/60 focus:border-emerald-600 bg-white' : 'border-slate-300 bg-slate-50/90 hover:bg-white focus:bg-white focus:border-slate-800'"
+                                    class="w-full pl-10 pr-10 py-2.5 border focus:ring-2 focus:ring-slate-800/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition"
                                 >
+                                <!-- Clear selection button -->
+                                <button
+                                    type="button"
+                                    x-show="selectedEmail"
+                                    @click="clearSelection"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-rose-500 transition"
+                                    title="Hapus pilihan"
+                                    style="display: none;"
+                                >
+                                    <i class="ri-close-circle-line text-sm"></i>
+                                </button>
+                                <!-- Chevron indicator -->
+                                <div x-show="!selectedEmail" class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="ri-arrow-down-s-line text-sm" x-show="!open"></i>
+                                    <i class="ri-arrow-up-s-line text-sm" x-show="open" style="display: none;"></i>
+                                </div>
                             </div>
+
+                            <!-- Dropdown panel -->
+                            <div
+                                x-show="open"
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-1"
+                                @click.outside="open = false"
+                                class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200/80 rounded-xl shadow-xl overflow-hidden"
+                                style="display: none;"
+                            >
+                                <!-- Results list -->
+                                <ul x-show="filteredUsers.length > 0" class="max-h-52 overflow-y-auto divide-y divide-slate-100 py-1">
+                                    <template x-for="(user, index) in filteredUsers" :key="user.id">
+                                        <li
+                                            @click="selectUser(user)"
+                                            @mouseenter="highlightedIndex = index"
+                                            :class="highlightedIndex === index ? 'bg-slate-100' : 'hover:bg-slate-50'"
+                                            class="flex items-center justify-between gap-3 px-4 py-2.5 cursor-pointer transition-colors"
+                                        >
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                                                    <i class="ri-user-line text-white text-xs"></i>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="text-xs font-semibold text-slate-800 truncate" x-text="user.name"></p>
+                                                    <p class="text-[10px] text-slate-400 font-mono" x-text="user.nip ? user.nip : 'NIP tidak tersedia'"></p>
+                                                </div>
+                                            </div>
+                                            <span
+                                                :class="user.role === 'admin' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'"
+                                                class="flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                                x-text="user.role === 'admin' ? 'Admin' : 'Pegawai'"
+                                            ></span>
+                                        </li>
+                                    </template>
+                                </ul>
+                                <!-- Empty state -->
+                                <div x-show="filteredUsers.length === 0" class="px-4 py-3 text-center">
+                                    <p class="text-xs text-slate-400">Pegawai tidak ditemukan</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected Employee Card (shown after selection) -->
+                        <div
+                            x-show="selectedEmail"
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 shadow-sm"
+                            style="display: none;"
+                        >
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                                <i class="ri-user-check-line text-white text-sm"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[10px] font-bold uppercase tracking-wide text-emerald-700 leading-none mb-0.5">Pegawai Dipilih</p>
+                                <p class="text-xs font-semibold text-slate-800 truncate" x-text="selectedName"></p>
+                                <p class="text-[10px] text-slate-500 font-mono tracking-wider" x-text="selectedNip ? 'NIP: ' + selectedNip : 'NIP tidak tercatat'"></p>
+                            </div>
+                            <i class="ri-check-double-line text-emerald-500 text-base flex-shrink-0"></i>
                         </div>
 
                         <!-- Password Field with Show/Hide Toggle -->
                         <div x-data="{ showPassword: false }">
                             <label for="password" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
+                                <i class="ri-lock-password-line text-slate-500 text-sm"></i>
                                 <span>Password</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                    </svg>
+                                    <i class="ri-key-line text-sm"></i>
                                 </div>
                                 <input 
                                     id="password" 
@@ -189,15 +270,8 @@
                                     class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition"
                                     title="Tampilkan / Sembunyikan Password"
                                 >
-                                    <!-- Eye Open Icon -->
-                                    <svg x-show="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                    <!-- Eye Closed / Slash Icon -->
-                                    <svg x-show="showPassword" style="display: none;" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                    </svg>
+                                    <i x-show="!showPassword" class="ri-eye-line text-sm"></i>
+                                    <i x-show="showPassword" class="ri-eye-off-line text-sm text-emerald-600" style="display: none;"></i>
                                 </button>
                             </div>
                         </div>
@@ -228,9 +302,7 @@
                                 class="w-full bg-[#1e293b] hover:bg-[#0f172a] active:scale-[0.99] text-white py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tracking-wide shadow-lg shadow-slate-900/25 transition-all duration-150 flex items-center justify-center gap-2 group cursor-pointer"
                             >
                                 <span>Masuk Situs</span>
-                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
+                                <i class="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-1"></i>
                             </button>
                         </div>
 
@@ -257,6 +329,86 @@
 
         </div>
     </div>
+
+    {{-- Alpine.js login state — all logic in named function per AGENTS.md safety rules --}}
+    <script>
+        function loginData() {
+            var allUsers = @json($users);
+
+            return {
+                search: '',
+                open: false,
+                selectedEmail: '',
+                selectedName: '',
+                selectedNip: '',
+                highlightedIndex: -1,
+                users: allUsers,
+
+                get filteredUsers() {
+                    var q = this.search.trim().toLowerCase();
+                    if (q === '') {
+                        return this.users;
+                    }
+                    return this.users.filter(function(u) {
+                        var nameMatch = u.name.toLowerCase().indexOf(q) !== -1;
+                        var nipMatch = u.nip && u.nip.indexOf(q) !== -1;
+                        return nameMatch || nipMatch;
+                    });
+                },
+
+                selectUser: function(user) {
+                    var self = this;
+                    self.selectedEmail = user.email;
+                    self.selectedName = user.name;
+                    self.selectedNip = user.nip || '';
+                    self.search = user.name;
+                    self.open = false;
+                    self.highlightedIndex = -1;
+                    self.$nextTick(function() {
+                        var pw = document.getElementById('password');
+                        if (pw) { pw.focus(); }
+                    });
+                },
+
+                clearSelection: function() {
+                    this.selectedEmail = '';
+                    this.selectedName = '';
+                    this.selectedNip = '';
+                    this.search = '';
+                    this.open = false;
+                    this.highlightedIndex = -1;
+                },
+
+                selectFirst: function() {
+                    if (this.filteredUsers.length > 0) {
+                        var idx = this.highlightedIndex >= 0 ? this.highlightedIndex : 0;
+                        this.selectUser(this.filteredUsers[idx]);
+                    }
+                },
+
+                highlightNext: function() {
+                    var max = this.filteredUsers.length - 1;
+                    if (this.highlightedIndex < max) {
+                        this.highlightedIndex++;
+                        this.open = true;
+                    }
+                },
+
+                highlightPrev: function() {
+                    if (this.highlightedIndex > 0) {
+                        this.highlightedIndex--;
+                    }
+                },
+
+                onSubmit: function(e) {
+                    if (!this.selectedEmail) {
+                        e.preventDefault();
+                        this.open = true;
+                    }
+                },
+            };
+        }
+    </script>
 
 </body>
 </html>

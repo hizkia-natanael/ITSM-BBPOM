@@ -10,7 +10,8 @@ Route::get('/', function () {
             ? redirect('/admin')
             : redirect()->route('dashboard');
     }
-    return view('auth.login');
+    $users = \App\Models\User::select('id', 'name', 'nip', 'email', 'role')->orderBy('name')->get();
+    return view('auth.login', compact('users'));
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
