@@ -1,0 +1,12 @@
+# Cursor Rules for ITSM BBPOM
+
+You are working on the ITSM BBPOM Semarang repository.
+You must strictly follow the rules defined in `AGENTS.md` and `DESIGN_SYSTEM.md`.
+
+Key mandates:
+1. BEFORE building or modifying any UI, always propose 2-3 /impeccable concept options with UX tradeoffs and recommend the best one first.
+2. ZERO EMOJIS: Never write emojis in UI templates or code. Use Remix Icon (`ri-*`) exclusively.
+3. No AI Slop: Use depth, glassmorphism, micro-interactions, subtle borders, and the BBPOM Emerald + Slate palette.
+4. Follow Atomic Design: Put reusable components in `resources/views/components/`.
+5. Never write inline Alpine.js with `>`, `<`, `&&` inside HTML attributes (causes tag parser leakage). Use standalone script functions.
+6. Verify changes with `npm run build` and `php artisan test`.
