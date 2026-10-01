@@ -125,10 +125,32 @@
 
     <!-- E. Lainnya SIPT -->
     <template x-if="selectedSubcategory === 'lainnya'">
-        <div class="space-y-4 pt-4 border-t border-slate-100">
+        <div class="space-y-4 pt-4 border-t border-slate-100" x-data="{ siptOtherFileName: '' }">
             <div>
-                <x-input-label for="sipt_description" :value="__('Deskripsi Kendala SIPT')" class="font-semibold text-xs text-slate-700" />
-                <textarea id="sipt_description" name="service_description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan kendala SIPT yang Anda alami..." required></textarea>
+                <x-input-label for="sipt_description" class="font-semibold text-xs text-slate-700">
+                    <span>Deskripsi Kendala SIPT</span> <span class="text-rose-500">*</span>
+                </x-input-label>
+                <textarea id="sipt_description" name="service_description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm focus:border-emerald-600 focus:ring-emerald-600" placeholder="Jelaskan kendala SIPT yang Anda alami..." required>{{ old('service_description') }}</textarea>
+                <x-input-error class="mt-1" :messages="$errors->get('service_description')" />
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                    Upload File <span class="text-slate-400 font-normal">(Opsional)</span>
+                </label>
+                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
+                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
+                        <span>Pilih Berkas</span>
+                        <input 
+                            type="file" 
+                            name="attachment" 
+                            class="sr-only"
+                            @change="siptOtherFileName = $event.target.files[0]?.name"
+                        >
+                    </label>
+                    <span class="text-xs text-slate-500 truncate" x-text="siptOtherFileName ? 'File: ' + siptOtherFileName : 'Format: JPG, PNG, PDF, DOCX, ZIP (Maks 5MB)'"></span>
+                </div>
+                <x-input-error class="mt-1" :messages="$errors->get('attachment')" />
             </div>
         </div>
     </template>

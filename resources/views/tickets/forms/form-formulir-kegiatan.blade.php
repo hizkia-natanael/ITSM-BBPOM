@@ -40,20 +40,7 @@
                     :class="selectedSubcategory === '{{ $key }}' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
                     class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
                 >
-                    <span class="flex items-center gap-1.5">
-                        @if($key === 'permintaan_daftar_hadir')
-                            <i class="ri-user-follow-line text-emerald-600"></i>
-                        @elseif($key === 'permintaan_qrcode')
-                            <i class="ri-qr-code-line text-blue-600"></i>
-                        @elseif($key === 'survey')
-                            <i class="ri-questionnaire-line text-indigo-600"></i>
-                        @elseif($key === 'post_test_pretest')
-                            <i class="ri-file-list-3-line text-purple-600"></i>
-                        @else
-                            <i class="ri-more-line text-slate-500"></i>
-                        @endif
-                        <span>{{ $label }}</span>
-                    </span>
+                    <span>{{ $label }}</span>
                     <i x-show="selectedSubcategory === '{{ $key }}'" class="ri-check-line text-sm"></i>
                 </button>
             @endforeach

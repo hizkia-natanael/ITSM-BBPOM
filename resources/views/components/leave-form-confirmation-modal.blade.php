@@ -60,16 +60,8 @@
                     Tinggalkan Pengisian Formulir?
                 </h3>
                 <p class="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
-                    Anda sedang mengisi formulir tiket. Tenang saja, isian Anda <strong class="text-slate-700 font-semibold">otomatis tersimpan sebagai draf</strong> dan dapat dipulihkan saat kembali ke halaman ini.
+                    Formulir pengaduan sedang Anda isi. Perubahan yang belum dikirimkan akan hilang jika Anda berpindah atau meninggalkan halaman ini.
                 </p>
-            </div>
-
-            <!-- Safe Status Badge -->
-            <div class="mt-4 rounded-xl bg-emerald-50/80 border border-emerald-200/80 px-3.5 py-2.5 flex items-center gap-2.5 text-xs text-emerald-800">
-                <i class="ri-shield-check-line text-base text-emerald-700 shrink-0"></i>
-                <span class="font-medium text-[11px] leading-snug">
-                    Draf Anda telah diamankan otomatis di perangkat ini.
-                </span>
             </div>
 
             <!-- Action Buttons Footer -->

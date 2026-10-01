@@ -2,17 +2,11 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <!-- Modern Pill Breadcrumb -->
-                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
-                    <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
-                        <i class="ri-home-4-line text-xs"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700 transition-colors">Daftar Pengaduan</a>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <span class="font-semibold text-emerald-800">App Gateway Layanan</span>
-                </nav>
+                <x-breadcrumb :items="[
+                    ['label' => 'Dashboard', 'url' => route('dashboard')],
+                    ['label' => 'Daftar Pengaduan', 'url' => route('tickets.index')],
+                    ['label' => 'Buat Pengaduan']
+                ]" />
                 <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight flex items-center gap-2.5">
                     <span class="w-3 h-3 rounded-full bg-emerald-600 ring-4 ring-emerald-100"></span>
                     Katalog Layanan & Pengaduan TIK
@@ -31,113 +25,182 @@
     </x-slot>
 
     <!-- Main Container with Alpine.js Reactive Gateway State -->
-    <div x-data="ticketGatewayData()" class="space-y-6">
-
-        <!-- Alert Pemulihan Draf Isian Formulir (Atomic Component) -->
-        <x-draft-recovery-alert />
-
-        <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
-        <x-leave-form-confirmation-modal />
+    <div x-data="ticketGatewayData()">
 
         <!-- VIEW 1: APP GATEWAY CATALOG (Shown when no service is selected) -->
         <div x-show="!selectedServiceKey" x-transition.opacity.duration.300ms class="space-y-6">
 
-            <!-- Hero Search & Filter Section -->
-            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-slate-700/50">
-                <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- Hero Search & Helpdesk Info Banner (Konsep A: Split Banner) -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 rounded-3xl p-5 sm:p-6 lg:p-7 text-white shadow-lg relative overflow-hidden border border-slate-700/50">
+                <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 max-w-3xl">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        App Gateway Layanan TI
-                    </span>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                        Pilih Menu Layanan yang Ingin Anda Laporkan
-                    </h3>
-                    <p class="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        Cari aplikasi, akun dinas, kebutuhan acara, fasilitas jaringan, atau perbaikan sistem operasi PC di bawah ini untuk langsung terhubung dengan formulir spesifik.
-                    </p>
-
-                    <!-- Instant Search Bar -->
-                    <div class="mt-6 relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            <i class="ri-search-line text-lg"></i>
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-center">
+                    <!-- Left: Title, Search & Filter -->
+                    <div class="lg:col-span-8 flex flex-col justify-between">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                App Gateway Layanan TI
+                            </span>
+                            <span class="text-[11px] text-slate-300/80 font-medium px-2 py-0.5 rounded-full bg-white/[0.08] border border-white/10" x-text="visibleCount + ' Layanan Tersedia'"></span>
                         </div>
-                        <input 
-                            type="text" 
-                            x-model="search" 
-                            placeholder="Cari layanan, misal: zoom, sertifikat bsre, formulir presensi, survey, windows, lisensi office..."
-                            class="w-full pl-12 pr-10 py-3.5 bg-white/95 focus:bg-white text-slate-900 rounded-2xl text-xs sm:text-sm placeholder:text-slate-400 shadow-xl border border-transparent focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition"
-                        >
-                        <button 
-                            x-show="search.length > 0" 
-                            @click="search = ''" 
-                            type="button" 
-                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600"
-                        >
-                            <i class="ri-close-line text-lg"></i>
-                        </button>
-                    </div>
-                </div>
+                        <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-tight">
+                            Pilih Menu Layanan yang Ingin Anda Laporkan
+                        </h3>
+                        <p class="mt-1.5 text-xs text-slate-300 leading-relaxed max-w-xl">
+                            Cari aplikasi, fasilitas jaringan, atau perbaikan sistem dinas untuk terhubung langsung dengan formulir permohonan.
+                        </p>
 
-                <!-- Group Tabs Filter -->
-                <div class="relative z-10 mt-6 pt-5 border-t border-slate-700/60 flex flex-wrap items-center gap-2">
-                    <span class="text-xs text-slate-400 font-medium me-1">Kategori:</span>
-                    <template x-for="(label, key) in groups" :key="key">
-                        <button 
-                            type="button" 
-                            @click="activeGroup = key"
-                            :class="activeGroup === key 
-                                ? 'bg-emerald-600 text-white font-semibold shadow-sm' 
-                                : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 font-medium'"
-                            class="px-3.5 py-1.5 rounded-xl text-xs transition duration-150"
-                            x-text="label"
-                        ></button>
-                    </template>
-                    <span class="ms-auto text-xs text-slate-400 font-medium" x-text="visibleCount + ' Layanan Tersedia'"></span>
+                        <!-- Instant Search Bar -->
+                        <div class="mt-4 relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="ri-search-line text-base"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                x-model="search" 
+                                placeholder="Cari layanan, misal: zoom, bsre, presensi, survey, windows, lisensi..."
+                                class="w-full pl-10 pr-9 py-2.5 bg-white/95 focus:bg-white text-slate-900 rounded-xl text-xs sm:text-sm placeholder:text-slate-400 shadow-md border border-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition"
+                            >
+                            <button 
+                                x-show="search" 
+                                @click="search = ''" 
+                                type="button" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                                title="Reset"
+                            >
+                                <i class="ri-close-line text-base"></i>
+                            </button>
+                        </div>
+
+                        <!-- Group Tabs Filter (Strictly Single Row, Scrollbar Hidden) -->
+                        <div class="mt-3.5 flex items-center gap-1.5 pt-3 border-t border-slate-700/50 flex-nowrap overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                            <span class="text-[11px] text-slate-400 font-medium me-0.5 shrink-0 flex items-center gap-1">
+                                <i class="ri-filter-3-line text-xs text-slate-400"></i>
+                                <span>Kategori:</span>
+                            </span>
+                            <template x-for="(label, key) in groups" :key="key">
+                                <button 
+                                    type="button" 
+                                    @click="activeGroup = key"
+                                    :class="activeGroup === key 
+                                        ? 'bg-emerald-600 text-white font-bold shadow-xs' 
+                                        : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 font-medium'"
+                                    class="px-2.5 py-1 rounded-lg text-[11px] transition duration-150 shrink-0 whitespace-nowrap"
+                                    x-text="label"
+                                ></button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Right: Helpdesk Information Panel (Narrower 4-column card) -->
+                    <div class="lg:col-span-4">
+                        <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-3.5 sm:p-4 shadow-xl relative overflow-hidden">
+                            <div class="flex items-center justify-between pb-2.5 border-b border-white/10 mb-2.5">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="ri-customer-service-2-line text-emerald-400 text-sm"></i>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-200">Helpdesk TIK</span>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Siaga
+                                </span>
+                            </div>
+
+                            <div class="space-y-2 text-xs">
+                                <!-- 1. Jam Layanan -->
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-md bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-time-line text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Jam Layanan</p>
+                                        <p class="text-[10.5px] text-slate-300/90 mt-0.5">Senin &ndash; Jumat, 08.00 &ndash; 16.00</p>
+                                    </div>
+                                </div>
+
+                                <!-- 2. SLA Penanganan -->
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-md bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-flashlight-line text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">SLA Respons Awal</p>
+                                        <p class="text-[10.5px] text-slate-300/90 mt-0.5">Target respon dalam &le; 2 Jam</p>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Bantuan & Lokasi -->
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-md bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="ri-building-4-line text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-100 text-[11px] leading-tight">Ruang Tim TI &amp; Ext</p>
+                                        <p class="text-[10.5px] text-slate-300/90 mt-0.5">Tata Usaha Lt. 2 (Ext. 104)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 12 Service Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+            <!-- 12 Service Cards Grid (Konsep 3: Compact Metric & Service Badge) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
                 @foreach($services as $key => $svc)
+                    @php
+                        $subCount = !empty($svc['subcategories']) ? count($svc['subcategories']) : 0;
+                        $colorClass = match($svc['color'] ?? 'slate') {
+                            'indigo' => 'from-indigo-600 to-indigo-700 shadow-indigo-500/25',
+                            'blue' => 'from-blue-600 to-cyan-600 shadow-blue-500/25',
+                            'emerald' => 'from-emerald-600 to-teal-600 shadow-emerald-500/25',
+                            'cyan' => 'from-cyan-600 to-blue-600 shadow-cyan-500/25',
+                            'sky' => 'from-sky-600 to-blue-700 shadow-sky-500/25',
+                            'teal' => 'from-teal-600 to-emerald-700 shadow-teal-500/25',
+                            'purple' => 'from-purple-600 to-indigo-600 shadow-purple-500/25',
+                            'violet' => 'from-violet-600 to-purple-700 shadow-violet-500/25',
+                            'amber' => 'from-amber-500 to-orange-600 shadow-amber-500/25',
+                            default => 'from-slate-700 to-slate-800 shadow-slate-500/25',
+                        };
+                    @endphp
                     <div 
                         x-show="isMatch('{{ $key }}')"
                         x-transition.opacity.duration.200ms
                         @click="selectService('{{ $key }}')"
-                        class="group relative bg-white rounded-2xl p-5 border border-slate-200/80 hover:border-emerald-400 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                        class="group relative bg-white rounded-2xl p-4 border border-slate-200/80 hover:border-emerald-500/60 shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center gap-3.5 sm:gap-4"
                     >
-                        <div>
-                            <!-- Header: Badge & Icon -->
-                            <div class="flex items-start justify-between gap-2 mb-3.5">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-slate-100 group-hover:bg-emerald-100 transition">
-                                    <span class="text-slate-700 group-hover:text-emerald-900">{{ $svc['badge'] }}</span>
-                                </span>
-
-                                <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-emerald-700 flex items-center justify-center transition shadow-sm">
-                                    <i class="{{ $svc['icon'] }} text-xl text-slate-700 group-hover:text-white"></i>
-                                </div>
-                            </div>
-
-                            <!-- Name & Long Name -->
-                            <h4 class="font-bold text-base text-slate-900 group-hover:text-emerald-800 transition">
-                                {{ $svc['name'] }}
-                            </h4>
-                            <p class="text-[11px] font-medium text-slate-400 mt-0.5 leading-snug">
-                                {{ $svc['long_name'] }}
-                            </p>
-
-                            <!-- Description -->
-                            <p class="mt-2.5 text-xs text-slate-600 line-clamp-3 leading-relaxed">
-                                {{ $svc['description'] }}
-                            </p>
+                        <!-- Service Icon Badge with Vibrant Color Gradient -->
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br {{ $colorClass }} flex items-center justify-center shrink-0 shadow-md transition-transform duration-200 group-hover:scale-105">
+                            <i class="{{ $svc['icon'] }} text-2xl text-white"></i>
                         </div>
 
-                        <!-- Card Footer Action -->
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-700 group-hover:text-emerald-800">
-                            <span>Pilih Layanan</span>
-                            <span class="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                        <!-- Service Details -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-800 transition truncate">
+                                    {{ $svc['name'] }}
+                                </h4>
+                                @if($subCount > 0)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200/60 group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-200 transition shrink-0">
+                                        {{ $subCount }} Modul
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-slate-500 truncate mt-0.5">
+                                {{ $svc['long_name'] }}
+                            </p>
+                            <div class="mt-1 flex items-center gap-2">
+                                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
+                                    {{ $svc['badge'] }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Micro-interaction Action Indicator -->
+                        <div class="w-8 h-8 rounded-xl bg-slate-50 group-hover:bg-emerald-600 text-slate-400 group-hover:text-white flex items-center justify-center transition-all duration-200 shrink-0">
+                            <i class="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-0.5"></i>
                         </div>
                     </div>
                 @endforeach
@@ -229,9 +292,7 @@
                             action="{{ route('tickets.store') }}" 
                             enctype="multipart/form-data" 
                             class="space-y-6"
-                            @submit="isSubmitting = true; discardDraft()"
-                            @input.debounce.500ms="saveDraft()"
-                            @change="saveDraft()"
+                            @submit="isSubmitting = true"
                         >
                             @csrf
                             <input type="hidden" name="service_key" :value="selectedServiceKey">
@@ -351,6 +412,9 @@
 
         </div>
 
+        <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
+        <x-leave-form-confirmation-modal />
+
     </div>
 
     <!-- Script to handle file input display & Alpine Gateway state -->
@@ -364,29 +428,12 @@
                 selectedSubCategory: @json(old('subcategory', old('subcategory_key', $initialSubcategory ?? ''))),
                 services: @json($services),
                 groups: @json($groups),
-                hasDraft: false,
-                draftTimeText: '',
-                draftServiceKey: '',
-                draftSubcategory: '',
-                draftFieldsCount: 0,
-                showRestoredToast: false,
                 isSubmitting: false,
                 showLeaveConfirm: false,
                 pendingLeaveTarget: null,
 
                 get currentService() {
                     return this.services[this.selectedServiceKey] || null;
-                },
-
-                get draftService() {
-                    return this.services[this.draftServiceKey] || null;
-                },
-
-                get draftSubcategoryLabel() {
-                    if (this.draftService && this.draftService.subcategories && this.draftSubcategory) {
-                        return this.draftService.subcategories[this.draftSubcategory] || this.draftSubcategory;
-                    }
-                    return '';
                 },
 
                 selectService(key) {
@@ -437,124 +484,32 @@
                     return Object.keys(this.services).filter(key => this.isMatch(key)).length;
                 },
 
-                checkDraft() {
-                    try {
-                        const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
-                        if (raw) {
-                            const data = JSON.parse(raw);
-                            if (data && data._saved_at) {
-                                const savedDate = new Date(data._saved_at);
-                                const timeStr = savedDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
-                                this.draftTimeText = 'Tersimpan ' + timeStr + ' WIB';
-                                this.draftServiceKey = data._service_key || '';
-                                this.draftSubcategory = data._subcategory_key || '';
-
-                                let count = 0;
-                                for (let k in data) {
-                                    if (!k.startsWith('_') && data[k] !== null && data[k] !== undefined && String(data[k]).trim().length > 0) {
-                                        count++;
-                                    }
-                                }
-                                this.draftFieldsCount = count;
-                                if (count > 0 || this.draftServiceKey) {
-                                    this.hasDraft = true;
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Error checking draft:', e);
-                    }
-                },
-
-                saveDraft() {
-                    if (this.isSubmitting) return;
-                    const form = document.querySelector('form[action*="tickets"]');
-                    if (!form) return;
-
-                    const formData = {};
-                    let hasContent = false;
-
-                    for (let el of form.elements) {
-                        if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                        if (el.type === 'checkbox' || el.type === 'radio') {
-                            if (el.checked) {
-                                formData[el.name] = el.value;
-                                hasContent = true;
-                            }
-                        } else if (el.value && el.value.trim().length > 0) {
-                            formData[el.name] = el.value;
-                            if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'subcategory' && el.name !== 'category_id') {
-                                hasContent = true;
-                            }
-                        }
-                    }
-
-                    if (this.selectedServiceKey || hasContent) {
-                        formData._service_key = this.selectedServiceKey;
-                        formData._subcategory_key = this.selectedSubcategory;
-                        formData._saved_at = new Date().toISOString();
-                        localStorage.setItem('bbpom_itsm_ticket_draft', JSON.stringify(formData));
-                    }
-                },
-
-                restoreDraft() {
-                    try {
-                        const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
-                        if (!raw) return;
-                        const data = JSON.parse(raw);
-
-                        if (data._service_key) {
-                            this.selectService(data._service_key);
-                        }
-                        if (data._subcategory_key) {
-                            this.selectedSubcategory = data._subcategory_key;
-                            this.selectedSubCategory = data._subcategory_key;
-                        }
-
-                        this.$nextTick(() => {
-                            const form = document.querySelector('form[action*="tickets"]');
-                            if (form) {
-                                for (let key in data) {
-                                    if (key.startsWith('_')) continue;
-                                    const el = form.elements[key];
-                                    if (el) {
-                                        if (el.type === 'checkbox' || el.type === 'radio') {
-                                            el.checked = (el.value === data[key]);
-                                        } else {
-                                            el.value = data[key];
-                                        }
-                                        el.dispatchEvent(new Event('input', { bubbles: true }));
-                                        el.dispatchEvent(new Event('change', { bubbles: true }));
-                                    }
-                                }
-                            }
-                            this.hasDraft = false;
-                            this.showRestoredToast = true;
-                            setTimeout(() => {
-                                this.showRestoredToast = false;
-                            }, 3500);
-                        });
-                    } catch (e) {
-                        console.error('Error restoring draft:', e);
-                    }
-                },
-
-                discardDraft() {
-                    localStorage.removeItem('bbpom_itsm_ticket_draft');
-                    this.hasDraft = false;
-                    this.draftServiceKey = '';
-                    this.draftSubcategory = '';
-                    this.draftFieldsCount = 0;
-                },
-
                 isDirty() {
                     if (this.isSubmitting) return false;
+                    if (!this.selectedServiceKey) return false;
+
                     const form = document.querySelector('form[action*="tickets"]');
                     if (!form) return false;
 
+                    const ignoredNames = [
+                        '_token', 
+                        'service_key', 
+                        'subcategory', 
+                        'subcategory_key', 
+                        'category_id', 
+                        'tanggal_pengajuan', 
+                        'nama'
+                    ];
+
                     for (let el of form.elements) {
-                        if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'subcategory' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
+                        if (!el.name || ignoredNames.includes(el.name) || el.type === 'submit') continue;
+                        if (el.offsetParent === null) continue;
+
+                        if (el.type === 'file') {
+                            if (el.files && el.files.length > 0) return true;
+                        } else if (el.type === 'checkbox' || el.type === 'radio') {
+                            if (el.checked) return true;
+                        } else if (el.value && el.value.trim().length > 0) {
                             return true;
                         }
                     }
@@ -563,7 +518,6 @@
 
                 confirmLeave(target) {
                     if (this.isDirty() && !this.isSubmitting) {
-                        this.saveDraft();
                         this.pendingLeaveTarget = target;
                         this.showLeaveConfirm = true;
                     } else if (target === 'clearService') {
@@ -579,7 +533,6 @@
                 },
 
                 proceedLeave() {
-                    this.saveDraft();
                     this.showLeaveConfirm = false;
                     const target = this.pendingLeaveTarget;
                     this.pendingLeaveTarget = null;
@@ -599,6 +552,10 @@
                 },
 
                 init() {
+                    try {
+                        localStorage.removeItem('bbpom_itsm_ticket_draft');
+                    } catch (e) {}
+
                     if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
                         const s = this.services[this.selectedServiceKey];
                         if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
@@ -610,10 +567,10 @@
                         this.selectedSubCategory = this.selectedSubcategory;
                     }
 
-                    this.checkDraft();
-
-                    // Intercept in-app navigation link clicks when form has unsaved content
+                    // Intercept in-app navigation link clicks ONLY when actively filling a selected service form
                     document.addEventListener('click', (e) => {
+                        if (!this.selectedServiceKey) return;
+
                         const anchor = e.target.closest('a[href]');
                         if (!anchor) return;
                         const href = anchor.getAttribute('href');
@@ -625,10 +582,11 @@
                         }
                     });
 
-                    // Silently auto-save draft on refresh/navigation without showing the basic native browser leave prompt
-                    window.addEventListener('beforeunload', () => {
-                        if (this.isDirty() && !this.isSubmitting) {
-                            this.saveDraft();
+                    // Warn on tab refresh/close ONLY when user has typed unsaved content into active service form
+                    window.addEventListener('beforeunload', (e) => {
+                        if (this.selectedServiceKey && this.isDirty() && !this.isSubmitting) {
+                            e.preventDefault();
+                            e.returnValue = '';
                         }
                     });
                 }

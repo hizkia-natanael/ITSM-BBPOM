@@ -6,7 +6,7 @@
             <i class="ri-list-check-2 text-emerald-700"></i>
             <span>Pilih Sub Kategori Layanan Internet:</span>
         </label>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             @foreach($services['internet']['subcategories'] as $key => $label)
                 <button 
                     type="button" 
@@ -14,16 +14,7 @@
                     :class="selectedSubcategory === '{{ $key }}' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
                     class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
                 >
-                    <span class="flex items-center gap-1.5">
-                        @if($key === 'lemot_mati')
-                            <i class="ri-wifi-off-line text-rose-500"></i>
-                        @elseif($key === 'tambah_ap')
-                            <i class="ri-router-line text-blue-500"></i>
-                        @else
-                            <i class="ri-more-line text-slate-500"></i>
-                        @endif
-                        <span>{{ $label }}</span>
-                    </span>
+                    <span>{{ $label }}</span>
                     <i x-show="selectedSubcategory === '{{ $key }}'" class="ri-check-line text-sm"></i>
                 </button>
             @endforeach

@@ -2,33 +2,21 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <nav class="flex text-xs text-slate-500 mb-1" aria-label="Breadcrumb">
-                    <ol class="inline-flex items-center space-x-1">
-                        <li>
-                            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1 font-semibold text-emerald-800 hover:text-emerald-900">
-                                <i class="ri-home-4-line text-sm"></i>
-                                Beranda
-                            </a>
-                        </li>
-                        <li>
-                            <span class="mx-1 text-slate-400">/</span>
-                        </li>
-                        <li class="text-slate-500 font-medium">
-                            Profil Pengguna
-                        </li>
-                    </ol>
-                </nav>
-                <h2 class="font-bold text-xl text-slate-900 leading-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                <x-breadcrumb :items="[
+                    ['label' => 'Dashboard', 'url' => route('dashboard')],
+                    ['label' => 'Profil Pengguna']
+                ]" />
+                <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                     Profil Pengguna & Akun Pegawai
                 </h2>
-                <p class="text-xs text-slate-500 mt-0.5">
-                    Layanan TIK BBPOM di Semarang
+                <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                    Pengaturan identitas pegawai, NIP, NIK, dan kredensial akun Layanan TIK BBPOM di Semarang
                 </p>
             </div>
-            <div>
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                    &larr; Kembali ke Dashboard
+            <div class="shrink-0">
+                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold shadow-xs hover:shadow transition-all">
+                    <i class="ri-arrow-left-line text-sm"></i>
+                    <span>Kembali ke Dashboard</span>
                 </a>
             </div>
         </div>

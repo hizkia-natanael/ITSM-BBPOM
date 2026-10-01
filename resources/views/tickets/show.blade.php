@@ -2,20 +2,11 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <!-- Modern Breadcrumbs with Remix Icons -->
-                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2.5" aria-label="Breadcrumb">
-                    <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
-                        <i class="ri-home-4-line text-xs"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
-                        <i class="ri-file-list-3-line text-xs"></i>
-                        <span>Daftar Pengaduan</span>
-                    </a>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <span class="font-mono font-semibold text-emerald-800">{{ $ticket->ticket_number }}</span>
-                </nav>
+                <x-breadcrumb :items="[
+                    ['label' => 'Dashboard', 'url' => route('dashboard')],
+                    ['label' => 'Daftar Pengaduan', 'url' => route('tickets.index')],
+                    ['label' => $ticket->ticket_number, 'mono' => true]
+                ]" />
 
                 <!-- Ticket Identifier & Subject Header -->
                 <div class="flex flex-wrap items-center gap-2.5">

@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <!-- Remix Icon Library -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -19,9 +22,9 @@
 
     <!-- Fullscreen Nature Background with Soft Blur & Vignette -->
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <img 
-            src="{{ asset('images/bg-waterfall.jpg') }}" 
-            alt="Latar Belakang Alam" 
+        <img
+            src="{{ asset('images/bg-waterfall.jpg') }}"
+            alt="Latar Belakang Alam"
             class="w-full h-full object-cover filter blur-[4px] scale-105 brightness-[0.82] contrast-[1.05]"
         >
         <div class="absolute inset-0 bg-slate-950/30"></div>
@@ -33,17 +36,14 @@
 
             <!-- LEFT COLUMN: Dark Portal Branding -->
             <div class="relative bg-gradient-to-b from-[#0c1424] via-[#0d1627] to-[#0a101d] text-white p-8 sm:p-10 lg:p-12 flex flex-col justify-between overflow-hidden">
-                <!-- Ambient Glow Decoration -->
                 <div class="absolute -top-20 -left-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                <!-- Top Tagline -->
                 <div class="relative z-10 flex items-center gap-2.5 text-cyan-400 text-[11px] sm:text-xs font-semibold tracking-widest uppercase">
                     <span class="w-5 h-[2px] bg-cyan-400 rounded-full"></span>
                     OFFICIAL PORTAL
                 </div>
 
-                <!-- Middle Branding -->
                 <div class="relative z-10 my-8 sm:my-auto py-4">
                     <div class="inline-block">
                         <div class="flex items-center gap-2">
@@ -52,7 +52,6 @@
                         </div>
                         <div class="h-1 w-16 bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full mt-2"></div>
                     </div>
-
                     <p class="mt-5 text-sm sm:text-base font-semibold text-slate-100 leading-snug">
                         Layanan Teknologi Informasi dan Komunikasi
                     </p>
@@ -61,11 +60,8 @@
                     </p>
                 </div>
 
-                <!-- Bottom Badges -->
                 <div class="relative z-10 pt-6 border-t border-slate-800/80">
-                    <p class="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-2.5">
-                        INTEGRATED WITH
-                    </p>
+                    <p class="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-2.5">INTEGRATED WITH</p>
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 text-[11px] font-medium text-slate-200 shadow-sm">
                             <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,19 +82,15 @@
             <!-- RIGHT COLUMN: Frosted Glass Form -->
             <div class="relative bg-white/90 sm:bg-white/85 backdrop-blur-2xl p-8 sm:p-10 lg:p-12 flex flex-col justify-between select-text border-t md:border-t-0 md:border-l border-white/50">
                 <div>
-                    <!-- Official BPOM Logo & Heading -->
+                    <!-- Logo & Heading -->
                     <div class="text-center mb-6">
-                        <img 
-                            src="{{ asset('images/logo-bpom.png') }}" 
-                            alt="Logo Badan POM" 
+                        <img
+                            src="{{ asset('images/logo-bpom.png') }}"
+                            alt="Logo Badan POM"
                             class="h-14 sm:h-16 w-auto mx-auto object-contain drop-shadow-sm mb-3"
                         >
-                        <h2 class="text-2xl font-bold tracking-tight text-slate-900">
-                            Selamat Datang
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-1">
-                            Silakan masuk untuk mengakses portal Layanan TIK
-                        </p>
+                        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Selamat Datang</h2>
+                        <p class="text-xs text-slate-500 mt-1">Silakan masuk untuk mengakses portal Layanan TIK</p>
                     </div>
 
                     <!-- Session Status Alert -->
@@ -129,75 +121,168 @@
                     @endif
 
                     <!-- Login Form -->
-                    <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                    <form method="POST" action="{{ route('login') }}" class="space-y-4" x-data="loginData()" @submit="onSubmit">
                         @csrf
 
-                        <!-- Email / Username Field -->
+                        {{-- Hidden email — populated by Alpine on user selection --}}
+                        <input type="hidden" name="email" x-model="selectedEmail">
+
+                        <!-- 1. Nama Pegawai — Searchable Dropdown -->
+                        <div class="relative">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                                <i class="ri-user-line text-slate-500 text-sm"></i>
+                                <span>Nama Pegawai</span>
+                            </label>
+
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
+                                    <i class="ri-search-line text-sm"></i>
+                                </div>
+                                <input
+                                    type="text"
+                                    x-model="search"
+                                    @focus="open = true"
+                                    @input="open = true"
+                                    @blur="closeSoon"
+                                    @keydown.escape="open = false"
+                                    @keydown.enter.prevent="selectFirst"
+                                    @keydown.arrow-down.prevent="highlightNext"
+                                    @keydown.arrow-up.prevent="highlightPrev"
+                                    placeholder="Ketik nama untuk mencari pegawai..."
+                                    autocomplete="off"
+                                    :class="selectedEmail ? 'border-emerald-500/60 focus:border-emerald-600 bg-white' : 'border-slate-300 bg-slate-50/90 hover:bg-white focus:bg-white focus:border-slate-800'"
+                                    class="w-full pl-10 pr-10 py-2.5 border focus:ring-2 focus:ring-slate-800/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition"
+                                >
+                                <!-- Clear button — mousedown.prevent keeps focus on input -->
+                                <button
+                                    type="button"
+                                    x-show="selectedEmail"
+                                    @mousedown.prevent="clearSelection"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-rose-500 transition"
+                                    title="Hapus pilihan"
+                                    style="display: none;"
+                                >
+                                    <i class="ri-close-circle-line text-sm"></i>
+                                </button>
+                                <!-- Chevron -->
+                                <div x-show="!selectedEmail" class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="ri-arrow-down-s-line text-sm" x-show="!open"></i>
+                                    <i class="ri-arrow-up-s-line text-sm" x-show="open" style="display: none;"></i>
+                                </div>
+                            </div>
+
+                            <!-- Floating Panel -->
+                            <div
+                                x-show="open"
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-1"
+                                class="absolute z-50 left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-slate-900/10 overflow-hidden"
+                                style="display: none;"
+                            >
+                                <!-- Empty state -->
+                                <div x-show="filteredUsers.length === 0" class="px-4 py-4 text-center">
+                                    <i class="ri-user-search-line text-slate-300 text-xl mb-1 block"></i>
+                                    <p class="text-xs text-slate-400">Pegawai tidak ditemukan</p>
+                                </div>
+
+                                <!-- Grouped results -->
+                                <div x-show="filteredUsers.length > 0" class="max-h-56 overflow-y-auto">
+
+                                    <!-- Admin group -->
+                                    <template x-if="adminUsers.length > 0">
+                                        <div>
+                                            <div class="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100">
+                                                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Administrator</p>
+                                            </div>
+                                            <template x-for="user in adminUsers" :key="'a-' + user.id">
+                                                <div
+                                                    @mousedown.prevent="selectUser(user)"
+                                                    @mouseenter="highlightedId = user.id"
+                                                    :class="highlightedId === user.id ? 'bg-emerald-50' : 'hover:bg-slate-50'"
+                                                    class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors border-b border-slate-50/80"
+                                                >
+                                                    <p class="text-xs font-medium text-slate-800 truncate" x-text="user.name"></p>
+                                                    <span class="flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Admin</span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- Pegawai group -->
+                                    <template x-if="pegawaiUsers.length > 0">
+                                        <div>
+                                            <div class="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100">
+                                                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pegawai</p>
+                                            </div>
+                                            <template x-for="user in pegawaiUsers" :key="'p-' + user.id">
+                                                <div
+                                                    @mousedown.prevent="selectUser(user)"
+                                                    @mouseenter="highlightedId = user.id"
+                                                    :class="highlightedId === user.id ? 'bg-emerald-50' : 'hover:bg-slate-50'"
+                                                    class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors border-b border-slate-50/80 last:border-0"
+                                                >
+                                                    <p class="text-xs font-medium text-slate-800 truncate" x-text="user.name"></p>
+                                                    <span class="flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Pegawai</span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. NIP — auto-filled read-only -->
                         <div>
-                            <label for="email" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span>Email / Akun Pegawai</span>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                                <i class="ri-id-card-line text-slate-500 text-sm"></i>
+                                <span>NIP</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
+                                    <i class="ri-barcode-line text-sm"></i>
                                 </div>
-                                <input 
-                                    id="email" 
-                                    type="email" 
-                                    name="email" 
-                                    value="{{ old('email') }}" 
-                                    required 
-                                    autofocus 
-                                    autocomplete="username"
-                                    placeholder="Ketik email pegawai Anda..."
-                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50/90 hover:bg-white focus:bg-white border border-slate-300 focus:border-slate-800 focus:ring-2 focus:ring-slate-800/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition"
+                                <input
+                                    type="text"
+                                    :value="selectedNip"
+                                    placeholder="Terisi otomatis setelah pilih nama..."
+                                    readonly
+                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs sm:text-sm font-mono text-slate-700 placeholder:text-slate-400 placeholder:font-sans shadow-sm cursor-default select-all"
                                 >
                             </div>
                         </div>
 
-                        <!-- Password Field with Show/Hide Toggle -->
+                        <!-- 3. Password — manual input -->
                         <div x-data="{ showPassword: false }">
                             <label for="password" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
+                                <i class="ri-lock-password-line text-slate-500 text-sm"></i>
                                 <span>Password</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                    </svg>
+                                    <i class="ri-key-line text-sm"></i>
                                 </div>
-                                <input 
-                                    id="password" 
-                                    :type="showPassword ? 'text' : 'password'" 
-                                    name="password" 
-                                    required 
+                                <input
+                                    id="password"
+                                    :type="showPassword ? 'text' : 'password'"
+                                    name="password"
+                                    required
                                     autocomplete="current-password"
                                     placeholder="Masukkan password..."
                                     class="w-full pl-10 pr-11 py-2.5 bg-slate-50/90 hover:bg-white focus:bg-white border border-slate-300 focus:border-slate-800 focus:ring-2 focus:ring-slate-800/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition"
                                 >
-                                <button 
-                                    type="button" 
-                                    @click="showPassword = !showPassword" 
+                                <button
+                                    type="button"
+                                    @click="showPassword = !showPassword"
                                     class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition"
                                     title="Tampilkan / Sembunyikan Password"
                                 >
-                                    <!-- Eye Open Icon -->
-                                    <svg x-show="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                    <!-- Eye Closed / Slash Icon -->
-                                    <svg x-show="showPassword" style="display: none;" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                    </svg>
+                                    <i x-show="!showPassword" class="ri-eye-line text-sm"></i>
+                                    <i x-show="showPassword" class="ri-eye-off-line text-sm text-emerald-600" style="display: none;"></i>
                                 </button>
                             </div>
                         </div>
@@ -205,15 +290,14 @@
                         <!-- Remember Me & Forgot Password -->
                         <div class="flex items-center justify-between pt-1">
                             <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                                <input 
-                                    id="remember_me" 
-                                    type="checkbox" 
-                                    name="remember" 
+                                <input
+                                    id="remember_me"
+                                    type="checkbox"
+                                    name="remember"
                                     class="rounded border-slate-300 text-slate-800 shadow-sm focus:ring-slate-800"
                                 >
                                 <span class="ms-2 text-xs text-slate-600">Ingat saya</span>
                             </label>
-
                             @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}" class="text-xs font-semibold text-slate-600 hover:text-emerald-700 transition">
                                     Lupa password?
@@ -221,33 +305,20 @@
                             @endif
                         </div>
 
-                        <!-- Submit Button -->
+                        <!-- Submit -->
                         <div class="pt-2">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 class="w-full bg-[#1e293b] hover:bg-[#0f172a] active:scale-[0.99] text-white py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tracking-wide shadow-lg shadow-slate-900/25 transition-all duration-150 flex items-center justify-center gap-2 group cursor-pointer"
                             >
                                 <span>Masuk Situs</span>
-                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
+                                <i class="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-1"></i>
                             </button>
                         </div>
-
-                        @if (Route::has('register'))
-                            <div class="text-center pt-2">
-                                <p class="text-xs text-slate-500">
-                                    Belum memiliki akun? 
-                                    <a href="{{ route('register') }}" class="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline">
-                                        Registrasi Pegawai
-                                    </a>
-                                </p>
-                            </div>
-                        @endif
                     </form>
                 </div>
 
-                <!-- Footer Copyright -->
+                <!-- Footer -->
                 <div class="mt-8 pt-4 border-t border-slate-200/60 text-center">
                     <p class="text-[11px] text-slate-500 font-medium">
                         &copy; {{ date('Y') }} Badan Pengawas Obat dan Makanan
@@ -257,6 +328,111 @@
 
         </div>
     </div>
+
+    {{-- Alpine.js — all state in named function (AGENTS.md HTML-parser safety rule) --}}
+    <script>
+        function loginData() {
+            var allUsers = @json($users);
+
+            return {
+                search: '',
+                open: false,
+                selectedEmail: '',
+                selectedName: '',
+                selectedNip: '',
+                highlightedId: null,
+                users: allUsers,
+                _closeTimer: null,
+
+                // Filtered list matching search query
+                get filteredUsers() {
+                    var q = this.search.trim().toLowerCase();
+                    if (q === '') { return this.users; }
+                    return this.users.filter(function(u) {
+                        return u.name.toLowerCase().indexOf(q) !== -1 ||
+                            (u.nip && u.nip.indexOf(q) !== -1);
+                    });
+                },
+
+                // Grouped computed props for the two sections
+                get adminUsers() {
+                    return this.filteredUsers.filter(function(u) { return u.role === 'admin'; });
+                },
+
+                get pegawaiUsers() {
+                    return this.filteredUsers.filter(function(u) { return u.role !== 'admin'; });
+                },
+
+                // KEY FIX: close with a small delay so @mousedown.prevent on items
+                // can fire selectUser() before the dropdown is hidden.
+                closeSoon: function() {
+                    var self = this;
+                    self._closeTimer = setTimeout(function() {
+                        self.open = false;
+                    }, 150);
+                },
+
+                selectUser: function(user) {
+                    var self = this;
+                    // Cancel any pending close from @blur
+                    clearTimeout(self._closeTimer);
+                    self.selectedEmail = user.email;
+                    self.selectedName = user.name;
+                    self.selectedNip = user.nip || '';
+                    self.search = user.name;
+                    self.open = false;
+                    self.highlightedId = null;
+                    self.$nextTick(function() {
+                        var pw = document.getElementById('password');
+                        if (pw) { pw.focus(); }
+                    });
+                },
+
+                clearSelection: function() {
+                    clearTimeout(this._closeTimer);
+                    this.selectedEmail = '';
+                    this.selectedName = '';
+                    this.selectedNip = '';
+                    this.search = '';
+                    this.open = false;
+                    this.highlightedId = null;
+                },
+
+                selectFirst: function() {
+                    if (this.filteredUsers.length > 0) {
+                        var target = this.highlightedId
+                            ? this.filteredUsers.find(function(u) { return u.id === this.highlightedId; }, this)
+                            : null;
+                        this.selectUser(target || this.filteredUsers[0]);
+                    }
+                },
+
+                highlightNext: function() {
+                    var list = this.filteredUsers;
+                    if (list.length === 0) { return; }
+                    var idx = list.findIndex(function(u) { return u.id === this.highlightedId; }, this);
+                    var next = idx < list.length - 1 ? idx + 1 : 0;
+                    this.highlightedId = list[next].id;
+                    this.open = true;
+                },
+
+                highlightPrev: function() {
+                    var list = this.filteredUsers;
+                    if (list.length === 0) { return; }
+                    var idx = list.findIndex(function(u) { return u.id === this.highlightedId; }, this);
+                    var prev = idx > 0 ? idx - 1 : list.length - 1;
+                    this.highlightedId = list[prev].id;
+                },
+
+                onSubmit: function(e) {
+                    if (!this.selectedEmail) {
+                        e.preventDefault();
+                        this.open = true;
+                    }
+                },
+            };
+        }
+    </script>
 
 </body>
 </html>
