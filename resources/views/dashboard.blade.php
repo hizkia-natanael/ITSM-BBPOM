@@ -1,14 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
-                <span class="flex items-center gap-1 font-semibold text-emerald-800">
-                    <i class="ri-home-4-line text-xs"></i>
-                    <span>Beranda</span>
-                </span>
-                <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                <span class="font-semibold text-emerald-800">Dashboard</span>
-            </nav>
+            <x-breadcrumb :items="[
+                ['label' => 'Dashboard', 'icon' => 'ri-home-4-line']
+            ]" />
             <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                 Dashboard Layanan TI Pegawai
             </h2>

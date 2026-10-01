@@ -2,17 +2,11 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <!-- Modern Pill Breadcrumb -->
-                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
-                    <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
-                        <i class="ri-home-4-line text-xs"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700 transition-colors">Daftar Pengaduan</a>
-                    <i class="ri-arrow-right-s-line text-slate-300 text-xs"></i>
-                    <span class="font-semibold text-emerald-800">App Gateway Layanan</span>
-                </nav>
+                <x-breadcrumb :items="[
+                    ['label' => 'Dashboard', 'url' => route('dashboard')],
+                    ['label' => 'Daftar Pengaduan', 'url' => route('tickets.index')],
+                    ['label' => 'Buat Pengaduan']
+                ]" />
                 <h2 class="font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight flex items-center gap-2.5">
                     <span class="w-3 h-3 rounded-full bg-emerald-600 ring-4 ring-emerald-100"></span>
                     Katalog Layanan & Pengaduan TIK

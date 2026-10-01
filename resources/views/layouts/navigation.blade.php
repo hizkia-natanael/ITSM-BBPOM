@@ -33,13 +33,8 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown & Global CTA -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
-                <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white shadow-xs hover:shadow-md transition-all duration-150 active:scale-[0.99]" title="Buat Pengaduan Baru">
-                    <i class="ri-add-line text-sm"></i>
-                    <span>Buat Pengaduan</span>
-                </a>
-
+            <!-- Settings Dropdown -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="56">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-slate-200 text-sm leading-4 font-medium rounded-xl !text-slate-700 !bg-white hover:!bg-slate-50 focus:outline-none transition ease-in-out duration-150 shadow-2xs">
