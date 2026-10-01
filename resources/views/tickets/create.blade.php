@@ -288,11 +288,14 @@
                         </div>
 
                         <form 
+                            id="ticketForm"
                             method="POST" 
                             action="{{ route('tickets.store') }}" 
                             enctype="multipart/form-data" 
                             class="space-y-6"
                             @submit="isSubmitting = true"
+                            @input="userHasTyped = true"
+                            @change="userHasTyped = true"
                         >
                             @csrf
                             <input type="hidden" name="service_key" :value="selectedServiceKey">
@@ -366,11 +369,20 @@
 
                             <!-- Form Action Buttons (Unified Enterprise Bar) -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
+                                <button 
+                                    type="button" 
+                                    @click="requestClearService()" 
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                                >
+                                    <i class="ri-arrow-left-line text-xs"></i>
+                                    <span>Ganti Layanan</span>
                                 </button>
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+                                    <a 
+                                        href="{{ route('tickets.index') }}" 
+                                        @click="if (isDirty()) { $event.preventDefault(); confirmLeave('{{ route('tickets.index') }}'); }"
+                                        class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                                    >
                                         Batal
                                     </a>
                                     <button 
@@ -429,6 +441,7 @@
                 services: @json($services),
                 groups: @json($groups),
                 isSubmitting: false,
+                userHasTyped: false,
                 showLeaveConfirm: false,
                 pendingLeaveTarget: null,
 
@@ -438,6 +451,7 @@
 
                 selectService(key) {
                     this.selectedServiceKey = key;
+                    this.userHasTyped = false;
                     const s = this.services[key];
                     if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
                         if (!this.selectedSubcategory || !s.subcategories[this.selectedSubcategory]) {
@@ -451,12 +465,25 @@
                         this.selectedSubcategory = '';
                         this.selectedSubCategory = '';
                     }
+
+                    // Push browser history state so the browser back button can be intercepted
+                    try {
+                        window.history.pushState({ serviceKey: key }, '', window.location.href);
+                    } catch (e) {}
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
 
                 clearService() {
                     this.selectedServiceKey = null;
                     this.selectedSubcategory = '';
                     this.selectedSubCategory = '';
+                    this.userHasTyped = false;
+                    const form = document.getElementById('ticketForm') || document.querySelector('form[action*="tickets"]');
+                    if (form) {
+                        form.reset();
+                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
 
                 isMatch(key) {
@@ -487,8 +514,9 @@
                 isDirty() {
                     if (this.isSubmitting) return false;
                     if (!this.selectedServiceKey) return false;
+                    if (this.userHasTyped) return true;
 
-                    const form = document.querySelector('form[action*="tickets"]');
+                    const form = document.getElementById('ticketForm') || document.querySelector('form[action*="tickets"]');
                     if (!form) return false;
 
                     const ignoredNames = [
@@ -502,8 +530,13 @@
                     ];
 
                     for (let el of form.elements) {
-                        if (!el.name || ignoredNames.includes(el.name) || el.type === 'submit') continue;
-                        if (el.offsetParent === null) continue;
+                        if (!el.name || ignoredNames.includes(el.name) || el.type === 'submit' || el.type === 'button') continue;
+
+                        // Check if element is inside the active service container
+                        const serviceContainer = el.closest('[x-show*="selectedServiceKey"]');
+                        if (serviceContainer && serviceContainer.getAttribute('x-show') !== 'selectedServiceKey' && !serviceContainer.getAttribute('x-show').includes(this.selectedServiceKey)) {
+                            continue;
+                        }
 
                         if (el.type === 'file') {
                             if (el.files && el.files.length > 0) return true;
@@ -520,7 +553,7 @@
                     if (this.isDirty() && !this.isSubmitting) {
                         this.pendingLeaveTarget = target;
                         this.showLeaveConfirm = true;
-                    } else if (target === 'clearService') {
+                    } else if (target === 'clearService' || target === 'history_back') {
                         this.clearService();
                     } else if (typeof target === 'string') {
                         window.location.href = target;
@@ -536,9 +569,12 @@
                     this.showLeaveConfirm = false;
                     const target = this.pendingLeaveTarget;
                     this.pendingLeaveTarget = null;
-                    if (target === 'clearService') {
+                    this.userHasTyped = false;
+
+                    if (target === 'clearService' || target === 'history_back') {
                         this.clearService();
                     } else if (typeof target === 'string') {
+                        this.isSubmitting = true;
                         window.location.href = target;
                     }
                 },
@@ -567,7 +603,19 @@
                         this.selectedSubCategory = this.selectedSubcategory;
                     }
 
-                    // Intercept in-app navigation link clicks ONLY when actively filling a selected service form
+                    // Intercept browser back button (popstate)
+                    window.addEventListener('popstate', (e) => {
+                        if (this.selectedServiceKey && this.isDirty() && !this.isSubmitting) {
+                            try {
+                                window.history.pushState({ serviceKey: this.selectedServiceKey }, '', window.location.href);
+                            } catch (err) {}
+                            this.confirmLeave('history_back');
+                        } else if (this.selectedServiceKey) {
+                            this.clearService();
+                        }
+                    });
+
+                    // Intercept in-app navigation link clicks with capture phase
                     document.addEventListener('click', (e) => {
                         if (!this.selectedServiceKey) return;
 
@@ -576,11 +624,13 @@
                         const href = anchor.getAttribute('href');
                         if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
                         if (anchor.target === '_blank') return;
+
                         if (this.isDirty() && !this.isSubmitting) {
                             e.preventDefault();
+                            e.stopPropagation();
                             this.confirmLeave(anchor.href);
                         }
-                    });
+                    }, true);
 
                     // Warn on tab refresh/close ONLY when user has typed unsaved content into active service form
                     window.addEventListener('beforeunload', (e) => {
