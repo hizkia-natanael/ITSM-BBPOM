@@ -737,11 +737,25 @@
                 groups: @json($groups),
                 hasDraft: false,
                 draftTimeText: '',
+                draftServiceKey: '',
+                draftSubcategory: '',
+                draftFieldsCount: 0,
                 showRestoredToast: false,
                 isSubmitting: false,
 
                 get currentService() {
                     return this.services[this.selectedServiceKey] || null;
+                },
+
+                get draftService() {
+                    return this.services[this.draftServiceKey] || null;
+                },
+
+                get draftSubcategoryLabel() {
+                    if (this.draftService && this.draftService.subcategories && this.draftSubcategory) {
+                        return this.draftService.subcategories[this.draftSubcategory] || this.draftSubcategory;
+                    }
+                    return '';
                 },
 
                 selectService(key) {
@@ -794,7 +808,17 @@
                             if (data && data._saved_at) {
                                 const savedDate = new Date(data._saved_at);
                                 const timeStr = savedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                this.draftTimeText = 'Tersimpan pukul ' + timeStr;
+                                this.draftTimeText = 'Tersimpan ' + timeStr;
+                                this.draftServiceKey = data._service_key || '';
+                                this.draftSubcategory = data._subcategory_key || '';
+
+                                let count = 0;
+                                for (let k in data) {
+                                    if (!k.startsWith('_') && data[k] !== null && data[k] !== undefined && String(data[k]).trim().length > 0) {
+                                        count++;
+                                    }
+                                }
+                                this.draftFieldsCount = count;
                                 this.hasDraft = true;
                             }
                         }
@@ -878,6 +902,9 @@
                 discardDraft() {
                     localStorage.removeItem('bbpom_itsm_ticket_draft');
                     this.hasDraft = false;
+                    this.draftServiceKey = '';
+                    this.draftSubcategory = '';
+                    this.draftFieldsCount = 0;
                 },
 
                 isDirty() {
