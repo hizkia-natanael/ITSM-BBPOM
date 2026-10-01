@@ -56,14 +56,14 @@
                     <div class="sm:col-span-6">
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                <i class="ri-search-line text-sm text-slate-400"></i>
+                                <i class="ri-search-line text-xs text-slate-400"></i>
                             </div>
                             <input 
                                 type="text" 
                                 name="search" 
                                 value="{{ $search }}" 
                                 placeholder="Cari nomor tiket, subjek, atau kata kunci..." 
-                                class="pl-9 block w-full rounded-xl border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-xs py-2"
+                                class="pl-8.5 block w-full rounded-xl border-slate-200 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs py-2"
                             />
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                     <div class="sm:col-span-4">
                         <select 
                             name="category_id" 
-                            class="block w-full rounded-xl border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-xs py-2"
+                            class="block w-full rounded-xl border-slate-200 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs py-2"
                         >
                             <option value="">Semua Kategori Layanan</option>
                             @foreach($categories as $cat)
@@ -83,11 +83,11 @@
                     </div>
 
                     <div class="sm:col-span-2 flex gap-2">
-                        <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition">
+                        <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-2xs transition">
                             Terapkan
                         </button>
                         @if(request()->hasAny(['search', 'category_id', 'status']))
-                            <a href="{{ route('tickets.index') }}" class="inline-flex justify-center items-center px-3 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 transition" title="Reset filter">
+                            <a href="{{ route('tickets.index') }}" class="inline-flex justify-center items-center px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition" title="Reset filter">
                                 Reset
                             </a>
                         @endif
@@ -100,48 +100,48 @@
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             @if($tickets->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50/90 text-slate-700 font-bold border-b border-slate-200 uppercase tracking-wider text-xs">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50/80 text-slate-600 font-bold border-b border-slate-200/80 uppercase tracking-wider text-[11px]">
                             <tr>
-                                <th scope="col" class="py-4 px-4 sm:px-6">
+                                <th scope="col" class="py-3 px-4 sm:px-5">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-hashtag text-slate-500 text-sm"></i>
+                                        <i class="ri-hashtag text-slate-400 text-xs"></i>
                                         <span>No. Tiket</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="py-4 px-4">
+                                <th scope="col" class="py-3 px-4">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-price-tag-3-line text-slate-500 text-sm"></i>
+                                        <i class="ri-price-tag-3-line text-slate-400 text-xs"></i>
                                         <span>Kategori</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="py-4 px-4">
+                                <th scope="col" class="py-3 px-4">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-file-text-line text-slate-500 text-sm"></i>
+                                        <i class="ri-file-text-line text-slate-400 text-xs"></i>
                                         <span>Subjek Kendala</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="py-4 px-4">
+                                <th scope="col" class="py-3 px-4">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-pulse-line text-slate-500 text-sm"></i>
+                                        <i class="ri-pulse-line text-slate-400 text-xs"></i>
                                         <span>Status Progres</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="py-4 px-4">
+                                <th scope="col" class="py-3 px-4">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-chat-3-line text-slate-500 text-sm"></i>
+                                        <i class="ri-chat-3-line text-slate-400 text-xs"></i>
                                         <span>Tanggapan</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="py-4 px-4">
+                                <th scope="col" class="py-3 px-4">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <i class="ri-calendar-line text-slate-500 text-sm"></i>
+                                        <i class="ri-calendar-line text-slate-400 text-xs"></i>
                                         <span>Waktu Pengajuan</span>
                                     </span>
                                 </th>
-                                <th scope="col" class="py-4 px-4 sm:px-6 text-right">
+                                <th scope="col" class="py-3 px-4 sm:px-5 text-right">
                                     <span class="inline-flex items-center gap-1.5 justify-end">
-                                        <i class="ri-flashlight-line text-slate-500 text-sm"></i>
+                                        <i class="ri-flashlight-line text-slate-400 text-xs"></i>
                                         <span>Aksi</span>
                                     </span>
                                 </th>
@@ -149,45 +149,45 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @foreach($tickets as $ticket)
-                                <tr class="hover:bg-slate-50/80 transition-colors group">
-                                    <td class="py-4 px-4 sm:px-6 whitespace-nowrap">
-                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100/90 group-hover:bg-emerald-50 border border-slate-200 group-hover:border-emerald-300 transition shadow-2xs">
-                                            <span class="font-mono font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-800 tracking-tight">
+                                <tr class="hover:bg-slate-50/70 transition-colors group">
+                                    <td class="py-3 px-4 sm:px-5 whitespace-nowrap">
+                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100/90 group-hover:bg-emerald-50 border border-slate-200/80 group-hover:border-emerald-300 transition shadow-2xs">
+                                            <span class="font-mono font-bold text-xs text-slate-900 group-hover:text-emerald-800">
                                                 {{ $ticket->ticket_number }}
                                             </span>
                                         </a>
                                     </td>
-                                    <td class="py-4 px-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
                                             {{ $ticket->category->name }}
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4 max-w-xs sm:max-w-md">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm sm:text-base text-slate-900 font-semibold truncate">{{ $ticket->subject }}</span>
+                                    <td class="py-3 px-4 max-w-xs sm:max-w-sm">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-xs font-semibold text-slate-900 truncate">{{ $ticket->subject }}</span>
                                             @if($ticket->attachment)
-                                                <span class="inline-flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md shrink-0 border border-slate-200/60" title="Memiliki lampiran berkas">
-                                                    <i class="ri-attachment-2 text-sm text-slate-600"></i>
+                                                <span class="inline-flex items-center gap-0.5 text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded shrink-0 border border-slate-200/60" title="Memiliki lampiran berkas">
+                                                    <i class="ri-attachment-2 text-xs text-slate-500"></i>
                                                 </span>
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="py-4 px-4 whitespace-nowrap">
+                                    <td class="py-3 px-4 whitespace-nowrap">
                                         <x-ticket-status-badge :status="$ticket->status" />
                                     </td>
-                                    <td class="py-4 px-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/60">
-                                            <i class="ri-chat-3-line text-xs text-slate-500"></i>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60">
+                                            <i class="ri-chat-3-line text-xs text-slate-400"></i>
                                             <span>{{ $ticket->responses->count() }} pesan</span>
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4 whitespace-nowrap text-xs sm:text-sm text-slate-600 font-medium">
+                                    <td class="py-3 px-4 whitespace-nowrap text-xs text-slate-500">
                                         {{ $ticket->created_at->translatedFormat('d M Y, H:i') }} WIB
                                     </td>
-                                    <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
-                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white hover:bg-emerald-600 text-slate-800 hover:text-white border border-slate-300 hover:border-emerald-600 shadow-2xs hover:shadow-md transition-all duration-150">
+                                    <td class="py-3 px-4 sm:px-5 text-right whitespace-nowrap">
+                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-emerald-600 text-slate-700 hover:text-white border border-slate-200 hover:border-emerald-600 shadow-2xs hover:shadow-xs transition-all duration-150">
                                             <span>Detail</span>
-                                            <i class="ri-arrow-right-line text-sm sm:text-base"></i>
+                                            <i class="ri-arrow-right-line text-xs"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -198,7 +198,7 @@
 
                 <!-- Pagination -->
                 @if($tickets->hasPages())
-                    <div class="px-6 py-4 border-t border-slate-100">
+                    <div class="px-5 py-3.5 border-t border-slate-100">
                         {{ $tickets->links() }}
                     </div>
                 @endif

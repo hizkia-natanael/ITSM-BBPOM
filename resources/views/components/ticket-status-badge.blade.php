@@ -26,12 +26,12 @@
     };
 @endphp
 
-<span class="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1 rounded-full text-xs sm:text-sm font-semibold border shadow-xs {{ $classes }}">
-    <span class="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border shadow-2xs {{ $classes }}">
+    <span class="relative flex h-2 w-2">
         @if(in_array($status, ['pending', 'diproses']))
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 {{ $dotClasses }}"></span>
         @endif
-        <span class="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 {{ $dotClasses }}"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 {{ $dotClasses }}"></span>
     </span>
     <span>{{ $label }}</span>
 </span>
