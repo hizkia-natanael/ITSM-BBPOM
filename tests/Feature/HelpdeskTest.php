@@ -154,7 +154,7 @@ class HelpdeskTest extends TestCase
         $response->assertSee($ticket->ticket_number);
         $response->assertSee('Aplikasi SIPT Error');
         $response->assertSee('Sedang Diproses');
-        $response->assertSee('Cetak Tiket');
+        $response->assertSee('Kembali ke Riwayat');
         $response->assertSee('Kolom Diskusi Tiket');
     }
 

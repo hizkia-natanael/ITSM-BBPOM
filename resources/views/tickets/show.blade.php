@@ -57,15 +57,6 @@
                     <i class="ri-arrow-left-line text-sm"></i>
                     <span>Kembali ke Riwayat</span>
                 </a>
-
-                <button 
-                    type="button" 
-                    onclick="window.print()" 
-                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition shadow-xs hover:shadow"
-                >
-                    <i class="ri-printer-line text-sm"></i>
-                    <span>Cetak Tiket</span>
-                </button>
             </div>
         </div>
     </x-slot>
@@ -636,26 +627,6 @@
                     <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400 leading-relaxed">
                         Jika kendala bersifat darurat yang menghentikan operasional pelayanan publik, segera hubungi kontak ekstensi TIK.
                     </div>
-                </div>
-
-                <!-- Card 4: Quick Action Buttons -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-2.5 print:hidden">
-                    <button 
-                        type="button" 
-                        onclick="window.print()" 
-                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
-                    >
-                        <i class="ri-printer-line text-sm"></i>
-                        <span>Cetak Bukti Pendaftaran</span>
-                    </button>
-
-                    <a 
-                        href="{{ route('tickets.index') }}" 
-                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition-colors"
-                    >
-                        <i class="ri-arrow-left-line text-sm"></i>
-                        <span>Kembali ke Daftar Pengaduan</span>
-                    </a>
                 </div>
 
             </div>
