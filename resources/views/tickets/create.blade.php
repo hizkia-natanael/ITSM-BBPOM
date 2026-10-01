@@ -218,7 +218,7 @@
 
                             <!-- Automatic User & Date Info Badge -->
                             <div class="flex items-center gap-2 text-[11px] bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl text-slate-600">
-                                <span><i class="ri-calendar-line text-emerald-600"></i> {{ date('d/m/Y') }}</span>
+                                <span><i class="ri-calendar-line text-emerald-600"></i> {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('d F Y') }}</span>
                                 <span class="text-slate-300">|</span>
                                 <span><i class="ri-user-line text-emerald-600"></i> {{ Auth::user()->name }}</span>
                             </div>
@@ -812,8 +812,8 @@
                             const data = JSON.parse(raw);
                             if (data && data._saved_at) {
                                 const savedDate = new Date(data._saved_at);
-                                const timeStr = savedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                this.draftTimeText = 'Tersimpan ' + timeStr;
+                                const timeStr = savedDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
+                                this.draftTimeText = 'Tersimpan ' + timeStr + ' WIB';
                                 this.draftServiceKey = data._service_key || '';
                                 this.draftSubcategory = data._subcategory_key || '';
 

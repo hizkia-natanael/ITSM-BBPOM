@@ -313,7 +313,7 @@
                                         Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan informasi tambahan di kolom chat ini jika diperlukan.
                                     </p>
                                     <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
-                                        {{ $ticket->created_at->format('H.i') }}
+                                        {{ $ticket->created_at->format('H:i') }} WIB
                                     </div>
                                 </div>
                                 <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
@@ -366,7 +366,7 @@
                                                     {{ $response->response_text }}
                                                 </p>
                                                 <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
-                                                    {{ $response->created_at->format('H.i') }}
+                                                    {{ $response->created_at->format('H:i') }} WIB
                                                 </div>
                                             </div>
                                         </div>
@@ -385,7 +385,7 @@
                                                     {{ $response->response_text }}
                                                 </p>
                                                 <div class="text-[10px] text-slate-400 text-right mt-1 font-mono">
-                                                    {{ $response->created_at->format('H.i') }}
+                                                    {{ $response->created_at->format('H:i') }} WIB
                                                 </div>
                                             </div>
 

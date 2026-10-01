@@ -164,7 +164,7 @@
                                         <x-ticket-status-badge :status="$ticket->status" />
                                     </td>
                                     <td class="py-3.5 px-4 text-gray-500">
-                                        {{ $ticket->created_at->translatedFormat('d M Y, H:i') }}
+                                        {{ $ticket->created_at->translatedFormat('d M Y, H:i') }} WIB
                                     </td>
                                     <td class="py-3.5 px-4 sm:px-6 text-right">
                                         <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
