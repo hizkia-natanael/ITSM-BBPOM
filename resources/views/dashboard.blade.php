@@ -29,7 +29,7 @@
                     Portal Layanan ITSM BBPOM di Semarang
                 </span>
                 <h3 class="text-xl sm:text-2xl font-bold tracking-tight">
-                    Selamat Datang, {{ Auth::user()->name }}! 👋
+                    Selamat Datang, {{ Auth::user()->name }}!
                 </h3>
                 <p class="mt-2 text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
                     Mengalami kendala koneksi jaringan, kerusakan PC/laptop, printer, email dinas, atau aplikasi perkantoran? Ajukan tiket pengaduan sekarang dan tim TI BBPOM akan segera membantu menanganinya.

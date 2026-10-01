@@ -140,8 +140,9 @@
                                     <td class="py-4 px-4 text-gray-900 font-medium max-w-xs sm:max-w-sm truncate">
                                         {{ $ticket->subject }}
                                         @if($ticket->attachment)
-                                            <span class="inline-flex items-center text-[10px] text-gray-400 ms-1.5" title="Memiliki lampiran">
-                                                📎 Lampiran
+                                            <span class="inline-flex items-center gap-1 text-[10px] text-gray-400 ms-1.5" title="Memiliki lampiran">
+                                                <i class="ri-attachment-2 text-xs"></i>
+                                                <span>Lampiran</span>
                                             </span>
                                         @endif
                                     </td>

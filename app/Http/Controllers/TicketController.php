@@ -76,14 +76,20 @@ class TicketController extends Controller
     }
 
     /**
-     * Form Tambah Pengaduan.
+     * Form Tambah Pengaduan (App Gateway & Dynamic Form).
      */
-    public function create(): View
+    public function create(Request $request): View
     {
         $categories = Category::orderBy('name')->get();
+        $services = config('services_gateway.services', []);
+        $groups = config('services_gateway.groups', []);
+        $initialService = $request->query('service');
 
         return view('tickets.create', [
             'categories' => $categories,
+            'services' => $services,
+            'groups' => $groups,
+            'initialService' => $initialService,
         ]);
     }
 
@@ -111,11 +117,17 @@ class TicketController extends Controller
             $attachmentPath = $request->file('attachment')->store('attachments', 'public');
         }
 
+        $description = $validated['description'];
+        $sub = $request->input('subcategory') ?: $request->input('custom_subcategory');
+        if ($sub) {
+            $description = "[Sub Kategori: {$sub}]\n\n" . $description;
+        }
+
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
             'category_id' => $validated['category_id'],
             'subject' => $validated['subject'],
-            'description' => $validated['description'],
+            'description' => $description,
             'status' => 'pending',
             'attachment' => $attachmentPath,
         ]);

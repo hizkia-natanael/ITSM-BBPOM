@@ -10,7 +10,7 @@ Route::get('/', function () {
             ? redirect('/admin')
             : redirect()->route('dashboard');
     }
-    return view('welcome');
+    return view('auth.login');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
