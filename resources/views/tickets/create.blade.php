@@ -417,12 +417,30 @@
 
                 isDirty() {
                     if (this.isSubmitting) return false;
+                    if (!this.selectedServiceKey) return false;
+
                     const form = document.querySelector('form[action*="tickets"]');
                     if (!form) return false;
 
+                    const ignoredNames = [
+                        '_token', 
+                        'service_key', 
+                        'subcategory', 
+                        'subcategory_key', 
+                        'category_id', 
+                        'tanggal_pengajuan', 
+                        'nama'
+                    ];
+
                     for (let el of form.elements) {
-                        if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'subcategory' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
+                        if (!el.name || ignoredNames.includes(el.name) || el.type === 'submit') continue;
+                        if (el.offsetParent === null) continue;
+
+                        if (el.type === 'file') {
+                            if (el.files && el.files.length > 0) return true;
+                        } else if (el.type === 'checkbox' || el.type === 'radio') {
+                            if (el.checked) return true;
+                        } else if (el.value && el.value.trim().length > 0) {
                             return true;
                         }
                     }
@@ -480,8 +498,10 @@
                         this.selectedSubCategory = this.selectedSubcategory;
                     }
 
-                    // Intercept in-app navigation link clicks when form has unsaved content
+                    // Intercept in-app navigation link clicks ONLY when actively filling a selected service form
                     document.addEventListener('click', (e) => {
+                        if (!this.selectedServiceKey) return;
+
                         const anchor = e.target.closest('a[href]');
                         if (!anchor) return;
                         const href = anchor.getAttribute('href');
@@ -490,6 +510,14 @@
                         if (this.isDirty() && !this.isSubmitting) {
                             e.preventDefault();
                             this.confirmLeave(anchor.href);
+                        }
+                    });
+
+                    // Warn on tab refresh/close ONLY when user has typed unsaved content into active service form
+                    window.addEventListener('beforeunload', (e) => {
+                        if (this.selectedServiceKey && this.isDirty() && !this.isSubmitting) {
+                            e.preventDefault();
+                            e.returnValue = '';
                         }
                     });
                 }
