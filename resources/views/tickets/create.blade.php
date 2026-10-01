@@ -41,6 +41,9 @@
         <!-- Alert Pemulihan Draf Isian Formulir (Atomic Component) -->
         <x-draft-recovery-alert />
 
+        <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
+        <x-leave-form-confirmation-modal />
+
         <!-- VIEW 1: APP GATEWAY CATALOG (Shown when no service is selected) -->
         <div x-show="!selectedServiceKey" x-transition.opacity.duration.300ms class="space-y-6">
 
@@ -189,7 +192,7 @@
                 <div>
                     <button 
                         type="button" 
-                        @click="clearService()" 
+                        @click="requestClearService()" 
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-white text-xs font-bold text-slate-700 shadow-sm transition"
                     >
                         <i class="ri-arrow-left-line"></i>
@@ -742,6 +745,8 @@
                 draftFieldsCount: 0,
                 showRestoredToast: false,
                 isSubmitting: false,
+                showLeaveConfirm: false,
+                pendingLeaveTarget: null,
 
                 get currentService() {
                     return this.services[this.selectedServiceKey] || null;
@@ -923,6 +928,43 @@
                     return false;
                 },
 
+                confirmLeave(target) {
+                    if (this.isDirty() && !this.isSubmitting) {
+                        this.saveDraft();
+                        this.pendingLeaveTarget = target;
+                        this.showLeaveConfirm = true;
+                    } else if (target === 'clearService') {
+                        this.clearService();
+                    } else if (typeof target === 'string') {
+                        window.location.href = target;
+                    }
+                },
+
+                cancelLeave() {
+                    this.showLeaveConfirm = false;
+                    this.pendingLeaveTarget = null;
+                },
+
+                proceedLeave() {
+                    this.saveDraft();
+                    this.showLeaveConfirm = false;
+                    const target = this.pendingLeaveTarget;
+                    this.pendingLeaveTarget = null;
+                    if (target === 'clearService') {
+                        this.clearService();
+                    } else if (typeof target === 'string') {
+                        window.location.href = target;
+                    }
+                },
+
+                requestClearService() {
+                    if (this.isDirty()) {
+                        this.confirmLeave('clearService');
+                    } else {
+                        this.clearService();
+                    }
+                },
+
                 init() {
                     if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
                         const s = this.services[this.selectedServiceKey];
@@ -932,6 +974,19 @@
                     }
 
                     this.checkDraft();
+
+                    // Intercept in-app navigation link clicks when form has unsaved content
+                    document.addEventListener('click', (e) => {
+                        const anchor = e.target.closest('a[href]');
+                        if (!anchor) return;
+                        const href = anchor.getAttribute('href');
+                        if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+                        if (anchor.target === '_blank') return;
+                        if (this.isDirty() && !this.isSubmitting) {
+                            e.preventDefault();
+                            this.confirmLeave(anchor.href);
+                        }
+                    });
 
                     // Silently auto-save draft on refresh/navigation without showing the basic native browser leave prompt
                     window.addEventListener('beforeunload', () => {
