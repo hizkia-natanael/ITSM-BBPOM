@@ -819,7 +819,9 @@
                                     }
                                 }
                                 this.draftFieldsCount = count;
-                                this.hasDraft = true;
+                                if (count > 0 || this.draftServiceKey) {
+                                    this.hasDraft = true;
+                                }
                             }
                         }
                     } catch (e) {
@@ -931,12 +933,10 @@
 
                     this.checkDraft();
 
-                    window.addEventListener('beforeunload', (e) => {
+                    // Silently auto-save draft on refresh/navigation without showing the basic native browser leave prompt
+                    window.addEventListener('beforeunload', () => {
                         if (this.isDirty() && !this.isSubmitting) {
                             this.saveDraft();
-                            e.preventDefault();
-                            e.returnValue = '';
-                            return '';
                         }
                     });
                 }
