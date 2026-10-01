@@ -821,9 +821,12 @@
                             <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
                             <div class="flex items-end justify-end gap-2.5 max-w-[85%] sm:max-w-[75%] ml-auto">
                                 <div class="bg-white rounded-2xl rounded-br-xs px-4 py-2.5 border border-slate-200 shadow-2xs">
-                                    <div class="mb-1">
-                                        <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                                            Petugas IT
+                                    <div class="flex items-center justify-end gap-1.5 mb-1">
+                                        <span class="text-[11px] font-bold text-slate-900 leading-tight">
+                                            Helpdesk TIK
+                                        </span>
+                                        <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-200/60">
+                                            Sistem
                                         </span>
                                     </div>
                                     <p class="text-xs sm:text-sm text-slate-800 leading-relaxed">
@@ -870,7 +873,7 @@
                                     @endphp
 
                                     @if(!$isAdmin)
-                                        <!-- Pelapor Bubble (LEFT SIDE - matching user FZ in screenshot) -->
+                                        <!-- Pelapor Bubble (LEFT SIDE) -->
                                         <div class="flex items-end gap-2.5 max-w-[85%] sm:max-w-[75%]">
                                             <!-- Avatar Circle with User Initials -->
                                             <div class="w-8 h-8 rounded-full bg-slate-200/90 border border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 self-end mb-0.5 shadow-2xs">
@@ -879,6 +882,15 @@
 
                                             <!-- Message Bubble -->
                                             <div class="bg-slate-100/95 rounded-2xl rounded-bl-xs px-4 py-2.5 border border-slate-200/60 shadow-2xs">
+                                                <!-- Sender Name & Role Header -->
+                                                <div class="flex items-center gap-1.5 mb-1">
+                                                    <span class="text-[11px] font-bold text-slate-900 leading-tight">
+                                                        {{ $response->user->name }}
+                                                    </span>
+                                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200/60">
+                                                        Pemohon
+                                                    </span>
+                                                </div>
                                                 <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
                                                     {{ $response->response_text }}
                                                 </p>
@@ -888,13 +900,16 @@
                                             </div>
                                         </div>
                                     @else
-                                        <!-- Petugas IT Bubble (RIGHT SIDE - matching Bot in screenshot) -->
+                                        <!-- Petugas IT Bubble (RIGHT SIDE) -->
                                         <div class="flex items-end justify-end gap-2.5 max-w-[85%] sm:max-w-[75%] ml-auto">
                                             <!-- Message Bubble -->
                                             <div class="bg-white rounded-2xl rounded-br-xs px-4 py-2.5 border border-slate-200 shadow-2xs">
-                                                <!-- Role Pill inside bubble -->
-                                                <div class="mb-1">
-                                                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                                <!-- Role Pill & Admin Name inside bubble -->
+                                                <div class="flex items-center justify-end gap-1.5 mb-1">
+                                                    <span class="text-[11px] font-bold text-slate-900 leading-tight">
+                                                        {{ $response->user->name }}
+                                                    </span>
+                                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-200/60">
                                                         Petugas IT
                                                     </span>
                                                 </div>
