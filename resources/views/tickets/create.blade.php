@@ -36,175 +36,7 @@
     </x-slot>
 
     <!-- Main Container with Alpine.js Reactive Gateway State -->
-    <div 
-        x-data="{
-            search: '',
-            activeGroup: 'all',
-            selectedServiceKey: '{{ old('service_key', $initialService ?? '') }}',
-            selectedSubcategory: '{{ old('subcategory_key', '') }}',
-            services: {{ json_encode($services) }},
-            groups: {{ json_encode($groups) }},
-            get currentService() {
-                return this.selectedServiceKey && this.services[this.selectedServiceKey] 
-                    ? this.services[this.selectedServiceKey] 
-                    : null;
-            },
-            selectService(key) {
-                this.selectedServiceKey = key;
-                const s = this.services[key];
-                if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
-                    const keys = Object.keys(s.subcategories);
-                    this.selectedSubcategory = keys.includes(this.selectedSubcategory) ? this.selectedSubcategory : keys[0];
-                } else {
-                    this.selectedSubcategory = '';
-                }
-                if (s) {
-                    const catSelect = document.getElementById('category_id');
-                    if (catSelect && s.default_category_id) {
-                        catSelect.value = s.default_category_id;
-                    }
-                }
-                window.scrollTo({ top: 120, behavior: 'smooth' });
-            },
-            clearService() {
-                this.selectedServiceKey = '';
-                this.selectedSubcategory = '';
-            },
-            isMatch(key) {
-                const s = this.services[key];
-                if (!s) return false;
-                if (this.activeGroup !== 'all' && s.group !== this.activeGroup) return false;
-                if (!this.search.trim()) return true;
-                const q = this.search.toLowerCase().trim();
-                return s.name.toLowerCase().includes(q) 
-                    || s.long_name.toLowerCase().includes(q) 
-                    || s.description.toLowerCase().includes(q)
-                    || (s.keywords && s.keywords.some(k => k.toLowerCase().includes(q)));
-            },
-            get visibleCount() {
-                return Object.keys(this.services).filter(k => this.isMatch(k)).length;
-            },
-            hasDraft: false,
-            draftTimeText: '',
-            showRestoredToast: false,
-            isSubmitting: false,
-            checkDraft() {
-                try {
-                    const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
-                    if (!raw) return;
-                    const data = JSON.parse(raw);
-                    if (data && data._saved_at && (data._service_key || Object.keys(data).length > 2)) {
-                        this.hasDraft = true;
-                        const diffMin = Math.round((new Date() - new Date(data._saved_at)) / 60000);
-                        if (diffMin < 1) {
-                            this.draftTimeText = 'Baru saja';
-                        } else if (diffMin < 60) {
-                            this.draftTimeText = diffMin + ' menit lalu';
-                        } else {
-                            this.draftTimeText = 'Tersimpan sebelumnya';
-                        }
-                    }
-                } catch (e) {
-                    localStorage.removeItem('bbpom_itsm_ticket_draft');
-                }
-            },
-            saveDraft() {
-                if (this.isSubmitting) return;
-                const form = document.querySelector('form[action*="tickets"]');
-                if (!form) return;
-                
-                const formData = {};
-                let hasContent = false;
-                
-                for (let el of form.elements) {
-                    if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                    if (el.value && el.value.trim().length > 0) {
-                        formData[el.name] = el.value;
-                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id') {
-                            hasContent = true;
-                        }
-                    }
-                }
-                
-                if (this.selectedServiceKey || hasContent) {
-                    formData._service_key = this.selectedServiceKey;
-                    formData._subcategory_key = this.selectedSubcategory;
-                    formData._saved_at = new Date().toISOString();
-                    localStorage.setItem('bbpom_itsm_ticket_draft', JSON.stringify(formData));
-                }
-            },
-            restoreDraft() {
-                try {
-                    const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
-                    if (!raw) return;
-                    const data = JSON.parse(raw);
-                    
-                    if (data._service_key) {
-                        this.selectService(data._service_key);
-                    }
-                    if (data._subcategory_key) {
-                        this.selectedSubcategory = data._subcategory_key;
-                    }
-                    
-                    this.$nextTick(() => {
-                        const form = document.querySelector('form[action*="tickets"]');
-                        if (form) {
-                            for (let key in data) {
-                                if (key.startsWith('_')) continue;
-                                const el = form.elements[key];
-                                if (el) {
-                                    el.value = data[key];
-                                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                                    el.dispatchEvent(new Event('change', { bubbles: true }));
-                                }
-                            }
-                        }
-                        this.hasDraft = false;
-                        this.showRestoredToast = true;
-                        setTimeout(() => this.showRestoredToast = false, 3500);
-                    });
-                } catch (e) {
-                    console.error(e);
-                }
-            },
-            discardDraft() {
-                localStorage.removeItem('bbpom_itsm_ticket_draft');
-                this.hasDraft = false;
-            },
-            isDirty() {
-                if (this.isSubmitting) return false;
-                const form = document.querySelector('form[action*="tickets"]');
-                if (!form) return false;
-                for (let el of form.elements) {
-                    if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                    if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
-                        return true;
-                    }
-                }
-                return false;
-            },
-            init() {
-                if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
-                    const s = this.services[this.selectedServiceKey];
-                    if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
-                        this.selectedSubcategory = Object.keys(s.subcategories)[0];
-                    }
-                }
-
-                this.checkDraft();
-
-                window.addEventListener('beforeunload', (e) => {
-                    if (this.isDirty() && !this.isSubmitting) {
-                        this.saveDraft();
-                        e.preventDefault();
-                        e.returnValue = '';
-                        return '';
-                    }
-                });
-            }
-        }"
-        class="space-y-6"
-    >
+    <div x-data="ticketGatewayData()" class="space-y-6">
 
         <!-- Alert Pemulihan Draf Isian Formulir (Atomic Component) -->
         <x-draft-recovery-alert />
@@ -893,8 +725,197 @@
 
     </div>
 
-    <!-- Script to handle file input display -->
+    <!-- Script to handle file input display & Alpine Gateway state -->
     <script>
+        function ticketGatewayData() {
+            return {
+                search: '',
+                activeGroup: 'all',
+                selectedServiceKey: @json(old('service_key', $initialService ?? '')),
+                selectedSubcategory: @json(old('subcategory_key', '')),
+                services: @json($services),
+                groups: @json($groups),
+                hasDraft: false,
+                draftTimeText: '',
+                showRestoredToast: false,
+                isSubmitting: false,
+
+                get currentService() {
+                    return this.services[this.selectedServiceKey] || null;
+                },
+
+                selectService(key) {
+                    this.selectedServiceKey = key;
+                    const s = this.services[key];
+                    if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
+                        if (!this.selectedSubcategory || !s.subcategories[this.selectedSubcategory]) {
+                            this.selectedSubcategory = Object.keys(s.subcategories)[0];
+                        }
+                    } else {
+                        this.selectedSubcategory = '';
+                    }
+                },
+
+                clearService() {
+                    this.selectedServiceKey = null;
+                    this.selectedSubcategory = '';
+                },
+
+                isMatch(key) {
+                    const svc = this.services[key];
+                    if (!svc) return false;
+
+                    if (this.activeGroup !== 'all' && svc.group !== this.activeGroup) {
+                        return false;
+                    }
+
+                    if (!this.search || this.search.trim() === '') {
+                        return true;
+                    }
+
+                    const q = this.search.toLowerCase().trim();
+                    const nameMatch = (svc.name || '').toLowerCase().includes(q);
+                    const longNameMatch = (svc.long_name || '').toLowerCase().includes(q);
+                    const descMatch = (svc.description || '').toLowerCase().includes(q);
+                    const badgeMatch = (svc.badge || '').toLowerCase().includes(q);
+
+                    return nameMatch || longNameMatch || descMatch || badgeMatch;
+                },
+
+                get visibleCount() {
+                    return Object.keys(this.services).filter(key => this.isMatch(key)).length;
+                },
+
+                checkDraft() {
+                    try {
+                        const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
+                        if (raw) {
+                            const data = JSON.parse(raw);
+                            if (data && data._saved_at) {
+                                const savedDate = new Date(data._saved_at);
+                                const timeStr = savedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                this.draftTimeText = 'Tersimpan pukul ' + timeStr;
+                                this.hasDraft = true;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error checking draft:', e);
+                    }
+                },
+
+                saveDraft() {
+                    if (this.isSubmitting) return;
+                    const form = document.querySelector('form[action*="tickets"]');
+                    if (!form) return;
+
+                    const formData = {};
+                    let hasContent = false;
+
+                    for (let el of form.elements) {
+                        if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
+                        if (el.type === 'checkbox' || el.type === 'radio') {
+                            if (el.checked) {
+                                formData[el.name] = el.value;
+                                hasContent = true;
+                            }
+                        } else if (el.value && el.value.trim().length > 0) {
+                            formData[el.name] = el.value;
+                            if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id') {
+                                hasContent = true;
+                            }
+                        }
+                    }
+
+                    if (this.selectedServiceKey || hasContent) {
+                        formData._service_key = this.selectedServiceKey;
+                        formData._subcategory_key = this.selectedSubcategory;
+                        formData._saved_at = new Date().toISOString();
+                        localStorage.setItem('bbpom_itsm_ticket_draft', JSON.stringify(formData));
+                    }
+                },
+
+                restoreDraft() {
+                    try {
+                        const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
+                        if (!raw) return;
+                        const data = JSON.parse(raw);
+
+                        if (data._service_key) {
+                            this.selectService(data._service_key);
+                        }
+                        if (data._subcategory_key) {
+                            this.selectedSubcategory = data._subcategory_key;
+                        }
+
+                        this.$nextTick(() => {
+                            const form = document.querySelector('form[action*="tickets"]');
+                            if (form) {
+                                for (let key in data) {
+                                    if (key.startsWith('_')) continue;
+                                    const el = form.elements[key];
+                                    if (el) {
+                                        if (el.type === 'checkbox' || el.type === 'radio') {
+                                            el.checked = (el.value === data[key]);
+                                        } else {
+                                            el.value = data[key];
+                                        }
+                                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
+                                }
+                            }
+                            this.hasDraft = false;
+                            this.showRestoredToast = true;
+                            setTimeout(() => {
+                                this.showRestoredToast = false;
+                            }, 3500);
+                        });
+                    } catch (e) {
+                        console.error('Error restoring draft:', e);
+                    }
+                },
+
+                discardDraft() {
+                    localStorage.removeItem('bbpom_itsm_ticket_draft');
+                    this.hasDraft = false;
+                },
+
+                isDirty() {
+                    if (this.isSubmitting) return false;
+                    const form = document.querySelector('form[action*="tickets"]');
+                    if (!form) return false;
+
+                    for (let el of form.elements) {
+                        if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
+                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+
+                init() {
+                    if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
+                        const s = this.services[this.selectedServiceKey];
+                        if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
+                            this.selectedSubcategory = Object.keys(s.subcategories)[0];
+                        }
+                    }
+
+                    this.checkDraft();
+
+                    window.addEventListener('beforeunload', (e) => {
+                        if (this.isDirty() && !this.isSubmitting) {
+                            this.saveDraft();
+                            e.preventDefault();
+                            e.returnValue = '';
+                            return '';
+                        }
+                    });
+                }
+            };
+        }
+
         document.getElementById('attachment')?.addEventListener('change', function(e) {
             const fileName = e.target.files[0]?.name;
             const textElem = document.getElementById('file-chosen-text');
