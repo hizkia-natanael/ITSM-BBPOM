@@ -164,7 +164,7 @@
 
         </div>
 
-        <!-- VIEW 2: DYNAMIC TICKET FORM (Shown when a service is selected) -->
+        <!-- VIEW 2: UNIFIED DYNAMIC TICKET FORM (Shown when a service is selected) -->
         <div x-show="selectedServiceKey" x-transition.opacity.duration.300ms class="space-y-6">
 
             <!-- Selected Service Notification Banner -->
@@ -198,7 +198,7 @@
             <!-- Form Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                <!-- Main Form Column -->
+                <!-- Main Form Column: Unified Card Container -->
                 <div class="lg:col-span-2">
                     <!-- Global Validation Errors -->
                     @if ($errors->any())
@@ -217,241 +217,11 @@
                         </div>
                     @endif
 
-                    <!-- ======================================================== -->
-                    <!-- FORM 4: SERTIFIKAT BSRE                                   -->
-                    <!-- ======================================================== -->
-                    <div x-show="selectedServiceKey === 'sertifikat_bse'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                        <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Sertifikat Elektronik BSrE</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Layanan penerbitan, reset password passphrase, dan permintaan OTP penandatanganan dokumen elektronik.
-                            </p>
-                        </div>
-
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="service_key" value="sertifikat_bse">
-                            <input type="hidden" name="subcategory" :value="selectedSubCategory">
-
-                            @include('tickets.forms.partials.metadata-header')
-
-                            @include('tickets.forms.form-bsre')
-
-                            <!-- Actions -->
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
-                                </button>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span x-text="selectedSubCategory === 'reset_password' ? 'Ajukan Reset Password BSrE' : (selectedSubCategory === 'permintaan_otp' ? 'Ajukan Permintaan OTP' : 'Kirim Pengaduan BSrE')"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- FORM 5: ZOOM MEETING / WEBINAR                            -->
-                    <!-- ======================================================== -->
-                    <div x-show="selectedServiceKey === 'zoom'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                        <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Layanan Zoom Meeting & Webinar</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Permintaan link ruang virtual rapat dinas, webinar, dan koordinasi daring BBPOM Semarang.
-                            </p>
-                        </div>
-
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="service_key" value="zoom">
-                            <input type="hidden" name="subcategory" :value="selectedSubCategory">
-
-                            @include('tickets.forms.partials.metadata-header')
-
-                            @include('tickets.forms.form-zoom')
-
-                            <!-- Actions -->
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
-                                </button>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span x-text="selectedSubCategory === 'permintaan_link_zoom' ? 'Ajukan Permintaan Link Zoom' : 'Kirim Pengaduan Zoom'"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- FORM 6: FORMULIR, SURVEY & KEGIATAN                       -->
-                    <!-- ======================================================== -->
-                    <div 
-                        x-show="selectedServiceKey === 'formulir_kegiatan'" 
-                        class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7"
-                    >
-                        <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Formulir, Survey & Kegiatan</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Layanan pembuatan daftar hadir online, QR Code resmi, survei evaluasi, dan instrumen pretest/posttest.
-                            </p>
-                        </div>
-
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="service_key" value="formulir_kegiatan">
-                            <input type="hidden" name="subcategory" :value="selectedSubCategory">
-
-                            @include('tickets.forms.partials.metadata-header')
-
-                            @include('tickets.forms.form-formulir-kegiatan')
-
-                            <!-- Actions -->
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
-                                </button>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span>Ajukan Permohonan Formulir / Kegiatan</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- FORM 10: INSTALL ULANG WINDOWS                            -->
-                    <!-- ======================================================== -->
-                    <div x-show="selectedServiceKey === 'install_windows'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                        <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Install Ulang Windows</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Penanganan laptop/komputer dinas yang bermasalah sistem operasi, lambat, terkena virus, atau butuh instalasi baru.
-                            </p>
-                        </div>
-
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="service_key" value="install_windows">
-                            <input type="hidden" name="subcategory" :value="selectedSubCategory">
-
-                            @include('tickets.forms.partials.metadata-header')
-
-                            @include('tickets.forms.form-install-windows')
-
-                            <!-- Actions -->
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
-                                </button>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span x-text="selectedSubCategory === 'permintaan_install_windows' ? 'Ajukan Install Ulang Windows' : 'Kirim Pengaduan'"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- FORM 11: LISENSI MICROSOFT OFFICE                         -->
-                    <!-- ======================================================== -->
-                    <div x-show="selectedServiceKey === 'lisensi_office'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                        <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Lisensi Microsoft Office</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Aktivasi resmi aplikasi Microsoft Word, Excel, PowerPoint, dan Microsoft 365 perangkat dinas BBPOM Semarang.
-                            </p>
-                        </div>
-
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="service_key" value="lisensi_office">
-                            <input type="hidden" name="subcategory" :value="selectedSubCategory">
-
-                            @include('tickets.forms.partials.metadata-header')
-
-                            @include('tickets.forms.form-lisensi-office')
-
-                            <!-- Actions -->
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
-                                </button>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span x-text="selectedSubCategory === 'permintaan_lisensi_office' ? 'Ajukan Permintaan Lisensi Office' : 'Kirim Pengaduan'"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- FORM 12: LAYANAN LAINNYA (UMUM)                           -->
-                    <!-- ======================================================== -->
-                    <div x-show="selectedServiceKey === 'lainnya'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                        <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Layanan TIK Lainnya</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">
-                                Dukungan teknis hardware printer, scanner, proyektor, audio ruang rapat, atau kebutuhan TI umum lainnya.
-                            </p>
-                        </div>
-
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="service_key" value="lainnya">
-                            <input type="hidden" name="subcategory" value="lainnya">
-
-                            @include('tickets.forms.partials.metadata-header')
-
-                            @include('tickets.forms.form-lainnya')
-
-                            <!-- Actions -->
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                    &larr; Ganti Layanan
-                                </button>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span>Ajukan Permohonan TIK</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- FORMULIR STANDARD GATEWAY (SIPT, Srikandi, Email, Internet, Subsite, Infografis) -->
-                    <!-- ======================================================== -->
-                    <div 
-                        x-show="selectedServiceKey && !['sertifikat_bse', 'zoom', 'formulir_kegiatan', 'install_windows', 'lisensi_office', 'lainnya'].includes(selectedServiceKey)" 
-                        class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7"
-                    >
+                    <!-- UNIFIED ENTERPRISE FORM CARD (SIPT/SRIKANDI STANDARD) -->
+                    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
                         <div class="border-b border-slate-100 pb-4 mb-6">
                             <h3 class="text-base font-bold text-slate-900" x-text="currentService ? currentService.name : 'Formulir Layanan'"></h3>
-                            <p class="text-xs text-slate-500 mt-1" x-text="currentService ? currentService.description : 'Lengkapi detail permohonan atau kendala di bawah ini.'"></p>
+                            <p class="text-xs text-slate-500 mt-1" x-text="currentService ? currentService.description : 'Lengkapi detail permohonan atau kendala di bawah ini agar teknisi TIK BBPOM dapat segera menindaklanjuti.'"></p>
                         </div>
 
                         <form 
@@ -465,8 +235,10 @@
                         >
                             @csrf
                             <input type="hidden" name="service_key" :value="selectedServiceKey">
+                            <input type="hidden" name="subcategory" :value="selectedSubcategory">
                             <input type="hidden" name="subcategory_key" :value="selectedSubcategory">
 
+                            <!-- Auto-filled Metadata Header (Tanggal Otomatis & Nama Pemohon Otomatis) -->
                             @include('tickets.forms.partials.metadata-header')
 
                             <!-- 1. SIPT -->
@@ -484,6 +256,21 @@
                                 @include('tickets.forms.form-email-corporate')
                             </div>
 
+                            <!-- 4. SERTIFIKAT BSRE -->
+                            <div x-show="selectedServiceKey === 'sertifikat_bse'">
+                                @include('tickets.forms.form-bsre')
+                            </div>
+
+                            <!-- 5. ZOOM -->
+                            <div x-show="selectedServiceKey === 'zoom'">
+                                @include('tickets.forms.form-zoom')
+                            </div>
+
+                            <!-- 6. FORMULIR & KEGIATAN -->
+                            <div x-show="selectedServiceKey === 'formulir_kegiatan'">
+                                @include('tickets.forms.form-formulir-kegiatan')
+                            </div>
+
                             <!-- 7. INTERNET -->
                             <div x-show="selectedServiceKey === 'internet'">
                                 @include('tickets.forms.form-internet')
@@ -499,29 +286,24 @@
                                 @include('tickets.forms.form-infografis')
                             </div>
 
-                            <!-- Universal Attachment for services where upload is not subcategory-specific -->
-                            <div x-show="!['subsite', 'infografis', 'internet'].includes(selectedServiceKey)" class="pt-2 border-t border-slate-100">
-                                <x-input-label for="attachment" :value="__('Upload File Lampiran / Foto / Dokumen Pendukung (Opsional)')" class="font-semibold text-xs text-slate-700" />
-                                <span class="text-[11px] text-slate-400 block mb-2">Format: JPG, PNG, PDF, DOCX, ZIP (Maks. 5MB)</span>
-                                
-                                <div class="mt-1 flex justify-center px-6 pt-4 pb-5 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl transition bg-slate-50/50">
-                                    <div class="space-y-1 text-center">
-                                        <i class="ri-upload-cloud-2-line text-3xl text-slate-400"></i>
-                                        <div class="flex text-xs text-slate-600 justify-center">
-                                            <label for="attachment" class="relative cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 font-semibold text-emerald-700 hover:text-emerald-800 shadow-sm transition">
-                                                <span>Pilih Berkas Lampiran</span>
-                                                <input id="attachment" name="attachment" type="file" class="sr-only">
-                                            </label>
-                                        </div>
-                                        <p class="text-[11px] text-slate-400" id="file-chosen-text">Belum ada file yang dipilih</p>
-                                    </div>
-                                </div>
-                                <x-input-error class="mt-1" :messages="$errors->get('attachment')" />
+                            <!-- 10. INSTALL WINDOWS -->
+                            <div x-show="selectedServiceKey === 'install_windows'">
+                                @include('tickets.forms.form-install-windows')
+                            </div>
+
+                            <!-- 11. LISENSI OFFICE -->
+                            <div x-show="selectedServiceKey === 'lisensi_office'">
+                                @include('tickets.forms.form-lisensi-office')
+                            </div>
+
+                            <!-- 12. LAINNYA -->
+                            <div x-show="selectedServiceKey === 'lainnya'">
+                                @include('tickets.forms.form-lainnya')
                             </div>
 
                             <input type="hidden" id="category_id" name="category_id" :value="currentService ? currentService.default_category_id : 5">
 
-                            <!-- Form Action Buttons -->
+                            <!-- Form Action Buttons (Unified Enterprise Bar) -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                                 <button type="button" @click="clearService()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
                                     &larr; Ganti Layanan
@@ -701,7 +483,7 @@
                             }
                         } else if (el.value && el.value.trim().length > 0) {
                             formData[el.name] = el.value;
-                            if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id') {
+                            if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'subcategory' && el.name !== 'category_id') {
                                 hasContent = true;
                             }
                         }
@@ -772,7 +554,7 @@
 
                     for (let el of form.elements) {
                         if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
-                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
+                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'subcategory' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
                             return true;
                         }
                     }
@@ -852,15 +634,5 @@
                 }
             };
         }
-
-        document.getElementById('attachment')?.addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name;
-            const textElem = document.getElementById('file-chosen-text');
-            if (fileName && textElem) {
-                textElem.textContent = 'File terpilih: ' + fileName;
-                textElem.classList.remove('text-slate-400');
-                textElem.classList.add('text-emerald-700', 'font-semibold');
-            }
-        });
     </script>
 </x-app-layout>

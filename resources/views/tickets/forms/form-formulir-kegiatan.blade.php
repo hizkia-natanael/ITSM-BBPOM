@@ -33,374 +33,315 @@
             <span>Pilih Sub Kategori Layanan Formulir & Kegiatan:</span>
         </label>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            <button 
-                type="button" 
-                @click="selectedSubCategory = 'permintaan_daftar_hadir'; selectedSubcategory = 'permintaan_daftar_hadir'"
-                :class="selectedSubCategory === 'permintaan_daftar_hadir' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
-                class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
-            >
-                <span class="flex items-center gap-1.5">
-                    <i class="ri-user-follow-line text-emerald-600"></i>
-                    <span>Permintaan Daftar Hadir</span>
-                </span>
-                <i x-show="selectedSubCategory === 'permintaan_daftar_hadir'" class="ri-check-line text-sm"></i>
-            </button>
-            <button 
-                type="button" 
-                @click="selectedSubCategory = 'permintaan_qrcode'; selectedSubcategory = 'permintaan_qrcode'"
-                :class="selectedSubCategory === 'permintaan_qrcode' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
-                class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
-            >
-                <span class="flex items-center gap-1.5">
-                    <i class="ri-qr-code-line text-blue-600"></i>
-                    <span>Permintaan QR Code</span>
-                </span>
-                <i x-show="selectedSubCategory === 'permintaan_qrcode'" class="ri-check-line text-sm"></i>
-            </button>
-            <button 
-                type="button" 
-                @click="selectedSubCategory = 'survey'; selectedSubcategory = 'survey'"
-                :class="selectedSubCategory === 'survey' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
-                class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
-            >
-                <span class="flex items-center gap-1.5">
-                    <i class="ri-survey-line text-indigo-600"></i>
-                    <span>Survey</span>
-                </span>
-                <i x-show="selectedSubCategory === 'survey'" class="ri-check-line text-sm"></i>
-            </button>
-            <button 
-                type="button" 
-                @click="selectedSubCategory = 'post_test_pretest'; selectedSubcategory = 'post_test_pretest'"
-                :class="selectedSubCategory === 'post_test_pretest' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
-                class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
-            >
-                <span class="flex items-center gap-1.5">
-                    <i class="ri-file-list-3-line text-amber-600"></i>
-                    <span>Pretest / Post Test</span>
-                </span>
-                <i x-show="selectedSubCategory === 'post_test_pretest'" class="ri-check-line text-sm"></i>
-            </button>
-            <button 
-                type="button" 
-                @click="selectedSubCategory = 'lainnya'; selectedSubcategory = 'lainnya'"
-                :class="selectedSubCategory === 'lainnya' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
-                class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
-            >
-                <span class="flex items-center gap-1.5">
-                    <i class="ri-more-line text-slate-500"></i>
-                    <span>Lainnya (Linktree, dll)</span>
-                </span>
-                <i x-show="selectedSubCategory === 'lainnya'" class="ri-check-line text-sm"></i>
-            </button>
+            @foreach($services['formulir_kegiatan']['subcategories'] as $key => $label)
+                <button 
+                    type="button" 
+                    @click="selectedSubcategory = '{{ $key }}'; selectedSubCategory = '{{ $key }}'"
+                    :class="selectedSubcategory === '{{ $key }}' ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
+                    class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
+                >
+                    <span class="flex items-center gap-1.5">
+                        @if($key === 'permintaan_daftar_hadir')
+                            <i class="ri-user-follow-line text-emerald-600"></i>
+                        @elseif($key === 'permintaan_qrcode')
+                            <i class="ri-qr-code-line text-blue-600"></i>
+                        @elseif($key === 'survey')
+                            <i class="ri-questionnaire-line text-indigo-600"></i>
+                        @elseif($key === 'post_test_pretest')
+                            <i class="ri-file-list-3-line text-purple-600"></i>
+                        @else
+                            <i class="ri-more-line text-slate-500"></i>
+                        @endif
+                        <span>{{ $label }}</span>
+                    </span>
+                    <i x-show="selectedSubcategory === '{{ $key }}'" class="ri-check-line text-sm"></i>
+                </button>
+            @endforeach
         </div>
     </div>
 
     <!-- A. Permintaan Daftar Hadir -->
-    <div x-show="selectedSubCategory === 'permintaan_daftar_hadir'" class="space-y-4 pt-4 border-t border-slate-100">
-        <div>
-            <label for="kegiatan_nama_acara" class="block text-xs font-semibold text-slate-700 mb-1">
-                Nama Acara <span class="text-rose-500">*</span>
-            </label>
-            <input 
-                type="text" 
-                id="kegiatan_nama_acara" 
-                name="nama_acara" 
-                value="{{ old('nama_acara') }}" 
-                placeholder="Contoh: Sosialisasi Pengawasan Pangan Jajanan Anak Sekolah" 
-                :required="selectedSubCategory === 'permintaan_daftar_hadir'"
-                :disabled="selectedSubCategory !== 'permintaan_daftar_hadir'"
-                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-            >
-            <x-input-error class="mt-1" :messages="$errors->get('nama_acara')" />
-        </div>
-
-        <div>
-            <label for="kegiatan_jam" class="block text-xs font-semibold text-slate-700 mb-1">
-                Jam <span class="text-rose-500">*</span>
-            </label>
-            <input 
-                type="text" 
-                id="kegiatan_jam" 
-                name="jam" 
-                value="{{ old('jam') }}" 
-                placeholder="Contoh: 08:30 - 12:00 WIB" 
-                :required="selectedSubCategory === 'permintaan_daftar_hadir'"
-                :disabled="selectedSubCategory !== 'permintaan_daftar_hadir'"
-                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-            >
-            <x-input-error class="mt-1" :messages="$errors->get('jam')" />
-        </div>
-    </div>
-
-    <!-- B. Permintaan QR Code -->
-    <div x-show="selectedSubCategory === 'permintaan_qrcode'" class="space-y-4 pt-4 border-t border-slate-100">
-        <div>
-            <label for="kegiatan_link_qrcode" class="block text-xs font-semibold text-slate-700 mb-1">
-                Link yang akan dijadikan QR Code <span class="text-rose-500">*</span>
-            </label>
-            <input 
-                type="url" 
-                id="kegiatan_link_qrcode" 
-                name="link_qrcode" 
-                value="{{ old('link_qrcode') }}" 
-                placeholder="https://..." 
-                :required="selectedSubCategory === 'permintaan_qrcode'"
-                :disabled="selectedSubCategory !== 'permintaan_qrcode'"
-                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm font-mono"
-            >
-            <p class="text-[11px] text-slate-400 mt-1">Masukkan URL lengkap tautan tujuan (Google Drive, survei, materi, dsb.).</p>
-            <x-input-error class="mt-1" :messages="$errors->get('link_qrcode')" />
-        </div>
-    </div>
-
-    <!-- C. Survey -->
-    <div x-show="selectedSubCategory === 'survey'" class="space-y-4 pt-4 border-t border-slate-100" x-data="{ surveyFileName: '' }">
-        <div>
-            <label for="survey_judul" class="block text-xs font-semibold text-slate-700 mb-1">
-                Judul Survey <span class="text-rose-500">*</span>
-            </label>
-            <input 
-                type="text" 
-                id="survey_judul" 
-                name="judul_survey" 
-                value="{{ old('judul_survey') }}" 
-                placeholder="Contoh: Survei Kepuasan Pelanggan Pelayanan Informasi Obat dan Makanan 2026" 
-                :required="selectedSubCategory === 'survey'"
-                :disabled="selectedSubCategory !== 'survey'"
-                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-            >
-            <x-input-error class="mt-1" :messages="$errors->get('judul_survey')" />
-        </div>
-
-        <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                File Upload (PDF/Word) <span class="text-slate-400 font-normal">(Jika upload file digunakan, kolom pertanyaan di bawah boleh dikosongkan)</span>
-            </label>
-            <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                    <span>Pilih Berkas</span>
-                    <input 
-                        type="file" 
-                        name="file_lampiran" 
-                        class="sr-only"
-                        @change="surveyFileName = $event.target.files[0]?.name"
-                        :disabled="selectedSubCategory !== 'survey'"
-                    >
-                </label>
-                <span class="text-xs text-slate-500 truncate" x-text="surveyFileName ? 'File: ' + surveyFileName : 'Format: PDF, DOC, DOCX (Maks 5MB)'"></span>
-            </div>
-            <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-        </div>
-
-        <!-- Dynamic Questions Builder for Survey -->
-        <div class="pt-2 border-t border-slate-100">
-            <div class="flex items-center justify-between mb-2">
-                <label class="block text-xs font-semibold text-slate-700">
-                    Pertanyaan Survei (Dapat menambahkan lebih dari 1 pertanyaan)
-                </label>
-                <button 
-                    type="button" 
-                    @click="addSurveyQuestion()"
-                    class="text-xs text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
-                >
-                    <i class="ri-add-line text-sm"></i>
-                    <span>Tambah Pertanyaan</span>
-                </button>
-            </div>
-
-            <input 
-                type="hidden" 
-                name="pertanyaan_json" 
-                :value="JSON.stringify(surveyQuestions.filter(q => q.text.trim() !== ''))"
-                :disabled="selectedSubCategory !== 'survey'"
-            >
-
-            <div class="space-y-3">
-                <template x-for="(item, idx) in surveyQuestions" :key="idx">
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                        <span class="text-xs font-bold text-slate-500 w-6" x-text="(idx + 1) + '.'"></span>
-                        <input 
-                            type="text" 
-                            x-model="item.text"
-                            placeholder="Tuliskan butir pertanyaan survei..." 
-                            class="flex-1 w-full rounded-lg border-slate-300 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                        >
-                        <select 
-                            x-model="item.tipe" 
-                            class="w-full sm:w-48 rounded-lg border-slate-300 text-xs text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                        >
-                            <option value="Pilihan Skala 4">Pilihan Skala 4</option>
-                            <option value="Yes / No">Yes / No</option>
-                            <option value="Pilihan Opsi">Pilihan Opsi</option>
-                            <option value="Essay / Teks">Essay / Teks</option>
-                            <option value="Rating Bintang">Rating Bintang</option>
-                        </select>
-                        <button 
-                            type="button" 
-                            @click="removeSurveyQuestion(idx)" 
-                            class="p-1.5 text-slate-400 hover:text-rose-600 transition"
-                            title="Hapus butir pertanyaan"
-                        >
-                            <i class="ri-delete-bin-line text-sm"></i>
-                        </button>
-                    </div>
-                </template>
-            </div>
-            <x-input-error class="mt-1" :messages="$errors->get('pertanyaan_json')" />
-        </div>
-    </div>
-
-    <!-- D. Pretest / Post Test -->
-    <div x-show="selectedSubCategory === 'post_test_pretest'" class="space-y-4 pt-4 border-t border-slate-100" x-data="{ testFileName: '' }">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="sm:col-span-2">
-                <label for="test_judul_acara" class="block text-xs font-semibold text-slate-700 mb-1">
-                    Judul Acara <span class="text-rose-500">*</span>
-                </label>
-                <input 
+    <template x-if="selectedSubcategory === 'permintaan_daftar_hadir'">
+        <div class="space-y-4 pt-4 border-t border-slate-100">
+            <div>
+                <x-input-label for="kegiatan_nama_acara" :value="__('Nama Acara')" class="font-semibold text-xs text-slate-700" />
+                <x-text-input 
                     type="text" 
-                    id="test_judul_acara" 
-                    name="judul_acara" 
-                    value="{{ old('judul_acara') }}" 
-                    placeholder="Contoh: Bimtek Internal Pengujian Mikrobiologi Laboratorium" 
-                    :required="selectedSubCategory === 'post_test_pretest'"
-                    :disabled="selectedSubCategory !== 'post_test_pretest'"
-                    class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                >
-                <x-input-error class="mt-1" :messages="$errors->get('judul_acara')" />
+                    id="kegiatan_nama_acara" 
+                    name="nama_acara" 
+                    value="{{ old('nama_acara') }}" 
+                    placeholder="Contoh: Bimbingan Teknis CPPOB Bagi Pelaku Usaha UMKM..." 
+                    class="mt-1 block w-full rounded-xl text-xs sm:text-sm" 
+                    required 
+                />
             </div>
 
             <div>
-                <label for="test_jenis" class="block text-xs font-semibold text-slate-700 mb-1">
-                    Jenis <span class="text-rose-500">*</span>
-                </label>
-                <select 
-                    id="test_jenis" 
-                    name="jenis_test" 
-                    :required="selectedSubCategory === 'post_test_pretest'"
-                    :disabled="selectedSubCategory !== 'post_test_pretest'"
-                    class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                >
-                    <option value="pretest" {{ old('jenis_test') === 'pretest' ? 'selected' : '' }}>Pretest</option>
-                    <option value="post_test" {{ old('jenis_test') === 'post_test' ? 'selected' : '' }}>Post Test</option>
-                </select>
-                <x-input-error class="mt-1" :messages="$errors->get('jenis_test')" />
+                <x-input-label for="kegiatan_jam" :value="__('Jam / Waktu Pelaksanaan')" class="font-semibold text-xs text-slate-700" />
+                <x-text-input 
+                    type="text" 
+                    id="kegiatan_jam" 
+                    name="jam" 
+                    value="{{ old('jam') }}" 
+                    placeholder="Contoh: 08:30 - 15:00 WIB..." 
+                    class="mt-1 block w-full rounded-xl text-xs sm:text-sm" 
+                    required 
+                />
             </div>
         </div>
+    </template>
 
-        <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                File Upload (PDF/Word) <span class="text-slate-400 font-normal">(Jika upload file digunakan, kolom pertanyaan di bawah boleh dikosongkan)</span>
-            </label>
-            <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                    <span>Pilih Berkas</span>
-                    <input 
-                        type="file" 
-                        name="file_lampiran" 
-                        class="sr-only"
-                        @change="testFileName = $event.target.files[0]?.name"
-                        :disabled="selectedSubCategory !== 'post_test_pretest'"
+    <!-- B. Permintaan QR Code -->
+    <template x-if="selectedSubcategory === 'permintaan_qrcode'">
+        <div class="space-y-4 pt-4 border-t border-slate-100">
+            <div>
+                <x-input-label for="kegiatan_link_qrcode" :value="__('Link yang Akan Dijadikan QR Code')" class="font-semibold text-xs text-slate-700" />
+                <x-text-input 
+                    type="text" 
+                    id="kegiatan_link_qrcode" 
+                    name="link_qrcode" 
+                    value="{{ old('link_qrcode') }}" 
+                    placeholder="Contoh: https://bbpomsemarang.pom.go.id/materi-bimtek atau tautan Google Drive..." 
+                    class="mt-1 block w-full rounded-xl text-xs sm:text-sm font-mono" 
+                    required 
+                />
+                <p class="text-[11px] text-slate-400 mt-1">Teknisi TIK akan men-generate QR Code resmi beresolusi tinggi dengan logo BBPOM.</p>
+            </div>
+        </div>
+    </template>
+
+    <!-- C. Survey -->
+    <template x-if="selectedSubcategory === 'survey'">
+        <div class="space-y-4 pt-4 border-t border-slate-100" x-data="{ surveyFileName: '' }">
+            <div>
+                <x-input-label for="survey_judul" :value="__('Judul Survey')" class="font-semibold text-xs text-slate-700" />
+                <x-text-input 
+                    type="text" 
+                    id="survey_judul" 
+                    name="judul_survey" 
+                    value="{{ old('judul_survey') }}" 
+                    placeholder="Contoh: Survei Kepuasan Pelanggan Layanan Pengujian Semester II..." 
+                    class="mt-1 block w-full rounded-xl text-xs sm:text-sm" 
+                    required 
+                />
+            </div>
+
+            <!-- Pertanyaan Dinamis & Kategori Jawaban -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i class="ri-questionnaire-line text-emerald-700"></i>
+                        <span>Daftar Pertanyaan Survey</span>
+                    </label>
+                    <button 
+                        type="button" 
+                        @click="addSurveyQuestion()" 
+                        class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold transition"
                     >
-                </label>
-                <span class="text-xs text-slate-500 truncate" x-text="testFileName ? 'File: ' + testFileName : 'Format: PDF, DOC, DOCX (Maks 5MB)'"></span>
-            </div>
-            <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-        </div>
+                        <i class="ri-add-line"></i>
+                        <span>Tambah Pertanyaan</span>
+                    </button>
+                </div>
 
-        <!-- Dynamic Questions Builder for Test -->
-        <div class="pt-2 border-t border-slate-100">
-            <div class="flex items-center justify-between mb-2">
-                <label class="block text-xs font-semibold text-slate-700">
-                    Pertanyaan (Dapat menambahkan lebih dari 1 pertanyaan)
-                </label>
-                <button 
-                    type="button" 
-                    @click="addTestQuestion()"
-                    class="text-xs text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
-                >
-                    <i class="ri-add-line text-sm"></i>
-                    <span>Tambah Soal</span>
-                </button>
-            </div>
-
-            <input 
-                type="hidden" 
-                name="pertanyaan_json" 
-                :value="JSON.stringify(testQuestions.filter(q => q.text.trim() !== ''))"
-                :disabled="selectedSubCategory !== 'post_test_pretest'"
-            >
-
-            <div class="space-y-3">
-                <template x-for="(item, idx) in testQuestions" :key="idx">
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                        <span class="text-xs font-bold text-slate-500 w-6" x-text="(idx + 1) + '.'"></span>
+                <template x-for="(q, idx) in surveyQuestions" :key="idx">
+                    <div class="p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-emerald-700" x-text="'Pertanyaan #' + (idx + 1)"></span>
+                            <button 
+                                type="button" 
+                                @click="removeSurveyQuestion(idx)" 
+                                class="text-rose-500 hover:text-rose-700 text-xs flex items-center gap-0.5"
+                                title="Hapus pertanyaan"
+                            >
+                                <i class="ri-delete-bin-line"></i>
+                                <span>Hapus</span>
+                            </button>
+                        </div>
                         <input 
                             type="text" 
-                            x-model="item.text"
-                            placeholder="Tuliskan butir soal evaluasi..." 
-                            class="flex-1 w-full rounded-lg border-slate-300 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
+                            x-model="q.text" 
+                            placeholder="Tuliskan butir pertanyaan survey..." 
+                            class="w-full rounded-xl border-slate-300 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs"
                         >
-                        <select 
-                            x-model="item.tipe" 
-                            class="w-full sm:w-48 rounded-lg border-slate-300 text-xs text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                        >
-                            <option value="Multiple Answer">Multiple Answer</option>
-                            <option value="Essay / Text">Essay / Text</option>
-                            <option value="File Upload">File Upload</option>
-                        </select>
-                        <button 
-                            type="button" 
-                            @click="removeTestQuestion(idx)" 
-                            class="p-1.5 text-slate-400 hover:text-rose-600 transition"
-                            title="Hapus butir soal"
-                        >
-                            <i class="ri-delete-bin-line text-sm"></i>
-                        </button>
+                        <div class="flex items-center gap-2 pt-1">
+                            <span class="text-[11px] font-medium text-slate-500 shrink-0">Kategori Jawaban:</span>
+                            <select 
+                                x-model="q.tipe" 
+                                class="text-xs rounded-xl border-slate-300 focus:border-emerald-600 focus:ring-emerald-600 bg-white py-1 px-2.5 shadow-2xs"
+                            >
+                                <option value="Pilihan Skala 4">Pilihan Skala 4 (Sangat Baik / Baik / Cukup / Kurang)</option>
+                                <option value="Yes / No">Yes / No</option>
+                                <option value="Pilihan Opsi">Pilihan Opsi (Multiple Choice)</option>
+                                <option value="Essay / Teks">Essay / Teks Bebas</option>
+                                <option value="Rating Bintang">Rating Bintang (1 - 5)</option>
+                            </select>
+                        </div>
                     </div>
                 </template>
+
+                <input type="hidden" name="pertanyaan_json" :value="JSON.stringify(surveyQuestions)">
             </div>
-            <x-input-error class="mt-1" :messages="$errors->get('pertanyaan_json')" />
+
+            <!-- Alternatif Dokumen Pertanyaan -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                    Atau Unggah Berkas Draf Pertanyaan (PDF / Word) <span class="text-slate-400 font-normal">(Opsional)</span>
+                </label>
+                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
+                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
+                        <span>Pilih Dokumen</span>
+                        <input 
+                            type="file" 
+                            name="attachment" 
+                            class="sr-only"
+                            @change="surveyFileName = $event.target.files[0]?.name"
+                        >
+                    </label>
+                    <span class="text-xs text-slate-500 truncate" x-text="surveyFileName ? 'File: ' + surveyFileName : 'Format: PDF, DOC, DOCX (Maks 5MB)'"></span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">Jika mengunggah berkas kuesioner draf, kolom daftar pertanyaan di atas boleh dikosongkan.</p>
+            </div>
         </div>
-    </div>
+    </template>
+
+    <!-- D. Pretest / Post Test -->
+    <template x-if="selectedSubcategory === 'post_test_pretest'">
+        <div class="space-y-4 pt-4 border-t border-slate-100" x-data="{ testFileName: '' }">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <x-input-label for="kegiatan_judul_test" :value="__('Judul Acara')" class="font-semibold text-xs text-slate-700" />
+                    <x-text-input 
+                        type="text" 
+                        id="kegiatan_judul_test" 
+                        name="judul_acara" 
+                        value="{{ old('judul_acara') }}" 
+                        placeholder="Contoh: Sosialisasi Pedoman Registrasi Pangan Olahan..." 
+                        class="mt-1 block w-full rounded-xl text-xs sm:text-sm" 
+                        required 
+                    />
+                </div>
+
+                <div>
+                    <x-input-label for="kegiatan_jenis_test" :value="__('Jenis Evaluasi')" class="font-semibold text-xs text-slate-700" />
+                    <select 
+                        id="kegiatan_jenis_test" 
+                        name="jenis_test" 
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm focus:border-emerald-600 focus:ring-emerald-600" 
+                        required
+                    >
+                        <option value="pretest" {{ old('jenis_test') == 'pretest' ? 'selected' : '' }}>Pretest</option>
+                        <option value="post_test" {{ old('jenis_test') == 'post_test' ? 'selected' : '' }}>Post Test</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pertanyaan Evaluasi Dinamis -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i class="ri-file-list-3-line text-emerald-700"></i>
+                        <span>Butir Soal Evaluasi</span>
+                    </label>
+                    <button 
+                        type="button" 
+                        @click="addTestQuestion()" 
+                        class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold transition"
+                    >
+                        <i class="ri-add-line"></i>
+                        <span>Tambah Soal</span>
+                    </button>
+                </div>
+
+                <template x-for="(q, idx) in testQuestions" :key="idx">
+                    <div class="p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-emerald-700" x-text="'Soal #' + (idx + 1)"></span>
+                            <button 
+                                type="button" 
+                                @click="removeTestQuestion(idx)" 
+                                class="text-rose-500 hover:text-rose-700 text-xs flex items-center gap-0.5"
+                                title="Hapus soal"
+                            >
+                                <i class="ri-delete-bin-line"></i>
+                                <span>Hapus</span>
+                            </button>
+                        </div>
+                        <input 
+                            type="text" 
+                            x-model="q.text" 
+                            placeholder="Tuliskan naskah soal pertanyaan..." 
+                            class="w-full rounded-xl border-slate-300 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs"
+                        >
+                        <div class="flex items-center gap-2 pt-1">
+                            <span class="text-[11px] font-medium text-slate-500 shrink-0">Tipe Jawaban:</span>
+                            <select 
+                                x-model="q.tipe" 
+                                class="text-xs rounded-xl border-slate-300 focus:border-emerald-600 focus:ring-emerald-600 bg-white py-1 px-2.5 shadow-2xs"
+                            >
+                                <option value="Multiple Answer">Multiple Answer (Pilihan Ganda A/B/C/D)</option>
+                                <option value="Essay / Text">Essay / Isian Singkat</option>
+                                <option value="File Upload">Upload Berkas Jawaban</option>
+                            </select>
+                        </div>
+                    </div>
+                </template>
+
+                <input type="hidden" name="pertanyaan_json" :value="JSON.stringify(testQuestions)">
+            </div>
+
+            <!-- Alternatif Berkas Soal -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                    Atau Unggah Naskah Soal Lengkap (PDF / Word) <span class="text-slate-400 font-normal">(Opsional)</span>
+                </label>
+                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
+                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
+                        <span>Pilih Naskah Soal</span>
+                        <input 
+                            type="file" 
+                            name="attachment" 
+                            class="sr-only"
+                            @change="testFileName = $event.target.files[0]?.name"
+                        >
+                    </label>
+                    <span class="text-xs text-slate-500 truncate" x-text="testFileName ? 'File: ' + testFileName : 'Format: PDF, DOC, DOCX (Maks 5MB)'"></span>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <!-- E. Lainnya Formulir & Kegiatan -->
-    <div x-show="selectedSubCategory === 'lainnya'" class="space-y-4 pt-4 border-t border-slate-100" x-data="{ fileName: '' }">
-        <div>
-            <label for="kegiatan_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                Deskripsi <span class="text-rose-500">*</span>
-            </label>
-            <textarea 
-                id="kegiatan_deskripsi" 
-                name="deskripsi" 
-                rows="4" 
-                :required="selectedSubCategory === 'lainnya'"
-                :disabled="selectedSubCategory !== 'lainnya'"
-                placeholder="Jelaskan kebutuhan pembuatan Linktree, Google Form khusus, atau format formulir lainnya..." 
-                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-            >{{ old('deskripsi') }}</textarea>
-            <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-        </div>
-
-        <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                Upload File <span class="text-slate-400 font-normal">(Opsional)</span>
-            </label>
-            <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                    <span>Pilih Berkas</span>
-                    <input 
-                        type="file" 
-                        name="file_lampiran" 
-                        class="sr-only"
-                        @change="fileName = $event.target.files[0]?.name"
-                        :disabled="selectedSubCategory !== 'lainnya'"
-                    >
-                </label>
-                <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: PDF, DOC, DOCX, ZIP (Maks 5MB)'"></span>
+    <template x-if="selectedSubcategory === 'lainnya'">
+        <div class="space-y-4 pt-4 border-t border-slate-100" x-data="{ kegiatanOtherFileName: '' }">
+            <div>
+                <x-input-label for="kegiatan_deskripsi" :value="__('Deskripsi')" class="font-semibold text-xs text-slate-700" />
+                <textarea 
+                    id="kegiatan_deskripsi" 
+                    name="deskripsi" 
+                    rows="4" 
+                    class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm focus:border-emerald-600 focus:ring-emerald-600" 
+                    placeholder="Jelaskan kebutuhan pembuatan linktree tautan materi acara, sertifikat elektronik kegiatan, atau form khusus lainnya..." 
+                    required
+                >{{ old('deskripsi') }}</textarea>
             </div>
-            <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                    Upload File Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
+                </label>
+                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
+                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
+                        <span>Pilih Berkas</span>
+                        <input 
+                            type="file" 
+                            name="attachment" 
+                            class="sr-only"
+                            @change="kegiatanOtherFileName = $event.target.files[0]?.name"
+                        >
+                    </label>
+                    <span class="text-xs text-slate-500 truncate" x-text="kegiatanOtherFileName ? 'File: ' + kegiatanOtherFileName : 'Format: JPG, PNG, PDF (Maks 5MB)'"></span>
+                </div>
+            </div>
         </div>
-    </div>
+    </template>
 </div>
