@@ -546,5 +546,83 @@ class HelpdeskTest extends TestCase
         $viewResponse->assertSuccessful();
         $viewResponse->assertSee('Layanan TIK Umum / Lainnya');
     }
+
+    public function test_user_can_submit_internet_ticket(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Jaringan', 'slug' => 'jaringan']);
+
+        $response = $this->actingAs($user)->post('/tickets', [
+            'service_key' => 'internet',
+            'subcategory_key' => 'lemot_mati',
+            'category_id' => $category->id,
+            'ap_location' => 'Gedung A Lantai 2 Subbag TU',
+            'complaint_details' => 'Sinyal WiFi sering RTO dan tidak bisa akses intranet.',
+        ]);
+
+        $ticket = $user->tickets()->where('service_key', 'internet')->latest('id')->first();
+        $this->assertNotNull($ticket);
+        $this->assertStringContainsString('Internet', $ticket->subject);
+        $this->assertStringContainsString('Gedung A Lantai 2 Subbag TU', $ticket->description);
+        $this->assertStringContainsString('Sinyal WiFi sering RTO', $ticket->description);
+
+        $response->assertRedirect(route('tickets.show', $ticket));
+    }
+
+    public function test_user_can_submit_subsite_ticket(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Website', 'slug' => 'website']);
+
+        $response = $this->actingAs($user)->post('/tickets', [
+            'service_key' => 'subsite',
+            'subcategory_key' => 'upload_berita',
+            'category_id' => $category->id,
+            'news_title' => 'Sosialisasi Keamanan Pangan Segar',
+            'news_content' => 'BBPOM Semarang melaksanakan inspeksi rutin bersama dinas kesehatan.',
+            'target_date' => '2026-10-05',
+        ]);
+
+        $ticket = $user->tickets()->where('service_key', 'subsite')->latest('id')->first();
+        $this->assertNotNull($ticket);
+        $this->assertStringContainsString('Upload Berita', $ticket->subject);
+        $this->assertStringContainsString('Sosialisasi Keamanan Pangan Segar', $ticket->description);
+
+        $response->assertRedirect(route('tickets.show', $ticket));
+    }
+
+    public function test_user_can_submit_infografis_ticket(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Media', 'slug' => 'media']);
+
+        $response = $this->actingAs($user)->post('/tickets', [
+            'service_key' => 'infografis',
+            'subcategory_key' => 'pembuatan_infografis',
+            'category_id' => $category->id,
+            'infographic_title' => 'Tips Memilih Kosmetik Aman',
+            'infographic_content' => 'Poin KLIK: Kemasan, Label, Izin Edar, Kedaluwarsa.',
+        ]);
+
+        $ticket = $user->tickets()->where('service_key', 'infografis')->latest('id')->first();
+        $this->assertNotNull($ticket);
+        $this->assertStringContainsString('Pembuatan Infografis', $ticket->subject);
+        $this->assertStringContainsString('Tips Memilih Kosmetik Aman', $ticket->description);
+
+        $response->assertRedirect(route('tickets.show', $ticket));
+    }
+
+    public function test_user_can_view_create_screen_for_services(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $services = ['sipt', 'srikandi', 'email_corporate', 'sertifikat_bse', 'zoom', 'formulir_kegiatan', 'internet', 'subsite', 'infografis', 'install_windows', 'lisensi_office', 'lainnya'];
+
+        foreach ($services as $service) {
+            $response = $this->actingAs($user)->get(route('tickets.create', ['service' => $service]));
+            $response->assertSuccessful();
+            $response->assertSee('App Gateway Layanan');
+        }
+    }
 }
 

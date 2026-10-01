@@ -31,7 +31,6 @@
     </x-slot>
 
     <!-- Main Container with Alpine.js Reactive Gateway State -->
-    <!-- Main Container with Alpine.js Reactive Gateway State -->
     <div x-data="ticketGatewayData()" class="space-y-6">
 
         <!-- Alert Pemulihan Draf Isian Formulir (Atomic Component) -->
@@ -219,7 +218,7 @@
                     @endif
 
                     <!-- ======================================================== -->
-                    <!-- FORM 1: SERTIFIKAT BSRE (Modern, Simple, Impeccable)      -->
+                    <!-- FORM 4: SERTIFIKAT BSRE                                   -->
                     <!-- ======================================================== -->
                     <div x-show="selectedServiceKey === 'sertifikat_bse'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
                         <div class="border-b border-slate-100 pb-4 mb-6">
@@ -234,181 +233,9 @@
                             <input type="hidden" name="service_key" value="sertifikat_bse">
                             <input type="hidden" name="subcategory" :value="selectedSubCategory">
 
-                            <!-- Sleek Segmented Pill Bar -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-2">
-                                    Pilih Sub Kategori Layanan BSrE:
-                                </label>
-                                <div class="inline-flex flex-wrap p-1 bg-slate-100 rounded-xl gap-1">
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'reset_password'"
-                                        :class="selectedSubCategory === 'reset_password' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-lock-password-line text-amber-600"></i>
-                                        <span>Reset Password BSrE</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'permintaan_otp'"
-                                        :class="selectedSubCategory === 'permintaan_otp' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-shield-keyhole-line text-blue-600"></i>
-                                        <span>Permintaan OTP</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'lainnya'"
-                                        :class="selectedSubCategory === 'lainnya' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-more-line text-slate-600"></i>
-                                        <span>Lainnya</span>
-                                    </button>
-                                </div>
-                            </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                            <!-- Auto-filled Metadata Header -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Tanggal Pengajuan
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-calendar-line text-emerald-700"></i>
-                                        <span>{{ $todayFormatted }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Otomatis</span>
-                                    </div>
-                                    <input type="hidden" name="tanggal_pengajuan" value="{{ $todayDate }}">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Nama Pemohon
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-user-line text-emerald-700"></i>
-                                        <span>{{ $user->name }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Akun Login</span>
-                                    </div>
-                                    <input type="hidden" name="nama" value="{{ old('nama', $user->name) }}">
-                                </div>
-                            </div>
-
-                            <!-- VARIASI 1: RESET PASSWORD & PERMINTAAN OTP -->
-                            <div x-show="selectedSubCategory === 'reset_password' || selectedSubCategory === 'permintaan_otp'" class="space-y-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="bsre_nip" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            NIP (Nomor Induk Pegawai) <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="bsre_nip" 
-                                            name="nip" 
-                                            value="{{ old('nip', $user->nip ?? '') }}" 
-                                            placeholder="Contoh: 198501012010121001" 
-                                            maxlength="30" 
-                                            :required="selectedSubCategory === 'reset_password' || selectedSubCategory === 'permintaan_otp'"
-                                            :disabled="selectedSubCategory === 'lainnya'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm font-mono"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('nip')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="bsre_nik" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            NIK (Nomor Induk Kependudukan) <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="bsre_nik" 
-                                            name="nik" 
-                                            value="{{ old('nik', $user->nik ?? '') }}" 
-                                            placeholder="Masukkan 16 digit NIK sesuai KTP..." 
-                                            maxlength="20" 
-                                            :required="selectedSubCategory === 'reset_password' || selectedSubCategory === 'permintaan_otp'"
-                                            :disabled="selectedSubCategory === 'lainnya'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm font-mono"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('nik')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="bsre_email" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Email Dinas / Terdaftar di BSrE <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="email" 
-                                            id="bsre_email" 
-                                            name="email" 
-                                            value="{{ old('email', $user->email) }}" 
-                                            placeholder="nama@bbpom.go.id" 
-                                            :required="selectedSubCategory === 'reset_password' || selectedSubCategory === 'permintaan_otp'"
-                                            :disabled="selectedSubCategory === 'lainnya'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('email')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="bsre_nomor_telepon" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="tel" 
-                                            id="bsre_nomor_telepon" 
-                                            name="nomor_telepon" 
-                                            value="{{ old('nomor_telepon', $user->phone_number ?? '') }}" 
-                                            placeholder="Contoh: 081234567890" 
-                                            :required="selectedSubCategory === 'reset_password' || selectedSubCategory === 'permintaan_otp'"
-                                            :disabled="selectedSubCategory === 'lainnya'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm font-mono"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('nomor_telepon')" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- VARIASI 2: SUB KATEGORI LAINNYA -->
-                            <div x-show="selectedSubCategory === 'lainnya'" class="space-y-4" x-data="{ fileName: '' }">
-                                <div>
-                                    <label for="bsre_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Kendala / Permohonan <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="bsre_deskripsi" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'lainnya'"
-                                        :disabled="selectedSubCategory !== 'lainnya'"
-                                        placeholder="Jelaskan kebutuhan sertifikat elektronik, perpanjangan masa berlaku, atau kendala teknis lainnya..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih File</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="fileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'lainnya'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG, PDF, DOCX (Maks 5MB)'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-                            </div>
+                            @include('tickets.forms.form-bsre')
 
                             <!-- Actions -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -428,7 +255,7 @@
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- FORM 2: ZOOM MEETING / WEBINAR                            -->
+                    <!-- FORM 5: ZOOM MEETING / WEBINAR                            -->
                     <!-- ======================================================== -->
                     <div x-show="selectedServiceKey === 'zoom'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
                         <div class="border-b border-slate-100 pb-4 mb-6">
@@ -443,134 +270,9 @@
                             <input type="hidden" name="service_key" value="zoom">
                             <input type="hidden" name="subcategory" :value="selectedSubCategory">
 
-                            <!-- Sleek Segmented Pill Bar -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-2">
-                                    Pilih Sub Kategori Layanan Zoom:
-                                </label>
-                                <div class="inline-flex flex-wrap p-1 bg-slate-100 rounded-xl gap-1">
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'permintaan_link_zoom'"
-                                        :class="selectedSubCategory === 'permintaan_link_zoom' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-video-chat-line text-blue-600"></i>
-                                        <span>Permintaan Link Zoom</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'lainnya'"
-                                        :class="selectedSubCategory === 'lainnya' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-more-line text-slate-600"></i>
-                                        <span>Lainnya</span>
-                                    </button>
-                                </div>
-                            </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                            <!-- Auto-filled Metadata Header -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Tanggal Pengajuan
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-calendar-line text-emerald-700"></i>
-                                        <span>{{ $todayFormatted }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Otomatis</span>
-                                    </div>
-                                    <input type="hidden" name="tanggal_pengajuan" value="{{ $todayDate }}">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Nama Pemohon
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-user-line text-emerald-700"></i>
-                                        <span>{{ $user->name }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Akun Login</span>
-                                    </div>
-                                    <input type="hidden" name="nama" value="{{ old('nama', $user->name) }}">
-                                </div>
-                            </div>
-
-                            <!-- VARIASI 1: PERMINTAAN LINK ZOOM -->
-                            <div x-show="selectedSubCategory === 'permintaan_link_zoom'" class="space-y-4">
-                                <div>
-                                    <label for="zoom_nama_acara" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Nama Acara / Kegiatan <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="zoom_nama_acara" 
-                                        name="nama_acara" 
-                                        value="{{ old('nama_acara') }}" 
-                                        placeholder="Contoh: Rapat Koordinasi Evaluasi Pengawasan Obat Semester I" 
-                                        :required="selectedSubCategory === 'permintaan_link_zoom'"
-                                        :disabled="selectedSubCategory !== 'permintaan_link_zoom'"
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                    >
-                                    <x-input-error class="mt-1" :messages="$errors->get('nama_acara')" />
-                                </div>
-
-                                <div>
-                                    <label for="zoom_jam" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Jam / Waktu Pelaksanaan <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="zoom_jam" 
-                                        name="jam" 
-                                        value="{{ old('jam') }}" 
-                                        placeholder="Contoh: 09:00 - 12:00 WIB atau 13:30 WIB s/d Selesai" 
-                                        :required="selectedSubCategory === 'permintaan_link_zoom'"
-                                        :disabled="selectedSubCategory !== 'permintaan_link_zoom'"
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                    >
-                                    <x-input-error class="mt-1" :messages="$errors->get('jam')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI 2: SUB KATEGORI LAINNYA -->
-                            <div x-show="selectedSubCategory === 'lainnya'" class="space-y-4" x-data="{ fileName: '' }">
-                                <div>
-                                    <label for="zoom_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Kebutuhan / Kendala <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="zoom_deskripsi" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'lainnya'"
-                                        :disabled="selectedSubCategory !== 'lainnya'"
-                                        placeholder="Jelaskan kebutuhan pengaturan khusus Zoom, breakout room, kapasitas besar, atau kendala lainnya..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih File</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="fileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'lainnya'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG, PDF, DOCX (Maks 5MB)'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-                            </div>
+                            @include('tickets.forms.form-zoom')
 
                             <!-- Actions -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -590,40 +292,16 @@
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- FORM 3: FORMULIR, QRCODE, SURVEY, PRETEST/POSTTEST        -->
+                    <!-- FORM 6: FORMULIR, SURVEY & KEGIATAN                       -->
                     <!-- ======================================================== -->
                     <div 
                         x-show="selectedServiceKey === 'formulir_kegiatan'" 
                         class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7"
-                        x-data="{
-                            surveyQuestions: [{ text: '', tipe: 'Pilihan Skala 4' }],
-                            addSurveyQuestion() {
-                                this.surveyQuestions.push({ text: '', tipe: 'Pilihan Skala 4' });
-                            },
-                            removeSurveyQuestion(index) {
-                                if (this.surveyQuestions.length > 1) {
-                                    this.surveyQuestions.splice(index, 1);
-                                } else {
-                                    this.surveyQuestions[0].text = '';
-                                }
-                            },
-                            testQuestions: [{ text: '', tipe: 'Multiple Answer' }],
-                            addTestQuestion() {
-                                this.testQuestions.push({ text: '', tipe: 'Multiple Answer' });
-                            },
-                            removeTestQuestion(index) {
-                                if (this.testQuestions.length > 1) {
-                                    this.testQuestions.splice(index, 1);
-                                } else {
-                                    this.testQuestions[0].text = '';
-                                }
-                            }
-                        }"
                     >
                         <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Formulir, QR Code, Survey & Pretest/Posttest</h3>
+                            <h3 class="text-base font-bold text-slate-900">Formulir, Survey & Kegiatan</h3>
                             <p class="text-xs text-slate-500 mt-0.5">
-                                Layanan pembuatan presensi daftar hadir, generate QR Code resmi, kuesioner survei, evaluasi pretest/posttest, dan tautan kegiatan.
+                                Layanan pembuatan daftar hadir online, QR Code resmi, survei evaluasi, dan instrumen pretest/posttest.
                             </p>
                         </div>
 
@@ -632,399 +310,9 @@
                             <input type="hidden" name="service_key" value="formulir_kegiatan">
                             <input type="hidden" name="subcategory" :value="selectedSubCategory">
 
-                            <!-- Sleek Segmented Pill Bar -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-2">
-                                    Pilih Sub Kategori Layanan:
-                                </label>
-                                <div class="inline-flex flex-wrap p-1 bg-slate-100 rounded-xl gap-1">
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'permintaan_daftar_hadir'"
-                                        :class="selectedSubCategory === 'permintaan_daftar_hadir' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-user-follow-line text-emerald-600"></i>
-                                        <span>Daftar Hadir</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'permintaan_qrcode'"
-                                        :class="selectedSubCategory === 'permintaan_qrcode' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-qr-code-line text-blue-600"></i>
-                                        <span>QR Code</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'survey'"
-                                        :class="selectedSubCategory === 'survey' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-survey-line text-indigo-600"></i>
-                                        <span>Survey</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'post_test_pretest'"
-                                        :class="selectedSubCategory === 'post_test_pretest' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-file-list-3-line text-amber-600"></i>
-                                        <span>Post Test / Pretest</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'lainnya'"
-                                        :class="selectedSubCategory === 'lainnya' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-more-line text-slate-600"></i>
-                                        <span>Lainnya</span>
-                                    </button>
-                                </div>
-                            </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                            <!-- Auto-filled Metadata Header -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Tanggal Pengajuan
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-calendar-line text-emerald-700"></i>
-                                        <span>{{ $todayFormatted }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Otomatis</span>
-                                    </div>
-                                    <input type="hidden" name="tanggal_pengajuan" value="{{ $todayDate }}">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Nama Pemohon
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-user-line text-emerald-700"></i>
-                                        <span>{{ $user->name }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Akun Login</span>
-                                    </div>
-                                    <input type="hidden" name="nama" value="{{ old('nama', $user->name) }}">
-                                </div>
-                            </div>
-
-                            <!-- VARIASI a: PERMINTAAN DAFTAR HADIR -->
-                            <div x-show="selectedSubCategory === 'permintaan_daftar_hadir'" class="space-y-4">
-                                <div>
-                                    <label for="kegiatan_nama_acara" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Nama Acara / Kegiatan <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="kegiatan_nama_acara" 
-                                        name="nama_acara" 
-                                        value="{{ old('nama_acara') }}" 
-                                        placeholder="Contoh: Sosialisasi Pengawasan Pangan Jajanan Anak Sekolah" 
-                                        :required="selectedSubCategory === 'permintaan_daftar_hadir'"
-                                        :disabled="selectedSubCategory !== 'permintaan_daftar_hadir'"
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                    >
-                                    <x-input-error class="mt-1" :messages="$errors->get('nama_acara')" />
-                                </div>
-
-                                <div>
-                                    <label for="kegiatan_jam" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Jam / Waktu Pelaksanaan <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="kegiatan_jam" 
-                                        name="jam" 
-                                        value="{{ old('jam') }}" 
-                                        placeholder="Contoh: 08:00 - 12:00 WIB" 
-                                        :required="selectedSubCategory === 'permintaan_daftar_hadir'"
-                                        :disabled="selectedSubCategory !== 'permintaan_daftar_hadir'"
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                    >
-                                    <x-input-error class="mt-1" :messages="$errors->get('jam')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI b: PERMINTAAN QRCODE -->
-                            <div x-show="selectedSubCategory === 'permintaan_qrcode'" class="space-y-4">
-                                <div>
-                                    <label for="kegiatan_link_qrcode" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Link Sasaran yang Akan Dijadikan QR Code <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="kegiatan_link_qrcode" 
-                                        name="link_qrcode" 
-                                        value="{{ old('link_qrcode') }}" 
-                                        placeholder="Contoh: https://bbpomsemarang.pom.go.id/materi-bimtek atau tautan Google Drive" 
-                                        :required="selectedSubCategory === 'permintaan_qrcode'"
-                                        :disabled="selectedSubCategory !== 'permintaan_qrcode'"
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                    >
-                                    <span class="text-[11px] text-slate-500 mt-1 block">
-                                        Teknisi TIK akan men-generate QR Code resmi beresolusi tinggi dengan logo BBPOM.
-                                    </span>
-                                    <x-input-error class="mt-1" :messages="$errors->get('link_qrcode')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI c: SURVEY -->
-                            <div x-show="selectedSubCategory === 'survey'" class="space-y-4" x-data="{ surveyFileName: '' }">
-                                <div>
-                                    <label for="survey_judul" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Judul Survey <span class="text-rose-500">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="survey_judul" 
-                                        name="judul_survey" 
-                                        value="{{ old('judul_survey') }}" 
-                                        placeholder="Contoh: Survei Kepuasan Masyarakat terhadap Layanan Sertifikasi BBPOM" 
-                                        :required="selectedSubCategory === 'survey'"
-                                        :disabled="selectedSubCategory !== 'survey'"
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                    >
-                                    <x-input-error class="mt-1" :messages="$errors->get('judul_survey')" />
-                                </div>
-
-                                <!-- Upload File (Opsional - bila upload file, pertanyaan di bawah boleh kosong) -->
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Kuesioner (PDF / Word)
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih Berkas</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="surveyFileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'survey'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="surveyFileName ? 'File: ' + surveyFileName : 'Format: PDF, DOC, DOCX (Maks 5MB) - Jika ada berkas, pertanyaan di bawah boleh dikosongkan'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-
-                                <!-- Dynamic Questions Builder -->
-                                <div class="pt-2 border-t border-slate-100">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-xs font-semibold text-slate-700">
-                                            Daftar Pertanyaan Survei (Opsional jika mengunggah berkas)
-                                        </label>
-                                        <button 
-                                            type="button" 
-                                            @click="addSurveyQuestion()"
-                                            class="text-xs text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
-                                        >
-                                            <i class="ri-add-line text-sm"></i>
-                                            <span>Tambah Pertanyaan</span>
-                                        </button>
-                                    </div>
-
-                                    <!-- Serialized Hidden Input for Backend -->
-                                    <input 
-                                        type="hidden" 
-                                        name="pertanyaan_json" 
-                                        :value="JSON.stringify(surveyQuestions.filter(q => q.text.trim() !== ''))"
-                                        :disabled="selectedSubCategory !== 'survey'"
-                                    >
-
-                                    <div class="space-y-3">
-                                        <template x-for="(item, idx) in surveyQuestions" :key="idx">
-                                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                                                <span class="text-xs font-bold text-slate-500 w-6" x-text="(idx + 1) + '.'"></span>
-                                                <input 
-                                                    type="text" 
-                                                    x-model="item.text"
-                                                    placeholder="Tuliskan butir pertanyaan survei..." 
-                                                    class="flex-1 w-full rounded-lg border-slate-300 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                                >
-                                                <select 
-                                                    x-model="item.tipe" 
-                                                    class="w-full sm:w-44 rounded-lg border-slate-300 text-xs text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                                >
-                                                    <option value="Pilihan Skala 4">Pilihan Skala 4</option>
-                                                    <option value="Yes/No">Yes/No</option>
-                                                    <option value="Pilihan option">Pilihan option</option>
-                                                    <option value="Essay/text">Essay/text</option>
-                                                    <option value="Rating Bintang">Rating Bintang</option>
-                                                </select>
-                                                <button 
-                                                    type="button" 
-                                                    @click="removeSurveyQuestion(idx)" 
-                                                    class="p-1.5 text-slate-400 hover:text-rose-600 transition"
-                                                    title="Hapus baris pertanyaan"
-                                                >
-                                                    <i class="ri-delete-bin-line text-sm"></i>
-                                                </button>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('pertanyaan_json')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI d: POST TEST / PRETEST -->
-                            <div x-show="selectedSubCategory === 'post_test_pretest'" class="space-y-4" x-data="{ testFileName: '' }">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div class="sm:col-span-2">
-                                        <label for="test_judul_acara" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Judul Acara / Kegiatan <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="test_judul_acara" 
-                                            name="judul_acara" 
-                                            value="{{ old('judul_acara') }}" 
-                                            placeholder="Contoh: Pelatihan Internal Pengujian Mikrobiologi Laboratorium" 
-                                            :required="selectedSubCategory === 'post_test_pretest'"
-                                            :disabled="selectedSubCategory !== 'post_test_pretest'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('judul_acara')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="test_jenis" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Jenis Evaluasi <span class="text-rose-500">*</span>
-                                        </label>
-                                        <select 
-                                            id="test_jenis" 
-                                            name="jenis_test" 
-                                            :required="selectedSubCategory === 'post_test_pretest'"
-                                            :disabled="selectedSubCategory !== 'post_test_pretest'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                            <option value="pretest" {{ old('jenis_test') === 'pretest' ? 'selected' : '' }}>Pretest (Awal)</option>
-                                            <option value="post_test" {{ old('jenis_test') === 'post_test' ? 'selected' : '' }}>Post Test (Akhir)</option>
-                                        </select>
-                                        <x-input-error class="mt-1" :messages="$errors->get('jenis_test')" />
-                                    </div>
-                                </div>
-
-                                <!-- Upload File (Opsional - bila upload file, pertanyaan di bawah boleh kosong) -->
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Soal (PDF / Word)
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih Berkas</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="testFileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'post_test_pretest'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="testFileName ? 'File: ' + testFileName : 'Format: PDF, DOC, DOCX (Maks 5MB) - Jika ada berkas, soal di bawah boleh dikosongkan'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-
-                                <!-- Dynamic Questions Builder for Test -->
-                                <div class="pt-2 border-t border-slate-100">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-xs font-semibold text-slate-700">
-                                            Daftar Butir Soal (Opsional jika mengunggah berkas)
-                                        </label>
-                                        <button 
-                                            type="button" 
-                                            @click="addTestQuestion()"
-                                            class="text-xs text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
-                                        >
-                                            <i class="ri-add-line text-sm"></i>
-                                            <span>Tambah Soal</span>
-                                        </button>
-                                    </div>
-
-                                    <!-- Serialized Hidden Input for Backend -->
-                                    <input 
-                                        type="hidden" 
-                                        name="pertanyaan_json" 
-                                        :value="JSON.stringify(testQuestions.filter(q => q.text.trim() !== ''))"
-                                        :disabled="selectedSubCategory !== 'post_test_pretest'"
-                                    >
-
-                                    <div class="space-y-3">
-                                        <template x-for="(item, idx) in testQuestions" :key="idx">
-                                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                                                <span class="text-xs font-bold text-slate-500 w-6" x-text="(idx + 1) + '.'"></span>
-                                                <input 
-                                                    type="text" 
-                                                    x-model="item.text"
-                                                    placeholder="Tuliskan butir soal evaluasi..." 
-                                                    class="flex-1 w-full rounded-lg border-slate-300 text-xs text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                                >
-                                                <select 
-                                                    x-model="item.tipe" 
-                                                    class="w-full sm:w-44 rounded-lg border-slate-300 text-xs text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                                >
-                                                    <option value="Multiple Answer">Multiple Answer</option>
-                                                    <option value="Essay/Text">Essay/Text</option>
-                                                    <option value="File Upload">File Upload</option>
-                                                </select>
-                                                <button 
-                                                    type="button" 
-                                                    @click="removeTestQuestion(idx)" 
-                                                    class="p-1.5 text-slate-400 hover:text-rose-600 transition"
-                                                    title="Hapus butir soal"
-                                                >
-                                                    <i class="ri-delete-bin-line text-sm"></i>
-                                                </button>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('pertanyaan_json')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI e: SUB KATEGORI LAINNYA -->
-                            <div x-show="selectedSubCategory === 'lainnya'" class="space-y-4" x-data="{ fileName: '' }">
-                                <div>
-                                    <label for="kegiatan_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Kebutuhan / Permohonan <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="kegiatan_deskripsi" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'lainnya'"
-                                        :disabled="selectedSubCategory !== 'lainnya'"
-                                        placeholder="Jelaskan kebutuhan pembuatan Link Tree, Google Form khusus, atau format formulir lainnya..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih File</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="fileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'lainnya'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG, PDF, DOCX (Maks 5MB)'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-                            </div>
+                            @include('tickets.forms.form-formulir-kegiatan')
 
                             <!-- Actions -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -1036,7 +324,7 @@
                                         Batal
                                     </a>
                                     <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span>Ajukan Permohonan</span>
+                                        <span>Ajukan Permohonan Formulir / Kegiatan</span>
                                     </button>
                                 </div>
                             </div>
@@ -1044,13 +332,13 @@
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- FORM 4: INSTALL ULANG WINDOWS                             -->
+                    <!-- FORM 10: INSTALL ULANG WINDOWS                            -->
                     <!-- ======================================================== -->
                     <div x-show="selectedServiceKey === 'install_windows'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
                         <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Install Ulang Operating System Windows</h3>
+                            <h3 class="text-base font-bold text-slate-900">Install Ulang Windows</h3>
                             <p class="text-xs text-slate-500 mt-0.5">
-                                Layanan perbaikan OS, formatting, pembersihan malware, instalasi fresh Windows 10/11 untuk perangkat dinas BBPOM.
+                                Penanganan laptop/komputer dinas yang bermasalah sistem operasi, lambat, terkena virus, atau butuh instalasi baru.
                             </p>
                         </div>
 
@@ -1059,173 +347,9 @@
                             <input type="hidden" name="service_key" value="install_windows">
                             <input type="hidden" name="subcategory" :value="selectedSubCategory">
 
-                            <!-- Sleek Segmented Pill Bar -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-2">
-                                    Pilih Sub Kategori:
-                                </label>
-                                <div class="inline-flex flex-wrap p-1 bg-slate-100 rounded-xl gap-1">
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'permintaan_install_windows'"
-                                        :class="selectedSubCategory === 'permintaan_install_windows' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-computer-line text-slate-700"></i>
-                                        <span>Permintaan Install Ulang Windows</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'lainnya'"
-                                        :class="selectedSubCategory === 'lainnya' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-more-line text-slate-600"></i>
-                                        <span>Lainnya</span>
-                                    </button>
-                                </div>
-                            </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                            <!-- Auto-filled Metadata Header -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Tanggal Pengajuan
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-calendar-line text-emerald-700"></i>
-                                        <span>{{ $todayFormatted }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Otomatis</span>
-                                    </div>
-                                    <input type="hidden" name="tanggal_pengajuan" value="{{ $todayDate }}">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Nama Pemohon
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-user-line text-emerald-700"></i>
-                                        <span>{{ $user->name }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Akun Login</span>
-                                    </div>
-                                    <input type="hidden" name="nama" value="{{ old('nama', $user->name) }}">
-                                </div>
-                            </div>
-
-                            <!-- VARIASI a: PERMINTAAN INSTALL ULANG WINDOWS -->
-                            <div x-show="selectedSubCategory === 'permintaan_install_windows'" class="space-y-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div>
-                                        <label for="windows_bidang" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Bidang / Substansi <span class="text-rose-500">*</span>
-                                        </label>
-                                        <select 
-                                            id="windows_bidang" 
-                                            name="bidang" 
-                                            :required="selectedSubCategory === 'permintaan_install_windows'"
-                                            :disabled="selectedSubCategory !== 'permintaan_install_windows'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                            <option value="">-- Pilih Bidang --</option>
-                                            <option value="Tata Usaha" {{ old('bidang') === 'Tata Usaha' ? 'selected' : '' }}>Tata Usaha</option>
-                                            <option value="Pengujian" {{ old('bidang') === 'Pengujian' ? 'selected' : '' }}>Pengujian</option>
-                                            <option value="Penindakan" {{ old('bidang') === 'Penindakan' ? 'selected' : '' }}>Penindakan</option>
-                                            <option value="Infokom" {{ old('bidang') === 'Infokom' ? 'selected' : '' }}>Infokom</option>
-                                            <option value="Pemeriksaan" {{ old('bidang') === 'Pemeriksaan' ? 'selected' : '' }}>Pemeriksaan</option>
-                                        </select>
-                                        <x-input-error class="mt-1" :messages="$errors->get('bidang')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="windows_merk" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Merk Laptop / Komputer <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="windows_merk" 
-                                            name="merk_perangkat" 
-                                            value="{{ old('merk_perangkat') }}" 
-                                            placeholder="Contoh: Lenovo ThinkPad L14" 
-                                            :required="selectedSubCategory === 'permintaan_install_windows'"
-                                            :disabled="selectedSubCategory !== 'permintaan_install_windows'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('merk_perangkat')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="windows_kode_bmn" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Kode BMN Perangkat <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="windows_kode_bmn" 
-                                            name="kode_bmn" 
-                                            value="{{ old('kode_bmn') }}" 
-                                            placeholder="Contoh: 3.05.01.04.001.000123" 
-                                            :required="selectedSubCategory === 'permintaan_install_windows'"
-                                            :disabled="selectedSubCategory !== 'permintaan_install_windows'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm font-mono"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('kode_bmn')" />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="windows_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Alasan / Kendala <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="windows_deskripsi" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'permintaan_install_windows'"
-                                        :disabled="selectedSubCategory !== 'permintaan_install_windows'"
-                                        placeholder="Jelaskan kendala (misal: sering blue screen, lambat setelah update, terinfeksi virus, peremajaan sistem)..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI b: SUB KATEGORI LAINNYA -->
-                            <div x-show="selectedSubCategory === 'lainnya'" class="space-y-4" x-data="{ fileName: '' }">
-                                <div>
-                                    <label for="windows_deskripsi_lainnya" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Kendala Sistem Operasi <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="windows_deskripsi_lainnya" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'lainnya'"
-                                        :disabled="selectedSubCategory !== 'lainnya'"
-                                        placeholder="Jelaskan kebutuhan driver, error sistem operasi, atau kendala Windows lainnya..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih File</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="fileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'lainnya'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG, PDF (Maks 5MB)'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-                            </div>
+                            @include('tickets.forms.form-install-windows')
 
                             <!-- Actions -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -1237,7 +361,7 @@
                                         Batal
                                     </a>
                                     <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span x-text="selectedSubCategory === 'permintaan_install_windows' ? 'Ajukan Install Ulang Windows' : 'Kirim Pengaduan OS'"></span>
+                                        <span x-text="selectedSubCategory === 'permintaan_install_windows' ? 'Ajukan Install Ulang Windows' : 'Kirim Pengaduan'"></span>
                                     </button>
                                 </div>
                             </div>
@@ -1245,13 +369,13 @@
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- FORM 5: LISENSI MICROSOFT OFFICE                          -->
+                    <!-- FORM 11: LISENSI MICROSOFT OFFICE                         -->
                     <!-- ======================================================== -->
                     <div x-show="selectedServiceKey === 'lisensi_office'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
                         <div class="border-b border-slate-100 pb-4 mb-6">
                             <h3 class="text-base font-bold text-slate-900">Lisensi Microsoft Office</h3>
                             <p class="text-xs text-slate-500 mt-0.5">
-                                Aktivasi lisensi resmi Microsoft 365, Word, Excel, PowerPoint, dan penanganan notifikasi unlicensed product.
+                                Aktivasi resmi aplikasi Microsoft Word, Excel, PowerPoint, dan Microsoft 365 perangkat dinas BBPOM Semarang.
                             </p>
                         </div>
 
@@ -1260,173 +384,9 @@
                             <input type="hidden" name="service_key" value="lisensi_office">
                             <input type="hidden" name="subcategory" :value="selectedSubCategory">
 
-                            <!-- Sleek Segmented Pill Bar -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-2">
-                                    Pilih Sub Kategori:
-                                </label>
-                                <div class="inline-flex flex-wrap p-1 bg-slate-100 rounded-xl gap-1">
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'permintaan_lisensi_office'"
-                                        :class="selectedSubCategory === 'permintaan_lisensi_office' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-key-line text-amber-600"></i>
-                                        <span>Permintaan Lisensi Office</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="selectedSubCategory = 'lainnya'"
-                                        :class="selectedSubCategory === 'lainnya' ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition duration-150 flex items-center gap-1.5"
-                                    >
-                                        <i class="ri-more-line text-slate-600"></i>
-                                        <span>Lainnya</span>
-                                    </button>
-                                </div>
-                            </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                            <!-- Auto-filled Metadata Header -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Tanggal Pengajuan
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-calendar-line text-emerald-700"></i>
-                                        <span>{{ $todayFormatted }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Otomatis</span>
-                                    </div>
-                                    <input type="hidden" name="tanggal_pengajuan" value="{{ $todayDate }}">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Nama Pemohon
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-user-line text-emerald-700"></i>
-                                        <span>{{ $user->name }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Akun Login</span>
-                                    </div>
-                                    <input type="hidden" name="nama" value="{{ old('nama', $user->name) }}">
-                                </div>
-                            </div>
-
-                            <!-- VARIASI a: PERMINTAAN LISENSI OFFICE -->
-                            <div x-show="selectedSubCategory === 'permintaan_lisensi_office'" class="space-y-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div>
-                                        <label for="office_bidang" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Bidang / Substansi <span class="text-rose-500">*</span>
-                                        </label>
-                                        <select 
-                                            id="office_bidang" 
-                                            name="bidang" 
-                                            :required="selectedSubCategory === 'permintaan_lisensi_office'"
-                                            :disabled="selectedSubCategory !== 'permintaan_lisensi_office'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-800 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                            <option value="">-- Pilih Bidang --</option>
-                                            <option value="Tata Usaha" {{ old('bidang') === 'Tata Usaha' ? 'selected' : '' }}>Tata Usaha</option>
-                                            <option value="Pengujian" {{ old('bidang') === 'Pengujian' ? 'selected' : '' }}>Pengujian</option>
-                                            <option value="Penindakan" {{ old('bidang') === 'Penindakan' ? 'selected' : '' }}>Penindakan</option>
-                                            <option value="Infokom" {{ old('bidang') === 'Infokom' ? 'selected' : '' }}>Infokom</option>
-                                            <option value="Pemeriksaan" {{ old('bidang') === 'Pemeriksaan' ? 'selected' : '' }}>Pemeriksaan</option>
-                                        </select>
-                                        <x-input-error class="mt-1" :messages="$errors->get('bidang')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="office_merk" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Merk Laptop / Komputer <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="office_merk" 
-                                            name="merk_perangkat" 
-                                            value="{{ old('merk_perangkat') }}" 
-                                            placeholder="Contoh: Dell Latitude 3420" 
-                                            :required="selectedSubCategory === 'permintaan_lisensi_office'"
-                                            :disabled="selectedSubCategory !== 'permintaan_lisensi_office'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('merk_perangkat')" />
-                                    </div>
-
-                                    <div>
-                                        <label for="office_kode_bmn" class="block text-xs font-semibold text-slate-700 mb-1">
-                                            Kode BMN Perangkat <span class="text-rose-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="office_kode_bmn" 
-                                            name="kode_bmn" 
-                                            value="{{ old('kode_bmn') }}" 
-                                            placeholder="Contoh: 3.05.01.04.001.000456" 
-                                            :required="selectedSubCategory === 'permintaan_lisensi_office'"
-                                            :disabled="selectedSubCategory !== 'permintaan_lisensi_office'"
-                                            class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm font-mono"
-                                        >
-                                        <x-input-error class="mt-1" :messages="$errors->get('kode_bmn')" />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="office_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Kendala Lisensi <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="office_deskripsi" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'permintaan_lisensi_office'"
-                                        :disabled="selectedSubCategory !== 'permintaan_lisensi_office'"
-                                        placeholder="Jelaskan kebutuhan lisensi atau kendala (misal: muncul Unlicensed Product, butuh aktivasi Microsoft 365 baru)..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-                            </div>
-
-                            <!-- VARIASI b: SUB KATEGORI LAINNYA -->
-                            <div x-show="selectedSubCategory === 'lainnya'" class="space-y-4" x-data="{ fileName: '' }">
-                                <div>
-                                    <label for="office_deskripsi_lainnya" class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Deskripsi Kebutuhan Aplikasi Perkantoran <span class="text-rose-500">*</span>
-                                    </label>
-                                    <textarea 
-                                        id="office_deskripsi_lainnya" 
-                                        name="deskripsi" 
-                                        rows="4" 
-                                        :required="selectedSubCategory === 'lainnya'"
-                                        :disabled="selectedSubCategory !== 'lainnya'"
-                                        placeholder="Jelaskan kendala atau permohonan software office lainnya..." 
-                                        class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                    >{{ old('deskripsi') }}</textarea>
-                                    <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Upload Berkas Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                            <span>Pilih File</span>
-                                            <input 
-                                                type="file" 
-                                                name="file_lampiran" 
-                                                class="sr-only"
-                                                @change="fileName = $event.target.files[0]?.name"
-                                                :disabled="selectedSubCategory !== 'lainnya'"
-                                            >
-                                        </label>
-                                        <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG, PDF (Maks 5MB)'"></span>
-                                    </div>
-                                    <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                                </div>
-                            </div>
+                            @include('tickets.forms.form-lisensi-office')
 
                             <!-- Actions -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -1438,7 +398,7 @@
                                         Batal
                                     </a>
                                     <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span x-text="selectedSubCategory === 'permintaan_lisensi_office' ? 'Ajukan Lisensi Office' : 'Kirim Pengaduan Office'"></span>
+                                        <span x-text="selectedSubCategory === 'permintaan_lisensi_office' ? 'Ajukan Permintaan Lisensi Office' : 'Kirim Pengaduan'"></span>
                                     </button>
                                 </div>
                             </div>
@@ -1446,79 +406,24 @@
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- FORM 6: LAYANAN LAINNYA (Dukungan Umum TIK)               -->
+                    <!-- FORM 12: LAYANAN LAINNYA (UMUM)                           -->
                     <!-- ======================================================== -->
-                    <div x-show="selectedServiceKey === 'lainnya'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7" x-data="{ fileName: '' }">
+                    <div x-show="selectedServiceKey === 'lainnya'" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
                         <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Pengaduan Layanan TIK Lainnya</h3>
+                            <h3 class="text-base font-bold text-slate-900">Layanan TIK Lainnya</h3>
                             <p class="text-xs text-slate-500 mt-0.5">
-                                Permohonan perbaikan printer, scanner, proyektor, audio ruang rapat, atau konsultasi kebutuhan teknologi informasi lainnya.
+                                Dukungan teknis hardware printer, scanner, proyektor, audio ruang rapat, atau kebutuhan TI umum lainnya.
                             </p>
                         </div>
 
                         <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
                             @csrf
                             <input type="hidden" name="service_key" value="lainnya">
+                            <input type="hidden" name="subcategory" value="lainnya">
 
-                            <!-- Auto-filled Metadata Header -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Tanggal Pengajuan
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-calendar-line text-emerald-700"></i>
-                                        <span>{{ $todayFormatted }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Otomatis</span>
-                                    </div>
-                                    <input type="hidden" name="tanggal_pengajuan" value="{{ $todayDate }}">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                                        Nama Pemohon
-                                    </label>
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
-                                        <i class="ri-user-line text-emerald-700"></i>
-                                        <span>{{ $user->name }}</span>
-                                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">Akun Login</span>
-                                    </div>
-                                    <input type="hidden" name="nama" value="{{ old('nama', $user->name) }}">
-                                </div>
-                            </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                            <div>
-                                <label for="lainnya_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Deskripsi Permintaan / Kendala <span class="text-rose-500">*</span>
-                                </label>
-                                <textarea 
-                                    id="lainnya_deskripsi" 
-                                    name="deskripsi" 
-                                    rows="5" 
-                                    required 
-                                    placeholder="Jelaskan kebutuhan teknis Anda secara rinci, nomor ruangan atau lokasi perangkat, serta kronologi kendala..." 
-                                    class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-slate-400"
-                                >{{ old('deskripsi') }}</textarea>
-                                <x-input-error class="mt-1" :messages="$errors->get('deskripsi')" />
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Upload Berkas Lampiran <span class="text-slate-400 font-normal">(Opsional, foto error/dokumen)</span>
-                                </label>
-                                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                                        <span>Pilih File</span>
-                                        <input 
-                                            type="file" 
-                                            name="file_lampiran" 
-                                            class="sr-only"
-                                            @change="fileName = $event.target.files[0]?.name"
-                                        >
-                                    </label>
-                                    <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG, PDF, DOCX, ZIP (Maks 5MB)'"></span>
-                                </div>
-                                <x-input-error class="mt-1" :messages="$errors->get('file_lampiran')" />
-                            </div>
+                            @include('tickets.forms.form-lainnya')
 
                             <!-- Actions -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
@@ -1530,7 +435,7 @@
                                         Batal
                                     </a>
                                     <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition active:scale-[0.99]">
-                                        <span>Kirim Pengaduan</span>
+                                        <span>Ajukan Permohonan TIK</span>
                                     </button>
                                 </div>
                             </div>
@@ -1538,18 +443,15 @@
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- FORM 7: FORMULIR STANDAR (SIPT, Srikandi, Email, dll)     -->
+                    <!-- FORMULIR STANDARD GATEWAY (SIPT, Srikandi, Email, Internet, Subsite, Infografis) -->
                     <!-- ======================================================== -->
                     <div 
                         x-show="selectedServiceKey && !['sertifikat_bse', 'zoom', 'formulir_kegiatan', 'install_windows', 'lisensi_office', 'lainnya'].includes(selectedServiceKey)" 
                         class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7"
-                        x-data="{ fileName: '' }"
                     >
                         <div class="border-b border-slate-100 pb-4 mb-6">
-                            <h3 class="text-base font-bold text-slate-900">Formulir Pengaduan Layanan</h3>
-                            <p class="text-xs text-slate-500 mt-1">
-                                Lengkapi detail permohonan atau kendala di bawah ini agar teknisi TIK BBPOM dapat segera menindaklanjuti.
-                            </p>
+                            <h3 class="text-base font-bold text-slate-900" x-text="currentService ? currentService.name : 'Formulir Layanan'"></h3>
+                            <p class="text-xs text-slate-500 mt-1" x-text="currentService ? currentService.description : 'Lengkapi detail permohonan atau kendala di bawah ini.'"></p>
                         </div>
 
                         <form 
@@ -1562,424 +464,43 @@
                             @change="saveDraft()"
                         >
                             @csrf
-                            <!-- Hidden fields to identify service and subcategory -->
                             <input type="hidden" name="service_key" :value="selectedServiceKey">
                             <input type="hidden" name="subcategory_key" :value="selectedSubcategory">
 
-                            <!-- SUB-KATEGORI SELECTOR -->
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-                                        <i class="ri-list-check-2 text-emerald-700"></i>
-                                        <span>Pilih Sub Kategori <span x-text="currentService ? currentService.name : ''"></span></span>
-                                    </label>
-                                    <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                                        Wajib Dipilih
-                                    </span>
-                                </div>
+                            @include('tickets.forms.partials.metadata-header')
 
-                                <!-- When subcategories are configured (Services 1, 2, 3, 7, 8, 9) -->
-                                <template x-if="currentService && currentService.subcategories && Object.keys(currentService.subcategories).length > 0">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                                        <template x-for="(subLabel, subKey) in currentService.subcategories" :key="subKey">
-                                            <button 
-                                                type="button" 
-                                                @click="selectedSubcategory = subKey"
-                                                :class="selectedSubcategory === subKey 
-                                                    ? 'bg-emerald-700 text-white font-bold border-emerald-700 shadow-sm' 
-                                                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'"
-                                                class="px-3.5 py-2.5 rounded-xl border text-xs text-left transition flex items-center justify-between gap-2"
-                                            >
-                                                <span x-text="subLabel"></span>
-                                                <i x-show="selectedSubcategory === subKey" class="ri-check-line text-sm"></i>
-                                            </button>
-                                        </template>
-                                    </div>
-                                </template>
-
-                                <!-- When subcategories are not configured yet (Services 4, 5, 6, 10, 11, 12 - Colleague's part) -->
-                                <template x-if="!currentService || !currentService.subcategories || Object.keys(currentService.subcategories).length === 0">
-                                    <div class="mt-2 text-xs text-slate-600 bg-slate-50 p-4 rounded-xl border border-dashed border-slate-300">
-                                        <div class="flex items-center gap-2 text-amber-700 font-semibold mb-1">
-                                            <i class="ri-information-line text-base"></i>
-                                            <span>Sub Kategori Siap Dikonfigurasi</span>
-                                        </div>
-                                        <p class="text-[11px] text-slate-500 leading-relaxed">
-                                            Daftar sub kategori untuk layanan ini dapat langsung ditambahkan di file <code class="px-1 py-0.5 bg-white text-slate-800 rounded font-mono text-[10px] border">config/services_gateway.php</code>.
-                                        </p>
-                                        <div class="mt-2.5">
-                                            <input 
-                                                type="text" 
-                                                name="custom_subcategory" 
-                                                placeholder="Ketik rincian kebutuhan / sub kategori..."
-                                                class="w-full text-xs rounded-xl border-slate-300 focus:border-emerald-600 focus:ring-emerald-600 bg-white"
-                                            >
-                                        </div>
-                                    </div>
-                                </template>
+                            <!-- 1. SIPT -->
+                            <div x-show="selectedServiceKey === 'sipt'">
+                                @include('tickets.forms.form-sipt')
                             </div>
 
-                            <!-- ========================================== -->
-                            <!-- DYNAMIC FORM SECTIONS FOR SERVICES 1, 2, 3, 7, 8, 9 -->
-                            <!-- ========================================== -->
-
-                            <!-- 1. SIPT FIELDS -->
-                            <div x-show="selectedServiceKey === 'sipt'" class="space-y-4 pt-2 border-t border-slate-100">
-                                
-                                <!-- A. Reset Password SIPT -->
-                                <template x-if="selectedSubcategory === 'reset_password'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="sipt_username" :value="__('Username SIPT')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="sipt_username" name="sipt_username" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Masukkan username akun SIPT Anda..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="sipt_password" :value="__('Request Password Baru')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="sipt_password" name="sipt_password" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Masukkan usulan password baru yang diinginkan..." />
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- B. Rollback Sampel SIPT -->
-                                <template x-if="selectedSubcategory === 'rollback_sampel'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="sipt_sample_number" :value="__('Nomor Sampel')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="sipt_sample_number" name="sipt_sample_number" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Contoh: SMP-2026-X123..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="sipt_commodity" :value="__('Komoditi')" class="font-semibold text-xs text-slate-700" />
-                                            <select id="sipt_commodity" name="sipt_commodity" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm">
-                                                <option value="Pangan">Pangan</option>
-                                                <option value="Obat">Obat</option>
-                                                <option value="Obat Tradisional">Obat Tradisional</option>
-                                                <option value="Kosmetik">Kosmetik</option>
-                                                <option value="Suplemen Kesehatan">Suplemen Kesehatan</option>
-                                                <option value="Lainnya">Lainnya</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- C. Perbaikan Data Sampel SIPT -->
-                                <template x-if="selectedSubcategory === 'perbaikan_sampel'">
-                                    <div class="space-y-4">
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <x-input-label for="sipt_sample_code" :value="__('Kode Sampel')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="sipt_sample_code" name="sipt_sample_code" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Kode sampel..." />
-                                            </div>
-                                            <div>
-                                                <x-input-label for="sipt_sample_commodity" :value="__('Komoditi')" class="font-semibold text-xs text-slate-700" />
-                                                <select id="sipt_sample_commodity" name="sipt_commodity" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm">
-                                                    <option value="Pangan">Pangan</option>
-                                                    <option value="Obat">Obat</option>
-                                                    <option value="Obat Tradisional">Obat Tradisional</option>
-                                                    <option value="Kosmetik">Kosmetik</option>
-                                                    <option value="Suplemen Kesehatan">Suplemen Kesehatan</option>
-                                                    <option value="Lainnya">Lainnya</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <x-input-label for="sipt_sample_name" :value="__('Nama Sampel')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="sipt_sample_name" name="sipt_sample_name" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Nama produk / sampel..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="sipt_before_repair" :value="__('Sebelum Perbaikan (Data Lama)')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="sipt_before_repair" name="sipt_before_repair" rows="3" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Tuliskan data sebelum perbaikan..."></textarea>
-                                        </div>
-                                        <div>
-                                            <x-input-label for="sipt_after_repair" :value="__('Perbaikan (Data Baru)')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="sipt_after_repair" name="sipt_after_repair" rows="3" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Tuliskan data perbaikan yang benar..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- D. Cek Posisi Sampel SIPT -->
-                                <template x-if="selectedSubcategory === 'cek_posisi_sampel'">
-                                    <div class="space-y-4">
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <x-input-label for="sipt_pos_sample_code" :value="__('Kode Sampel')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="sipt_pos_sample_code" name="sipt_sample_code" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Kode sampel yang ingin dilacak..." />
-                                            </div>
-                                            <div>
-                                                <x-input-label for="sipt_pos_commodity" :value="__('Komoditi')" class="font-semibold text-xs text-slate-700" />
-                                                <select id="sipt_pos_commodity" name="sipt_commodity" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm">
-                                                    <option value="Pangan">Pangan</option>
-                                                    <option value="Obat">Obat</option>
-                                                    <option value="Obat Tradisional">Obat Tradisional</option>
-                                                    <option value="Kosmetik">Kosmetik</option>
-                                                    <option value="Suplemen Kesehatan">Suplemen Kesehatan</option>
-                                                    <option value="Lainnya">Lainnya</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <x-input-label for="sipt_pos_sample_name" :value="__('Nama Sampel')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="sipt_pos_sample_name" name="sipt_sample_name" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Nama sampel yang dicari..." />
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- E. Lainnya SIPT -->
-                                <template x-if="selectedSubcategory === 'lainnya'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="sipt_description" :value="__('Deskripsi Kendala SIPT')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="sipt_description" name="service_description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan kendala SIPT yang Anda alami..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
+                            <!-- 2. SRIKANDI -->
+                            <div x-show="selectedServiceKey === 'srikandi'">
+                                @include('tickets.forms.form-srikandi')
                             </div>
 
-                            <!-- 2. SRIKANDI FIELDS -->
-                            <div x-show="selectedServiceKey === 'srikandi'" class="space-y-4 pt-2 border-t border-slate-100">
-                                
-                                <!-- A. Reset Password Srikandi -->
-                                <template x-if="selectedSubcategory === 'reset_password'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="srikandi_username" :value="__('Username Srikandi')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="srikandi_username" name="srikandi_username" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Username akun Srikandi Anda..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="srikandi_password" :value="__('Request Password Baru')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="srikandi_password" name="srikandi_password" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Password baru yang diinginkan..." />
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- B. Pembuatan Akun Baru Srikandi -->
-                                <template x-if="selectedSubcategory === 'buat_akun'">
-                                    <div class="space-y-4">
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <x-input-label for="srikandi_fullname" :value="__('Nama Lengkap')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="srikandi_fullname" name="srikandi_fullname" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Nama lengkap pegawai..." />
-                                            </div>
-                                            <div>
-                                                <x-input-label for="srikandi_nik" :value="__('NIK (Nomor Induk Kependudukan)')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="srikandi_nik" name="srikandi_nik" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="16 digit NIK..." />
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <x-input-label for="srikandi_phone" :value="__('No. Telepon / WhatsApp')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="srikandi_phone" name="srikandi_phone" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="08xxxxxxxxxx..." />
-                                            </div>
-                                            <div>
-                                                <x-input-label for="srikandi_email" :value="__('Alamat Email')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="srikandi_email" name="srikandi_email" type="email" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="nama@bbpom.go.id..." />
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <x-input-label for="srikandi_req_username" :value="__('Request Username Srikandi')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="srikandi_req_username" name="srikandi_req_username" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Usulan username..." />
-                                            </div>
-                                            <div>
-                                                <x-input-label for="srikandi_req_password" :value="__('Request Password Awal')" class="font-semibold text-xs text-slate-700" />
-                                                <x-text-input id="srikandi_req_password" name="srikandi_req_password" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Usulan password..." />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- C. Penonaktifan Akun Srikandi -->
-                                <template x-if="selectedSubcategory === 'nonaktif_akun'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="srikandi_nonaktif_user" :value="__('Username Srikandi')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="srikandi_nonaktif_user" name="srikandi_username" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Username akun yang akan dinonaktifkan..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="srikandi_disable_reason" :value="__('Alasan Dinonaktifkan')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="srikandi_disable_reason" name="srikandi_disable_reason" rows="3" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Contoh: Pensiun, mutasi unit kerja luar, dll..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- D. Reset MFA Srikandi -->
-                                <template x-if="selectedSubcategory === 'reset_mfa'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="srikandi_mfa_username" :value="__('Username Srikandi')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="srikandi_mfa_username" name="srikandi_username" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Username Srikandi yang terkendala MFA..." />
-                                        </div>
-                                        <p class="text-[11px] text-slate-500">Teknisi IT BBPOM akan me-reset otentikasi ganda (MFA) sehingga Anda dapat memindai ulang barcode autentikator.</p>
-                                    </div>
-                                </template>
-
-                                <!-- E. Lainnya Srikandi -->
-                                <template x-if="selectedSubcategory === 'lainnya'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="srikandi_description" :value="__('Deskripsi Kendala Srikandi')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="srikandi_description" name="service_description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan kendala Srikandi yang dihadapi..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
+                            <!-- 3. EMAIL CORPORATE -->
+                            <div x-show="selectedServiceKey === 'email_corporate'">
+                                @include('tickets.forms.form-email-corporate')
                             </div>
 
-                            <!-- 3. EMAIL CORPORATE FIELDS -->
-                            <div x-show="selectedServiceKey === 'email_corporate'" class="space-y-4 pt-2 border-t border-slate-100">
-                                
-                                <!-- A. Reset Password Email -->
-                                <template x-if="selectedSubcategory === 'reset_password'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="email_nip" :value="__('NIP (Nomor Induk Pegawai)')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="email_nip" name="email_nip" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="NIP pegawai..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="email_new_password" :value="__('Request Password Baru')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="email_new_password" name="email_password" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Ketik usulan password baru..." />
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- B. Lainnya Email Corporate -->
-                                <template x-if="selectedSubcategory === 'lainnya'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="email_description" :value="__('Deskripsi Kendala Email')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="email_description" name="service_description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan masalah email dinas (misal kuota penuh, gagal kirim webmail)..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
+                            <!-- 7. INTERNET -->
+                            <div x-show="selectedServiceKey === 'internet'">
+                                @include('tickets.forms.form-internet')
                             </div>
 
-                            <!-- 7. INTERNET & JARINGAN FIELDS -->
-                            <div x-show="selectedServiceKey === 'internet'" class="space-y-4 pt-2 border-t border-slate-100">
-                                
-                                <!-- A. Keluhan Internet Lemot / Mati -->
-                                <template x-if="selectedSubcategory === 'lemot_mati'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="internet_ap_location" :value="__('Lokasi Titik Access Point / Ruangan')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="internet_ap_location" name="ap_location" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Contoh: Ruang Lab Kimia Lt. 2 / Meja TU..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="internet_complaint" :value="__('Rincian Keluhan')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="internet_complaint" name="complaint_details" rows="3" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan kondisi jaringan (misal putus-nyambung, tidak ada sinyal WiFi)..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- B. Request Penambahan Access Point -->
-                                <template x-if="selectedSubcategory === 'tambah_ap'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="internet_req_ap_location" :value="__('Request Lokasi Titik Access Point')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="internet_req_ap_location" name="ap_location" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Contoh: Sudut Ruang Pertemuan Bawah..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="internet_req_reason" :value="__('Keluhan / Alasan Kebutuhan')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="internet_req_reason" name="complaint_details" rows="3" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Alasan penambahan titik AP (misal area blindspot sinyal)..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- C. Lainnya Internet -->
-                                <template x-if="selectedSubcategory === 'lainnya'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="internet_other_desc" :value="__('Deskripsi Kendala Jaringan')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="internet_other_desc" name="service_description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan kebutuhan jaringan atau kabel LAN..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
+                            <!-- 8. SUBSITE -->
+                            <div x-show="selectedServiceKey === 'subsite'">
+                                @include('tickets.forms.form-subsite')
                             </div>
 
-                            <!-- 8. SUBSITE FIELDS -->
-                            <div x-show="selectedServiceKey === 'subsite'" class="space-y-4 pt-2 border-t border-slate-100">
-                                
-                                <!-- A. Upload Berita Internal -->
-                                <template x-if="selectedSubcategory === 'upload_berita'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="subsite_news_title" :value="__('Judul Berita')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="subsite_news_title" name="news_title" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Judul artikel / berita kegiatan..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="subsite_news_content" :value="__('Isi Berita')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="subsite_news_content" name="news_content" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Tuliskan naskah isi berita yang akan ditayangkan..."></textarea>
-                                        </div>
-                                        <div>
-                                            <x-input-label for="subsite_upload_date" :value="__('Request Tanggal Upload')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="subsite_upload_date" name="target_date" type="date" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" />
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- B. Upload Dokumen Subsite -->
-                                <template x-if="selectedSubcategory === 'upload_dokumen'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="subsite_doc_name" :value="__('Nama Dokumen (untuk tampilan subsite)')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="subsite_doc_name" name="doc_name" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Judul dokumen resmi yang akan ditampilkan..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="subsite_doc_location" :value="__('Lokasi Upload / Halaman')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="subsite_doc_location" name="doc_location" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Misal: Menu Informasi Publik / Standar Layanan..." />
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <!-- C. Hapus Dokumen Subsite -->
-                                <template x-if="selectedSubcategory === 'hapus_dokumen'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="subsite_del_title" :value="__('Judul Dokumen yang Akan Dihapus')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="subsite_del_title" name="doc_name" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Nama dokumen di subsite..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="subsite_del_url" :value="__('Link Dokumen yang Ingin Dihapus')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="subsite_del_url" name="doc_url" type="url" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="https://semarang.pom.go.id/..." />
-                                        </div>
-                                    </div>
-                                </template>
-
+                            <!-- 9. INFOGRAFIS -->
+                            <div x-show="selectedServiceKey === 'infografis'">
+                                @include('tickets.forms.form-infografis')
                             </div>
 
-                            <!-- 9. INFOGRAFIS FIELDS -->
-                            <div x-show="selectedServiceKey === 'infografis'" class="space-y-4 pt-2 border-t border-slate-100">
-                                
-                                <template x-if="selectedSubcategory === 'pembuatan_infografis'">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <x-input-label for="infographic_title" :value="__('Judul Infografis')" class="font-semibold text-xs text-slate-700" />
-                                            <x-text-input id="infographic_title" name="infographic_title" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Judul / topik media informasi..." />
-                                        </div>
-                                        <div>
-                                            <x-input-label for="infographic_content" :value="__('Isi Materi / Pesan Utama')" class="font-semibold text-xs text-slate-700" />
-                                            <textarea id="infographic_content" name="infographic_content" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Tuliskan poin-poin materi, teks yang ingin ditampilkan, atau panduan visual..."></textarea>
-                                        </div>
-                                    </div>
-                                </template>
-
-                            </div>
-
-                            <!-- FALLBACK / GENERAL FIELDS FOR OTHER SERVICES (4, 5, 6, 10, 11, 12) -->
-                            <div x-show="!['sipt', 'srikandi', 'email_corporate', 'internet', 'subsite', 'infografis'].includes(selectedServiceKey)" class="space-y-4 pt-2 border-t border-slate-100">
-                                <div>
-                                    <x-input-label for="general_subject" :value="__('Subjek / Judul Kebutuhan')" class="font-semibold text-xs text-slate-700" />
-                                    <x-text-input id="general_subject" name="subject" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="Ringkasan kebutuhan layanan..." />
-                                </div>
-                                <div>
-                                    <x-input-label for="general_description" :value="__('Deskripsi Kebutuhan / Kendala')" class="font-semibold text-xs text-slate-700" />
-                                    <textarea id="general_description" name="description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300 text-xs sm:text-sm" placeholder="Jelaskan kebutuhan Anda secara rinci..."></textarea>
-                                </div>
-                            </div>
-
-                            <!-- UPLOAD LAMPIRAN / FILE (Universal for all subcategories) -->
-                            <div class="pt-2 border-t border-slate-100">
+                            <!-- Universal Attachment for services where upload is not subcategory-specific -->
+                            <div x-show="!['subsite', 'infografis', 'internet'].includes(selectedServiceKey)" class="pt-2 border-t border-slate-100">
                                 <x-input-label for="attachment" :value="__('Upload File Lampiran / Foto / Dokumen Pendukung (Opsional)')" class="font-semibold text-xs text-slate-700" />
                                 <span class="text-[11px] text-slate-400 block mb-2">Format: JPG, PNG, PDF, DOCX, ZIP (Maks. 5MB)</span>
                                 
@@ -1998,7 +519,6 @@
                                 <x-input-error class="mt-1" :messages="$errors->get('attachment')" />
                             </div>
 
-                            <!-- Hidden Category ID for backend -->
                             <input type="hidden" id="category_id" name="category_id" :value="currentService ? currentService.default_category_id : 5">
 
                             <!-- Form Action Buttons -->
@@ -2058,7 +578,8 @@
                 search: '',
                 activeGroup: 'all',
                 selectedServiceKey: @json(old('service_key', $initialService ?? '')),
-                selectedSubcategory: @json(old('subcategory_key', '')),
+                selectedSubcategory: @json(old('subcategory_key', old('subcategory', $initialSubcategory ?? ''))),
+                selectedSubCategory: @json(old('subcategory', old('subcategory_key', $initialSubcategory ?? ''))),
                 services: @json($services),
                 groups: @json($groups),
                 hasDraft: false,
@@ -2091,16 +612,22 @@
                     const s = this.services[key];
                     if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
                         if (!this.selectedSubcategory || !s.subcategories[this.selectedSubcategory]) {
-                            this.selectedSubcategory = Object.keys(s.subcategories)[0];
+                            const first = Object.keys(s.subcategories)[0];
+                            this.selectedSubcategory = first;
+                            this.selectedSubCategory = first;
+                        } else {
+                            this.selectedSubCategory = this.selectedSubcategory;
                         }
                     } else {
                         this.selectedSubcategory = '';
+                        this.selectedSubCategory = '';
                     }
                 },
 
                 clearService() {
                     this.selectedServiceKey = null;
                     this.selectedSubcategory = '';
+                    this.selectedSubCategory = '';
                 },
 
                 isMatch(key) {
@@ -2199,6 +726,7 @@
                         }
                         if (data._subcategory_key) {
                             this.selectedSubcategory = data._subcategory_key;
+                            this.selectedSubCategory = data._subcategory_key;
                         }
 
                         this.$nextTick(() => {
@@ -2292,8 +820,12 @@
                     if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
                         const s = this.services[this.selectedServiceKey];
                         if (s && s.subcategories && Object.keys(s.subcategories).length > 0) {
-                            this.selectedSubcategory = Object.keys(s.subcategories)[0];
+                            const first = Object.keys(s.subcategories)[0];
+                            this.selectedSubcategory = first;
+                            this.selectedSubCategory = first;
                         }
+                    } else if (this.selectedSubcategory) {
+                        this.selectedSubCategory = this.selectedSubcategory;
                     }
 
                     this.checkDraft();
