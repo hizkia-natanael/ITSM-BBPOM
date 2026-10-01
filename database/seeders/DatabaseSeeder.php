@@ -17,12 +17,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Seed Users (Admin & Pegawai)
+        // 1. Seed Users (Admin, Admin 1, Admin 2 & Pegawai)
         $admin = User::updateOrCreate(
             ['email' => 'admin@bbpom.go.id'],
             [
                 'name' => 'Administrator IT BBPOM',
                 'nip' => '198503122010121001',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $admin1 = User::updateOrCreate(
+            ['email' => 'admin1@bbpom.go.id'],
+            [
+                'name' => 'Admin 1 - Layanan TIK',
+                'nip' => '198503122010121001',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $admin2 = User::updateOrCreate(
+            ['email' => 'admin2@bbpom.go.id'],
+            [
+                'name' => 'Admin 2 - Layanan TIK',
+                'nip' => '198907152014031002',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
@@ -84,6 +106,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-001',
                 'user_id' => $user1->id,
+                'handled_by_id' => $admin1->id,
                 'category_id' => $categories['jaringan-internet']->id,
                 'subject' => 'Koneksi WiFi Ruang Infokom Terputus Sejak Pagi',
                 'description' => "Selamat pagi tim IT, koneksi WiFi di Ruang Infokom Lantai 2 tidak bisa diakses dari beberapa laptop pegawai. Indikator lampu di Access Point berkedip merah. Mohon bantuan pengecekan switch atau access point-nya. Terima kasih.",
@@ -92,12 +115,12 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()->subMonths(3)->addHours(4),
                 'responses' => [
                     [
-                        'user_id' => $admin->id,
+                        'user_id' => $admin1->id,
                         'response_text' => "Halo Pak Ahmad, laporan sudah diterima. Tim teknisi jaringan akan memeriksa switch lantai 2 dalam 15 menit.",
                         'created_at' => Carbon::now()->subMonths(3)->addHours(1),
                     ],
                     [
-                        'user_id' => $admin->id,
+                        'user_id' => $admin1->id,
                         'response_text' => "Koneksi kabel LAN ke Access Point telah di-crimp ulang dan restart power switch. Akses internet WiFi sudah kembali stabil normal.",
                         'created_at' => Carbon::now()->subMonths(3)->addHours(3),
                     ],
@@ -111,6 +134,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-002',
                 'user_id' => $user2->id,
+                'handled_by_id' => $admin2->id,
                 'category_id' => $categories['perangkat-keras-hardware']->id,
                 'subject' => 'Monitor PC Laboratorium Kimia Mati Total',
                 'description' => "Monitor LG pada PC instrumentasi pengujian kimia di Lab Lantai 1 mati total dan tidak keluar gambar sama sekali saat tombol power ditekan. Lampu indikator power tidak menyala. Mohon bantuan penggantian kabel power atau perbaikan.",
@@ -119,7 +143,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()->subMonths(2)->addDay(),
                 'responses' => [
                     [
-                        'user_id' => $admin->id,
+                        'user_id' => $admin2->id,
                         'response_text' => "Tiket sedang diproses oleh Mas Danu (Teknisi Hardware). Adaptor power cadangan sedang disiapkan untuk pengujian di lokasi lab.",
                         'created_at' => Carbon::now()->subMonths(2)->addHours(2),
                     ],
@@ -128,6 +152,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-003',
                 'user_id' => $user3->id,
+                'handled_by_id' => $admin1->id,
                 'category_id' => $categories['aplikasi-software']->id,
                 'subject' => 'Gagal Mengunggah Berkas BAP pada Aplikasi Internal',
                 'description' => "Saat hendak menyimpan dan mengunggah dokumen Berita Acara Pemeriksaan (BAP) PDF ukuran 1.8MB, aplikasi memunculkan notifikasi 'HTTP 500 Internal Server Error'. Kejadian ini berulang sejak kemarin sore.",
@@ -136,7 +161,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()->subMonth()->addHours(6),
                 'responses' => [
                     [
-                        'user_id' => $admin->id,
+                        'user_id' => $admin1->id,
                         'response_text' => "Laporan sedang dianalisis pada log server web internal. Dugaan awal terkait batasan post_max_size atau timeout query. Akan kami update secepatnya.",
                         'created_at' => Carbon::now()->subMonth()->addHours(2),
                     ],
@@ -145,6 +170,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-004',
                 'user_id' => $user1->id,
+                'handled_by_id' => null,
                 'category_id' => $categories['printer-scanner']->id,
                 'subject' => 'Printer Network Canon di Ruang Subbag Tata Usaha Paper Jam',
                 'description' => "Kertas tersangkut di roller penarik printer jaringan Canon ImageRunner. Sudah dicoba ditarik perlahan tetapi indikator error paper jam masih menyala dan tidak bisa print.",
@@ -156,6 +182,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-005',
                 'user_id' => $user2->id,
+                'handled_by_id' => $admin2->id,
                 'category_id' => $categories['akun-email-keamanan']->id,
                 'subject' => 'Permohonan Reset Password Akun Email Dinas @pom.go.id',
                 'description' => "Saya lupa kata sandi akun email dinas dikarenakan baru selesai masa cuti panjang. Mohon bantuan reset password dan tautan verifikasi ke nomor WA dinas.",
@@ -164,7 +191,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(9),
                 'responses' => [
                     [
-                        'user_id' => $admin->id,
+                        'user_id' => $admin2->id,
                         'response_text' => "Password sementara telah di-generate dan dikirimkan secara aman via SMS/WA resmi ke nomor pegawai terdaftar. Harap segera lakukan penggantian password saat login pertama kali.",
                         'created_at' => Carbon::now()->subDays(9),
                     ],
@@ -173,6 +200,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-006',
                 'user_id' => $user3->id,
+                'handled_by_id' => $admin1->id,
                 'category_id' => $categories['perangkat-keras-hardware']->id,
                 'subject' => 'Permintaan Pembelian Mouse Gaming Pribadi',
                 'description' => "Mohon diajukan pengadaan mouse ergonomis dengan spesifikasi gaming untuk operasional harian meja kerja.",
@@ -181,7 +209,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(14),
                 'responses' => [
                     [
-                        'user_id' => $admin->id,
+                        'user_id' => $admin1->id,
                         'response_text' => "Mohon maaf, pengadaan perangkat periferal kerja hanya melayani mouse standar dinas kantor BBPOM. Spesifikasi yang diminta berada di luar standar pengadaan TI.",
                         'created_at' => Carbon::now()->subDays(14),
                     ],
@@ -190,6 +218,7 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-007',
                 'user_id' => $user1->id,
+                'handled_by_id' => null,
                 'category_id' => $categories['jaringan-internet']->id,
                 'subject' => 'Permintaan Konfigurasi VPN Kantor untuk Work From Home (WFH)',
                 'description' => "Mohon bantuan setting akun VPN dinas BBPOM Semarang pada laptop dinas agar dapat mengakses server file share dari rumah.",

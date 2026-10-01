@@ -16,4 +16,16 @@ class EditTicket extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Otomatis mencatat akun admin yang sedang login (Admin 1 / Admin 2) saat mengubah status
+        if (in_array($data['status'] ?? '', ['diproses', 'selesai', 'ditolak'])) {
+            $data['handled_by_id'] = auth()->id();
+        } elseif (($data['status'] ?? '') === 'pending') {
+            $data['handled_by_id'] = null;
+        }
+
+        return $data;
+    }
 }

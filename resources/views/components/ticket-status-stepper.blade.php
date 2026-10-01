@@ -90,6 +90,12 @@
                                 Sedang Ditelaah
                             </span>
                         @endif
+                        @if($ticket->handledBy && $isStep2Done)
+                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                <i class="ri-user-star-line text-emerald-600"></i>
+                                <span>{{ $ticket->handledBy->name }}</span>
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -106,6 +112,12 @@
                         @if($isStep3Done && $status === 'diproses')
                             <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                                 Proses Pengerjaan
+                            </span>
+                        @endif
+                        @if($ticket->handledBy && $isStep3Done)
+                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                <i class="ri-tools-line text-blue-600"></i>
+                                <span>{{ $ticket->handledBy->name }}</span>
                             </span>
                         @endif
                     </div>
@@ -125,6 +137,12 @@
                             <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                                 Tuntas
                             </span>
+                            @if($ticket->handledBy)
+                                <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                    <i class="ri-checkbox-circle-line text-emerald-600"></i>
+                                    <span>{{ $ticket->handledBy->name }}</span>
+                                </span>
+                            @endif
                         @endif
                     </div>
                 </div>

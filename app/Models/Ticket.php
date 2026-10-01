@@ -15,6 +15,7 @@ class Ticket extends Model
     protected $fillable = [
         'ticket_number',
         'user_id',
+        'handled_by_id',
         'category_id',
         'service_key',
         'subcategory',
@@ -46,6 +47,11 @@ class Ticket extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function handledBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'handled_by_id');
     }
 
     public function category(): BelongsTo

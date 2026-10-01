@@ -62,6 +62,14 @@ class TicketsTable
                     })
                     ->sortable(),
 
+                TextColumn::make('handledBy.name')
+                    ->label('Petugas IT')
+                    ->placeholder('Belum Ditugaskan')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('responses_count')
                     ->counts('responses')
                     ->label('Tanggapan')
@@ -82,6 +90,10 @@ class TicketsTable
                         'selesai' => 'Selesai',
                         'ditolak' => 'Ditolak',
                     ]),
+
+                SelectFilter::make('handled_by_id')
+                    ->relationship('handledBy', 'name', fn ($query) => $query->where('role', 'admin'))
+                    ->label('Petugas IT (Admin)'),
 
                 SelectFilter::make('category_id')
                     ->relationship('category', 'name')

@@ -205,7 +205,7 @@
                                         </a>
                                     </td>
                                     <td class="py-4 px-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
                                             {{ $ticket->category->name }}
                                         </span>
                                     </td>
@@ -220,7 +220,7 @@
                                         </div>
                                     </td>
                                     <td class="py-4 px-4 whitespace-nowrap">
-                                        <x-ticket-status-badge :status="$ticket->status" />
+                                        <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
                                     </td>
                                     <td class="py-4 px-4 whitespace-nowrap text-xs sm:text-sm text-slate-600 font-medium">
                                         {{ $ticket->created_at->translatedFormat('d M Y, H:i') }} WIB

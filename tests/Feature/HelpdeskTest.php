@@ -718,5 +718,153 @@ class HelpdeskTest extends TestCase
             ->assertSee('Tiket Selesai')
             ->assertSee('Tiket Ditolak');
     }
+
+    public function test_ticket_status_displays_handling_admin_name_to_user(): void
+    {
+        $admin1 = User::factory()->create([
+            'name' => 'Admin 1 - Layanan TIK',
+            'role' => 'admin',
+        ]);
+
+        $admin2 = User::factory()->create([
+            'name' => 'Admin 2 - Layanan TIK',
+            'role' => 'admin',
+        ]);
+
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['slug' => 'jaringan'], ['name' => 'Jaringan']);
+
+        $ticket = Ticket::create([
+            'ticket_number' => 'TIK-TEST-001',
+            'user_id' => $user->id,
+            'handled_by_id' => $admin1->id,
+            'category_id' => $category->id,
+            'subject' => 'Kendala WiFi Admin 1',
+            'description' => 'Deskripsi kendala pengujian untuk admin 1',
+            'status' => 'diproses',
+        ]);
+
+        // User views ticket show page
+        $responseShow = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $responseShow->assertSuccessful();
+        $responseShow->assertSee('Sedang diproses oleh Admin 1 - Layanan TIK');
+        $responseShow->assertSee('Petugas Penanggung Jawab');
+        $responseShow->assertSee('Admin 1 - Layanan TIK');
+
+        // User views ticket index and dashboard
+        $responseIndex = $this->actingAs($user)->get(route('tickets.index'));
+        $responseIndex->assertSuccessful();
+        $responseIndex->assertSee('Sedang diproses oleh Admin 1 - Layanan TIK');
+
+        $responseDashboard = $this->actingAs($user)->get(route('dashboard'));
+        $responseDashboard->assertSuccessful();
+        $responseDashboard->assertSee('Sedang diproses oleh Admin 1 - Layanan TIK');
+
+        // Now change handler to Admin 2 and status to selesai
+        $ticket->update([
+            'handled_by_id' => $admin2->id,
+            'status' => 'selesai',
+        ]);
+
+        $responseShowSelesai = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $responseShowSelesai->assertSuccessful();
+        $responseShowSelesai->assertSee('Selesai ditangani oleh Admin 2 - Layanan TIK');
+        $responseShowSelesai->assertSee('Admin 2 - Layanan TIK');
+    }
+
+    public function test_admin_reply_auto_assigns_handler_and_moves_pending_to_diproses(): void
+    {
+        $admin = User::factory()->create([
+            'name' => 'Admin 1',
+            'role' => 'admin',
+        ]);
+
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['slug' => 'software'], ['name' => 'Software']);
+
+        $ticket = Ticket::create([
+            'ticket_number' => 'TIK-TEST-002',
+            'user_id' => $user->id,
+            'handled_by_id' => null,
+            'category_id' => $category->id,
+            'subject' => 'Kendala Aplikasi Test',
+            'description' => 'Aplikasi error',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('tickets.reply', $ticket), [
+            'response_text' => 'Halo, pengaduan ini sedang saya tangani sekarang.',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $ticket));
+
+        $ticket->refresh();
+        $this->assertEquals($admin->id, $ticket->handled_by_id);
+        $this->assertEquals('diproses', $ticket->status);
+    }
+
+    public function test_filament_auto_stamps_logged_in_admin_when_status_updated(): void
+    {
+        $admin1 = User::factory()->create([
+            'name' => 'Admin 1 - Layanan TIK',
+            'role' => 'admin',
+        ]);
+
+        $admin2 = User::factory()->create([
+            'name' => 'Admin 2 - Layanan TIK',
+            'role' => 'admin',
+        ]);
+
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['slug' => 'hardware'], ['name' => 'Hardware']);
+
+        $ticket = Ticket::create([
+            'ticket_number' => 'TIK-AUTO-001',
+            'user_id' => $user->id,
+            'handled_by_id' => null,
+            'category_id' => $category->id,
+            'subject' => 'Kendala PC',
+            'description' => 'PC tidak mau menyala',
+            'status' => 'pending',
+        ]);
+
+        // Admin 1 updates status to diproses via Filament
+        \Livewire\Livewire::actingAs($admin1)
+            ->test(\App\Filament\Resources\Tickets\Pages\EditTicket::class, [
+                'record' => $ticket->getKey(),
+            ])
+            ->fillForm([
+                'status' => 'diproses',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $ticket->refresh();
+        $this->assertEquals($admin1->id, $ticket->handled_by_id);
+        $this->assertEquals('diproses', $ticket->status);
+
+        // User views ticket and sees Admin 1 handling
+        $response1 = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $response1->assertSee('Sedang diproses oleh Admin 1 - Layanan TIK');
+
+        // Later Admin 2 finishes the ticket via Filament
+        \Livewire\Livewire::actingAs($admin2)
+            ->test(\App\Filament\Resources\Tickets\Pages\EditTicket::class, [
+                'record' => $ticket->getKey(),
+            ])
+            ->fillForm([
+                'status' => 'selesai',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $ticket->refresh();
+        $this->assertEquals($admin2->id, $ticket->handled_by_id);
+        $this->assertEquals('selesai', $ticket->status);
+
+        // User views ticket and sees Admin 2 finished it
+        $response2 = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $response2->assertSee('Selesai ditangani oleh Admin 2 - Layanan TIK');
+    }
 }
 
