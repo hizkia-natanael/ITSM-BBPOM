@@ -306,64 +306,64 @@
                             @include('tickets.forms.partials.metadata-header')
 
                             <!-- 1. SIPT -->
-                            <div x-show="selectedServiceKey === 'sipt'">
+                            <fieldset :disabled="selectedServiceKey !== 'sipt'" x-show="selectedServiceKey === 'sipt'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-sipt')
-                            </div>
+                            </fieldset>
 
                             <!-- 2. SRIKANDI -->
-                            <div x-show="selectedServiceKey === 'srikandi'">
+                            <fieldset :disabled="selectedServiceKey !== 'srikandi'" x-show="selectedServiceKey === 'srikandi'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-srikandi')
-                            </div>
+                            </fieldset>
 
                             <!-- 3. EMAIL CORPORATE -->
-                            <div x-show="selectedServiceKey === 'email_corporate'">
+                            <fieldset :disabled="selectedServiceKey !== 'email_corporate'" x-show="selectedServiceKey === 'email_corporate'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-email-corporate')
-                            </div>
+                            </fieldset>
 
                             <!-- 4. SERTIFIKAT BSRE -->
-                            <div x-show="selectedServiceKey === 'sertifikat_bse'">
+                            <fieldset :disabled="selectedServiceKey !== 'sertifikat_bse'" x-show="selectedServiceKey === 'sertifikat_bse'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-bsre')
-                            </div>
+                            </fieldset>
 
                             <!-- 5. ZOOM -->
-                            <div x-show="selectedServiceKey === 'zoom'">
+                            <fieldset :disabled="selectedServiceKey !== 'zoom'" x-show="selectedServiceKey === 'zoom'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-zoom')
-                            </div>
+                            </fieldset>
 
                             <!-- 6. FORMULIR & KEGIATAN -->
-                            <div x-show="selectedServiceKey === 'formulir_kegiatan'">
+                            <fieldset :disabled="selectedServiceKey !== 'formulir_kegiatan'" x-show="selectedServiceKey === 'formulir_kegiatan'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-formulir-kegiatan')
-                            </div>
+                            </fieldset>
 
                             <!-- 7. INTERNET -->
-                            <div x-show="selectedServiceKey === 'internet'">
+                            <fieldset :disabled="selectedServiceKey !== 'internet'" x-show="selectedServiceKey === 'internet'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-internet')
-                            </div>
+                            </fieldset>
 
                             <!-- 8. SUBSITE -->
-                            <div x-show="selectedServiceKey === 'subsite'">
+                            <fieldset :disabled="selectedServiceKey !== 'subsite'" x-show="selectedServiceKey === 'subsite'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-subsite')
-                            </div>
+                            </fieldset>
 
                             <!-- 9. INFOGRAFIS -->
-                            <div x-show="selectedServiceKey === 'infografis'">
+                            <fieldset :disabled="selectedServiceKey !== 'infografis'" x-show="selectedServiceKey === 'infografis'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-infografis')
-                            </div>
+                            </fieldset>
 
                             <!-- 10. INSTALL WINDOWS -->
-                            <div x-show="selectedServiceKey === 'install_windows'">
+                            <fieldset :disabled="selectedServiceKey !== 'install_windows'" x-show="selectedServiceKey === 'install_windows'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-install-windows')
-                            </div>
+                            </fieldset>
 
                             <!-- 11. LISENSI OFFICE -->
-                            <div x-show="selectedServiceKey === 'lisensi_office'">
+                            <fieldset :disabled="selectedServiceKey !== 'lisensi_office'" x-show="selectedServiceKey === 'lisensi_office'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-lisensi-office')
-                            </div>
+                            </fieldset>
 
                             <!-- 12. LAINNYA -->
-                            <div x-show="selectedServiceKey === 'lainnya'">
+                            <fieldset :disabled="selectedServiceKey !== 'lainnya'" x-show="selectedServiceKey === 'lainnya'" class="border-0 p-0 m-0 min-w-0">
                                 @include('tickets.forms.form-lainnya')
-                            </div>
+                            </fieldset>
 
                             <input type="hidden" id="category_id" name="category_id" :value="currentService ? currentService.default_category_id : 5">
 
@@ -531,6 +531,7 @@
 
                     for (let el of form.elements) {
                         if (!el.name || ignoredNames.includes(el.name) || el.type === 'submit' || el.type === 'button') continue;
+                        if (el.disabled) continue;
 
                         // Check if element is inside the active service container
                         const serviceContainer = el.closest('[x-show*="selectedServiceKey"]');

@@ -43,7 +43,7 @@
                     <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition" x-data="{ fileName: '' }">
                         <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
                             <span>Pilih Berkas</span>
-                            <input type="file" name="attachment" class="sr-only" required @change="fileName = $event.target.files[0]?.name">
+                            <input type="file" name="attachment" class="sr-only" @change="fileName = $event.target.files[0]?.name">
                         </label>
                         <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG (Maks 5MB)'"></span>
                     </div>
@@ -79,7 +79,7 @@
                 <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition" x-data="{ fileName: '' }">
                     <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
                         <span>Pilih Dokumen</span>
-                        <input type="file" name="attachment" class="sr-only" required @change="fileName = $event.target.files[0]?.name">
+                        <input type="file" name="attachment" class="sr-only" @change="fileName = $event.target.files[0]?.name">
                     </label>
                     <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: PDF, Word, Excel, ZIP (Maks 5MB)'"></span>
                 </div>
