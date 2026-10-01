@@ -821,7 +821,7 @@
                             <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
                             <div class="flex items-end justify-end gap-2 max-w-[80%] sm:max-w-[65%] ml-auto">
                                 <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2 border border-slate-200 shadow-2xs">
-                                    <div class="flex items-center justify-end gap-1.5 mb-0.5">
+                                    <div class="flex items-center justify-end gap-1.5 mb-0">
                                         <span class="text-[11px] font-bold text-slate-900 leading-tight">
                                             Helpdesk TIK
                                         </span>
@@ -829,7 +829,7 @@
                                             Sistem
                                         </span>
                                     </div>
-                                    <p class="text-xs sm:text-sm text-slate-800 leading-relaxed">
+                                    <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5">
                                         Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan informasi tambahan di kolom chat ini jika diperlukan.
                                     </p>
                                     <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
@@ -883,7 +883,7 @@
                                             <!-- Message Bubble -->
                                             <div class="bg-slate-100/95 rounded-2xl rounded-bl-xs px-3.5 py-2 border border-slate-200/60 shadow-2xs">
                                                 <!-- Sender Name & Role Header -->
-                                                <div class="flex items-center gap-1.5 mb-0.5">
+                                                <div class="flex items-center gap-1.5 mb-0">
                                                     <span class="text-[11px] font-bold text-slate-900 leading-tight">
                                                         {{ $response->user->name }}
                                                     </span>
@@ -891,7 +891,7 @@
                                                         Pemohon
                                                     </span>
                                                 </div>
-                                                <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+                                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line">
                                                     {{ $response->response_text }}
                                                 </p>
                                                 <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
@@ -905,7 +905,7 @@
                                             <!-- Message Bubble -->
                                             <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2 border border-slate-200 shadow-2xs">
                                                 <!-- Role Pill & Admin Name inside bubble -->
-                                                <div class="flex items-center justify-end gap-1.5 mb-0.5">
+                                                <div class="flex items-center justify-end gap-1.5 mb-0">
                                                     <span class="text-[11px] font-bold text-slate-900 leading-tight">
                                                         {{ $response->user->name }}
                                                     </span>
@@ -913,7 +913,7 @@
                                                         Petugas IT
                                                     </span>
                                                 </div>
-                                                <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+                                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line">
                                                     {{ $response->response_text }}
                                                 </p>
                                                 <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
@@ -946,7 +946,8 @@
                                     id="response_text" 
                                     name="response_text" 
                                     rows="1" 
-                                    class="w-full rounded-2xl border-slate-300 py-3 px-4 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs resize-none max-h-32 transition-all"
+                                    class="w-full rounded-2xl border-slate-300 py-3 px-4 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs resize-none max-h-32 overflow-hidden"
+                                    style="overflow-y: hidden;"
                                     placeholder="Ketik tanggapan Anda di sini..."
                                     required
                                 >{{ old('response_text') }}</textarea>
@@ -1112,9 +1113,16 @@
             // Auto-expand textarea height as user types (up to max-h-32 / 128px)
             function adjustHeight() {
                 textarea.style.height = 'auto';
-                textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+                if (textarea.scrollHeight > 128) {
+                    textarea.style.height = '128px';
+                    textarea.style.overflowY = 'auto';
+                } else {
+                    textarea.style.height = textarea.scrollHeight + 'px';
+                    textarea.style.overflowY = 'hidden';
+                }
             }
 
+            adjustHeight();
             textarea.addEventListener('input', adjustHeight);
 
             // Handle keyboard shortcuts: Enter to submit, Shift + Enter for newline
