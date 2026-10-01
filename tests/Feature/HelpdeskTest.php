@@ -134,4 +134,90 @@ class HelpdeskTest extends TestCase
         $this->assertStringContainsString('Pangan', $ticket->description);
         $response->assertRedirect(route('tickets.show', $ticket));
     }
+
+    public function test_user_can_view_ticket_detail(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Aplikasi', 'slug' => 'aplikasi']);
+
+        $ticket = Ticket::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'subject' => 'Aplikasi SIPT Error',
+            'description' => 'Tidak bisa input data pengujian.',
+            'status' => 'diproses',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('tickets.show', $ticket));
+
+        $response->assertSuccessful();
+        $response->assertSee($ticket->ticket_number);
+        $response->assertSee('Aplikasi SIPT Error');
+        $response->assertSee('Sedang Diproses');
+        $response->assertSee('Cetak Tiket');
+        $response->assertSee('Kolom Diskusi Tiket');
+    }
+
+    public function test_user_cannot_view_other_users_ticket(): void
+    {
+        $user1 = User::factory()->create(['role' => 'user']);
+        $user2 = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Jaringan', 'slug' => 'jaringan']);
+
+        $ticket = Ticket::create([
+            'user_id' => $user1->id,
+            'category_id' => $category->id,
+            'subject' => 'Tiket Rahasia User 1',
+            'description' => 'Hanya untuk user 1.',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($user2)->get(route('tickets.show', $ticket));
+        $response->assertForbidden();
+    }
+
+    public function test_admin_can_view_any_ticket(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Hardware', 'slug' => 'hardware']);
+
+        $ticket = Ticket::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'subject' => 'Printer Rusak',
+            'description' => 'Paper jam terus.',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('tickets.show', $ticket));
+        $response->assertSuccessful();
+        $response->assertSee('Printer Rusak');
+    }
+
+    public function test_user_can_view_ticket_with_structured_specifications(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['name' => 'Aplikasi', 'slug' => 'aplikasi']);
+
+        $structuredDesc = "**Layanan:** SIPT\n**Sub Kategori:** Reset Password\n**Tanggal Pengajuan:** 01/10/2026 10:00\n**Nama Pemohon:** {$user->name}\n---\n### Rincian Kebutuhan / Formulir:\n* **Username SIPT:** user.bbpom\n* **Request Password Baru:** Bbpom2026!\n* **Catatan Tambahan:** Butuh mendesak untuk uji laboratorium.";
+
+        $ticket = Ticket::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'subject' => '[SIPT] Reset Password',
+            'description' => $structuredDesc,
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $response->assertSuccessful();
+        $response->assertSee('Username SIPT');
+        $response->assertSee('user.bbpom');
+        $response->assertSee('Request Password Baru');
+        $response->assertSee('Bbpom2026!');
+        $response->assertSee('Catatan Tambahan');
+        $response->assertSee('Butuh mendesak untuk uji laboratorium.');
+    }
 }
+

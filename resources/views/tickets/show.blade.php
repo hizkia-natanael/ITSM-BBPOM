@@ -1,119 +1,219 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <nav class="flex text-xs text-gray-500 mb-1" aria-label="Breadcrumb">
-                    <ol class="inline-flex items-center space-x-1">
-                        <li>
-                            <a href="{{ route('dashboard') }}" class="hover:text-emerald-700">Dashboard</a>
-                        </li>
-                        <li>
-                            <span class="mx-1 text-gray-400">/</span>
-                        </li>
-                        <li>
-                            <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700">Daftar Pengaduan</a>
-                        </li>
-                        <li>
-                            <span class="mx-1 text-gray-400">/</span>
-                        </li>
-                        <li class="font-semibold text-emerald-800">{{ $ticket->ticket_number }}</li>
-                    </ol>
+                <!-- Breadcrumbs -->
+                <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
+                    <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
+                        <i class="ri-home-4-line text-xs"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <span class="text-slate-300">/</span>
+                    <a href="{{ route('tickets.index') }}" class="hover:text-emerald-700 transition-colors flex items-center gap-1">
+                        <i class="ri-file-list-3-line text-xs"></i>
+                        <span>Daftar Pengaduan</span>
+                    </a>
+                    <span class="text-slate-300">/</span>
+                    <span class="font-mono font-semibold text-emerald-800">{{ $ticket->ticket_number }}</span>
                 </nav>
-                <div class="flex items-center gap-3">
-                    <h2 class="font-bold text-xl text-gray-900 leading-tight">
-                        Tiket {{ $ticket->ticket_number }}
-                    </h2>
+
+                <!-- Ticket Identifier & Subject Header -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div x-data="{ copied: false }" class="inline-flex items-center gap-1.5">
+                        <span class="font-mono text-xs font-bold bg-slate-900 text-white px-3 py-1 rounded-lg tracking-wider shadow-xs">
+                            {{ $ticket->ticket_number }}
+                        </span>
+                        <button 
+                            @click="navigator.clipboard.writeText('{{ $ticket->ticket_number }}'); copied = true; setTimeout(() => copied = false, 2000)" 
+                            type="button" 
+                            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-xs"
+                            title="Salin Nomor Tiket"
+                        >
+                            <i x-show="!copied" class="ri-file-copy-line text-xs"></i>
+                            <i x-show="copied" class="ri-check-line text-emerald-600 text-xs" x-cloak></i>
+                            <span x-text="copied ? 'Tersalin' : 'Salin'">Salin</span>
+                        </button>
+                    </div>
+
                     <x-ticket-status-badge :status="$ticket->status" />
+
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        <i class="ri-apps-2-line text-slate-500 text-xs"></i>
+                        {{ $ticket->category->name }}
+                    </span>
                 </div>
+
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-2">
+                    {{ $ticket->subject }}
+                </h1>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('tickets.index') }}" class="inline-flex items-center px-3.5 py-2 border border-gray-300 rounded-xl text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 transition">
-                    &larr; Kembali ke Daftar
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-2.5 self-start md:self-center shrink-0 print:hidden">
+                <a 
+                    href="{{ route('tickets.index') }}" 
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 transition shadow-xs"
+                >
+                    <i class="ri-arrow-left-line text-sm"></i>
+                    <span>Kembali ke Riwayat</span>
                 </a>
+
+                <button 
+                    type="button" 
+                    onclick="window.print()" 
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition shadow-xs hover:shadow"
+                >
+                    <i class="ri-printer-line text-sm"></i>
+                    <span>Cetak Tiket</span>
+                </button>
             </div>
         </div>
     </x-slot>
 
+    <!-- Print Slip Official Header (Visible ONLY during print) -->
+    <div class="hidden print:block mb-8 pb-4 border-b-2 border-slate-900">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <img src="{{ asset('images/logo-bpom.png') }}" alt="Logo BPOM" class="h-16 w-auto object-contain">
+                <div>
+                    <h2 class="text-xs uppercase tracking-widest font-semibold text-slate-600">Badan Pengawas Obat dan Makanan Republik Indonesia</h2>
+                    <h1 class="text-lg font-bold uppercase tracking-wide text-slate-900">Balai Besar Pengawas Obat dan Makanan di Semarang</h1>
+                    <p class="text-[11px] text-slate-600">Jl. Sukun Raya No.41A, Srondol Wetan, Kec. Banyumanik, Kota Semarang, Jawa Tengah 50263</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="font-mono font-bold text-base border border-slate-900 px-3 py-1 bg-slate-50 inline-block">
+                    {{ $ticket->ticket_number }}
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1 uppercase font-semibold">Lembar Bukti Layanan TIK</div>
+            </div>
+        </div>
+        <div class="mt-4 pt-2 border-t border-slate-300 text-center font-bold text-sm tracking-wider uppercase text-slate-800">
+            Tanda Terima Pendaftaran Pengaduan & Permohonan Layanan TIK
+        </div>
+    </div>
+
     <div class="space-y-6">
-        <!-- Visual Timeline Status Tracking -->
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-6">
-                Status Pelacakan Kendala (Tracking Timeline)
-            </h3>
+        <!-- Status Tracking Stepper / Progress Bar (ITSM Lifecycle) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-7 print:hidden">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">ITSM Lifecycle Tracking</span>
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5 mt-0.5">
+                        <i class="ri-pulse-line text-emerald-700"></i>
+                        Status Penanganan Kendala Layanan
+                    </h3>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-500">Terakhir Diperbarui:</span>
+                    <span class="text-xs font-semibold text-slate-800 block">{{ $ticket->updated_at->translatedFormat('d M Y, H:i') }} WIB</span>
+                </div>
+            </div>
 
             @if($ticket->status === 'ditolak')
+                <!-- Status Ditolak / Dibatalkan Alert -->
                 <div class="rounded-xl bg-rose-50 border border-rose-200 p-5 flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                        <i class="ri-close-circle-fill text-2xl"></i>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-rose-900 text-sm">Pengaduan Berstatus Ditolak / Dibatalkan</h4>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-rose-900 text-sm">Pengaduan Berstatus Ditolak / Tidak Dapat Diproses</h4>
                         <p class="text-xs text-rose-700 mt-1 leading-relaxed">
-                            Pengaduan ini tidak dapat diproses lebih lanjut oleh tim IT BBPOM. Silakan periksa kolom tanggapan petugas di bawah untuk melihat alasan penolakan atau ajukan tiket baru dengan data yang sesuai.
+                            Permohonan atau pengaduan ini tidak dapat dilanjutkan oleh tim Helpdesk TIK BBPOM di Semarang. Alasan penolakan atau petunjuk perbaikan dapat Anda baca pada kolom riwayat tanggapan petugas di bawah.
                         </p>
                     </div>
                 </div>
             @else
-                <div class="relative">
-                    <!-- Progress Bar Background Line -->
-                    <div class="hidden sm:block absolute top-1/2 left-10 right-10 -translate-y-1/2 h-1 bg-gray-200 z-0"></div>
-                    
-                    @php
-                        $isPendingActive = in_array($ticket->status, ['pending', 'diproses', 'selesai']);
-                        $isDiprosesActive = in_array($ticket->status, ['diproses', 'selesai']);
-                        $isSelesaiActive = $ticket->status === 'selesai';
-                    @endphp
+                <!-- 4-Stage ITSM Stepper Timeline -->
+                @php
+                    $isStep1Done = true;
+                    $isStep2Done = in_array($ticket->status, ['diproses', 'selesai']);
+                    $isStep3Done = in_array($ticket->status, ['diproses', 'selesai']) && ($ticket->responses->where('user.role', 'admin')->count() > 0 || $ticket->status === 'selesai');
+                    $isStep4Done = $ticket->status === 'selesai';
 
-                    <!-- Active Progress Line -->
-                    <div class="hidden sm:block absolute top-1/2 left-10 -translate-y-1/2 h-1 bg-emerald-600 z-0 transition-all duration-500"
-                         style="width: {{ $isSelesaiActive ? 'calc(100% - 80px)' : ($isDiprosesActive ? 'calc(50% - 40px)' : '0%') }};">
+                    // Progress percentage for visual connecting bar
+                    $progressWidth = '0%';
+                    if ($isStep4Done) {
+                        $progressWidth = '100%';
+                    } elseif ($isStep3Done) {
+                        $progressWidth = '66%';
+                    } elseif ($isStep2Done) {
+                        $progressWidth = '33%';
+                    }
+                @endphp
+
+                <div class="relative py-2">
+                    <!-- Progress Bar Background Line -->
+                    <div class="hidden sm:block absolute top-6 left-12 right-12 h-1 bg-slate-100 z-0"></div>
+                    
+                    <!-- Progress Bar Active Colored Line -->
+                    <div class="hidden sm:block absolute top-6 left-12 h-1 bg-emerald-600 z-0 transition-all duration-700"
+                         style="width: {{ $progressWidth }};">
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 relative z-10">
-                        <!-- Step 1: Pending -->
-                        <div class="flex sm:flex-col items-center sm:text-center gap-4 sm:gap-2">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition {{ $isPendingActive ? 'bg-amber-500 text-white ring-4 ring-amber-100' : 'bg-gray-100 text-gray-400' }}">
-                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 relative z-10">
+                        <!-- Step 1: Pengajuan Masuk -->
+                        <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shadow-xs transition-all {{ $isStep1Done ? 'bg-emerald-700 text-white ring-4 ring-emerald-50' : 'bg-slate-100 text-slate-400' }}">
+                                <i class="ri-file-text-line text-xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-xs sm:text-sm text-gray-900">1. Pengaduan Masuk</h4>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Tiket diterbitkan & masuk antrian IT</p>
-                                <span class="text-[10px] text-gray-400 block">{{ $ticket->created_at->format('d/m/Y H:i') }} WIB</span>
+                                <h4 class="font-bold text-xs sm:text-sm text-slate-900">1. Pengaduan Masuk</h4>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Tiket tercatat di antrian Helpdesk</p>
+                                <span class="text-[10px] font-mono text-slate-400 block mt-0.5">{{ $ticket->created_at->format('d/m/Y H:i') }} WIB</span>
                             </div>
                         </div>
 
-                        <!-- Step 2: Diproses -->
-                        <div class="flex sm:flex-col items-center sm:text-center gap-4 sm:gap-2">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition {{ $isDiprosesActive ? 'bg-blue-600 text-white ring-4 ring-blue-100' : 'bg-gray-100 text-gray-400' }}">
-                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                </svg>
+                        <!-- Step 2: Verifikasi & Diagnosa -->
+                        <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shadow-xs transition-all {{ $isStep2Done ? ($ticket->status === 'diproses' && !$isStep3Done ? 'bg-blue-600 text-white ring-4 ring-blue-100 animate-pulse' : 'bg-emerald-700 text-white ring-4 ring-emerald-50') : 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                <i class="ri-search-eye-line text-xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-xs sm:text-sm {{ $isDiprosesActive ? 'text-blue-900 font-extrabold' : 'text-gray-500' }}">2. Sedang Diproses</h4>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Penanganan & investigasi teknisi</p>
-                                @if($isDiprosesActive)
-                                    <span class="inline-block mt-0.5 px-2 py-0.2 rounded text-[10px] font-semibold bg-blue-50 text-blue-700">Aktif</span>
+                                <h4 class="font-bold text-xs sm:text-sm {{ $isStep2Done ? 'text-slate-900 font-bold' : 'text-slate-400' }}">
+                                    2. Verifikasi & Diagnosa
+                                </h4>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Penelaahan spesifikasi oleh tim IT</p>
+                                @if($isStep2Done && $ticket->status === 'diproses')
+                                    <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                        Sedang Ditelaah
+                                    </span>
                                 @endif
                             </div>
                         </div>
 
-                        <!-- Step 3: Selesai -->
-                        <div class="flex sm:flex-col items-center sm:text-center gap-4 sm:gap-2">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition {{ $isSelesaiActive ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' : 'bg-gray-100 text-gray-400' }}">
-                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                </svg>
+                        <!-- Step 3: Penanganan Teknis -->
+                        <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shadow-xs transition-all {{ $isStep3Done ? ($ticket->status === 'diproses' ? 'bg-blue-600 text-white ring-4 ring-blue-100 animate-pulse' : 'bg-emerald-700 text-white ring-4 ring-emerald-50') : 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                <i class="ri-tools-line text-xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-xs sm:text-sm {{ $isSelesaiActive ? 'text-emerald-900 font-extrabold' : 'text-gray-500' }}">3. Selesai Ditangani</h4>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Kendala tuntas diperbaiki</p>
-                                @if($isSelesaiActive)
-                                    <span class="inline-block mt-0.5 px-2 py-0.2 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700">Tuntas</span>
+                                <h4 class="font-bold text-xs sm:text-sm {{ $isStep3Done ? 'text-slate-900 font-bold' : 'text-slate-400' }}">
+                                    3. Penanganan Teknis
+                                </h4>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Eksekusi perbaikan oleh teknisi</p>
+                                @if($isStep3Done && $ticket->status === 'diproses')
+                                    <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                        Proses Pengerjaan
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Selesai & Ditutup -->
+                        <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shadow-xs transition-all {{ $isStep4Done ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200' }}">
+                                <i class="ri-checkbox-circle-line text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm {{ $isStep4Done ? 'text-emerald-900 font-extrabold' : 'text-slate-400' }}">
+                                    4. Tuntas & Selesai
+                                </h4>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Kendala terselesaikan & tiket ditutup</p>
+                                @if($isStep4Done)
+                                    <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                        Tuntas
+                                    </span>
                                 @endif
                             </div>
                         </div>
@@ -122,142 +222,279 @@
             @endif
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Kolom Kiri (2 Kolom): Detail Tiket & Riwayat Diskusi -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Card Detail Tiket (Read-only) -->
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
-                    <div class="border-b border-gray-100 pb-4 mb-5 flex items-center justify-between">
+        <!-- Two-Column Enterprise Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Primary Column (8 cols): Detail Tiket, Form Spec, Attachment, Discussion -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- Card 1: Rincian Lengkap Pengaduan & Spesifikasi Formulir -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
+                    <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                            <span class="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Detail Informasi</span>
-                            <h3 class="text-base font-bold text-gray-900 mt-0.5">{{ $ticket->subject }}</h3>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                                <i class="ri-file-list-3-line text-sm"></i>
+                                Informasi & Spesifikasi Pengaduan
+                            </span>
+                            <h2 class="text-lg font-bold text-slate-900 mt-1">
+                                {{ $ticket->subject }}
+                            </h2>
                         </div>
-                        <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700">
-                            {{ $ticket->category->name }}
-                        </span>
+                        <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                            <span class="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5">
+                                <i class="ri-folder-2-line text-slate-500"></i>
+                                {{ $ticket->category->name }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="space-y-4 text-xs">
-                        <div>
-                            <span class="font-semibold text-gray-500 block mb-1">Deskripsi Masalah / Kendala:</span>
-                            <div class="p-4 rounded-xl bg-gray-50/70 border border-gray-100 text-gray-800 text-xs sm:text-sm leading-relaxed whitespace-pre-line">
-                                {{ $ticket->description }}
-                            </div>
-                        </div>
+                    <!-- Intelligent Structured Description Rendering -->
+                    <x-ticket-description :description="$ticket->description" />
 
-                        <!-- Lampiran jika ada -->
-                        @if($ticket->attachment)
-                            <div class="pt-3">
-                                <span class="font-semibold text-gray-500 block mb-1">Berkas Lampiran:</span>
-                                <div class="inline-flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50/50">
-                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                        </svg>
+                    <!-- Attachment Section (Preview / Download) -->
+                    @if($ticket->attachment)
+                        @php
+                            $ext = strtolower(pathinfo($ticket->attachment, PATHINFO_EXTENSION));
+                            $isImage = in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp']);
+                            $isPdf = $ext === 'pdf';
+                            $isDoc = in_array($ext, ['doc', 'docx']);
+                            $isZip = in_array($ext, ['zip', 'rar']);
+
+                            $fileIcon = match(true) {
+                                $isImage => 'ri-image-2-line text-blue-600',
+                                $isPdf => 'ri-file-pdf-2-line text-rose-600',
+                                $isDoc => 'ri-file-word-2-line text-blue-700',
+                                $isZip => 'ri-file-zip-line text-amber-600',
+                                default => 'ri-file-line text-slate-600',
+                            };
+
+                            $fileName = basename($ticket->attachment);
+                        @endphp
+
+                        <div class="mt-8 pt-6 border-t border-slate-100" x-data="{ showLightbox: false }">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                                <i class="ri-attachment-2 text-emerald-700 text-sm"></i>
+                                Berkas Lampiran Pendukung:
+                            </h4>
+
+                            <div class="p-4 rounded-2xl border border-slate-200/90 bg-slate-50/70 hover:bg-slate-50 transition-colors">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div class="flex items-center gap-3.5">
+                                        <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                                            <i class="{{ $fileIcon }} text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <p class="font-bold text-xs sm:text-sm text-slate-900 truncate max-w-xs sm:max-w-md" title="{{ $fileName }}">
+                                                    {{ $fileName }}
+                                                </p>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-slate-200 text-slate-700">
+                                                    {{ $ext }}
+                                                </span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-500 mt-0.5">
+                                                Dokumen lampiran tersimpan secara aman di server ITSM BBPOM
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-900 text-xs">Dokumen / Bukti Lampiran</p>
-                                        <a href="{{ asset('storage/' . $ticket->attachment) }}" target="_blank" class="text-emerald-700 hover:text-emerald-800 font-semibold underline text-[11px] inline-flex items-center gap-1 mt-0.5">
-                                            Buka / Unduh Lampiran
-                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
+
+                                    <div class="flex items-center gap-2">
+                                        @if($isImage)
+                                            <button 
+                                                type="button" 
+                                                @click="showLightbox = true" 
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors shadow-xs"
+                                            >
+                                                <i class="ri-eye-line text-xs"></i>
+                                                <span>Pratinjau</span>
+                                            </button>
+                                        @endif
+
+                                        <a 
+                                            href="{{ asset('storage/' . $ticket->attachment) }}" 
+                                            target="_blank" 
+                                            download 
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-xs"
+                                        >
+                                            <i class="ri-download-2-line text-xs"></i>
+                                            <span>Unduh Berkas</span>
                                         </a>
                                     </div>
                                 </div>
+
+                                <!-- Image Thumbnail if Image -->
+                                @if($isImage)
+                                    <div class="mt-4 pt-3 border-t border-slate-200/60">
+                                        <button 
+                                            type="button" 
+                                            @click="showLightbox = true" 
+                                            class="group relative inline-block rounded-xl overflow-hidden border border-slate-200 bg-white hover:ring-2 hover:ring-emerald-500 transition-all cursor-zoom-in"
+                                        >
+                                            <img 
+                                                src="{{ asset('storage/' . $ticket->attachment) }}" 
+                                                alt="Lampiran {{ $ticket->ticket_number }}" 
+                                                class="max-h-48 w-auto rounded-lg object-contain group-hover:opacity-90 transition-opacity"
+                                            >
+                                            <div class="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-semibold transition-opacity">
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60">
+                                                    <i class="ri-zoom-in-line text-sm"></i>
+                                                    Perbesar Gambar
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </div>
+
+                                    <!-- Lightbox Modal using Alpine.js -->
+                                    <div 
+                                        x-show="showLightbox" 
+                                        x-cloak 
+                                        @keydown.escape.window="showLightbox = false"
+                                        class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
+                                    >
+                                        <div 
+                                            @click.away="showLightbox = false" 
+                                            class="relative bg-white rounded-2xl max-w-4xl w-full p-4 overflow-hidden shadow-2xl"
+                                        >
+                                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="ri-image-2-line text-emerald-700"></i>
+                                                    <span class="text-xs font-bold text-slate-800">{{ $fileName }}</span>
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    @click="showLightbox = false" 
+                                                    class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition"
+                                                >
+                                                    <i class="ri-close-line text-lg"></i>
+                                                </button>
+                                            </div>
+                                            <div class="max-h-[75vh] overflow-auto flex items-center justify-center bg-slate-100/50 rounded-xl p-2">
+                                                <img 
+                                                    src="{{ asset('storage/' . $ticket->attachment) }}" 
+                                                    alt="Lampiran {{ $ticket->ticket_number }}" 
+                                                    class="max-h-[70vh] w-auto rounded-lg object-contain shadow-sm"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
-                <!-- Kolom Diskusi & Tanggapan Admin/User -->
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
-                    <div class="border-b border-gray-100 pb-4 mb-6 flex items-center justify-between">
+                <!-- Card 2: Diskusi & Riwayat Tanggapan -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8 print:hidden">
+                    <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                            <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                                Kolom Diskusi & Riwayat Tanggapan
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                                <i class="ri-chat-3-line text-sm"></i>
+                                Komunikasi & Riwayat Penanganan
+                            </span>
+                            <h3 class="text-base font-bold text-slate-900 mt-0.5">
+                                Kolom Diskusi Tiket
                             </h3>
-                            <p class="text-xs text-gray-500 mt-0.5">
-                                Pantau jawaban teknisi IT dan kirimkan informasi tambahan terkait pengaduan ini
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Catatan resmi respon penanganan antara pemohon dan tim Helpdesk TIK BBPOM di Semarang
                             </p>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 self-start sm:self-auto">
                             {{ $ticket->responses->count() }} Balasan
                         </span>
                     </div>
 
-                    <!-- List Responses -->
-                    <div class="space-y-4 mb-6">
+                    <!-- Conversation Stream -->
+                    <div class="space-y-4 mb-8">
                         @forelse($ticket->responses as $response)
                             @php
                                 $isAdmin = $response->user->isAdmin();
                             @endphp
-                            <div class="rounded-xl p-4 {{ $isAdmin ? 'bg-emerald-50/80 border border-emerald-200' : 'bg-gray-50 border border-gray-200' }}">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs {{ $isAdmin ? 'bg-emerald-700 text-white' : 'bg-gray-700 text-white' }}">
-                                            {{ strtoupper(substr($response->user->name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <span class="font-bold text-xs text-gray-900">{{ $response->user->name }}</span>
+
+                            <div class="rounded-2xl p-5 transition-all {{ $isAdmin ? 'bg-emerald-50/70 border border-emerald-200 shadow-xs' : 'bg-slate-50/80 border border-slate-200' }}">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shadow-xs {{ $isAdmin ? 'bg-emerald-700 text-white' : 'bg-slate-800 text-white' }}">
                                             @if($isAdmin)
-                                                <span class="ms-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-200 text-emerald-800">
-                                                    Petugas IT BBPOM
-                                                </span>
+                                                <i class="ri-customer-service-2-fill text-base"></i>
                                             @else
-                                                <span class="ms-1.5 px-2 py-0.5 rounded text-[10px] font-medium bg-gray-200 text-gray-700">
-                                                    Pelapor
-                                                </span>
+                                                {{ strtoupper(substr($response->user->name, 0, 1)) }}
                                             @endif
                                         </div>
+                                        <div>
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span class="font-bold text-xs sm:text-sm text-slate-900">{{ $response->user->name }}</span>
+                                                @if($isAdmin)
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                                        <i class="ri-shield-check-fill text-emerald-700"></i>
+                                                        Tim Helpdesk TIK BBPOM
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-200 text-slate-700">
+                                                        <i class="ri-user-3-line text-slate-500"></i>
+                                                        Pemohon Layanan
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <span class="text-[11px] text-slate-500 block mt-0.5">
+                                                {{ $response->created_at->translatedFormat('l, d F Y - H:i') }} WIB
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span class="text-[11px] text-gray-500">
-                                        {{ $response->created_at->translatedFormat('d M Y, H:i') }} WIB
+                                    <span class="text-[10px] font-mono text-slate-400 hidden sm:inline-block">
+                                        {{ $response->created_at->diffForHumans() }}
                                     </span>
                                 </div>
-                                <div class="text-xs text-gray-800 leading-relaxed ps-9 whitespace-pre-line">
+
+                                <div class="text-xs sm:text-sm text-slate-800 leading-relaxed ps-0 sm:ps-12 whitespace-pre-line bg-white/70 p-3.5 rounded-xl border border-slate-200/50">
                                     {{ $response->response_text }}
                                 </div>
                             </div>
                         @empty
-                            <div class="py-8 text-center bg-gray-50/60 rounded-xl border border-dashed border-gray-200">
-                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                                </svg>
-                                <p class="text-xs font-semibold text-gray-700">Belum Ada Tanggapan</p>
-                                <p class="text-[11px] text-gray-500 max-w-sm mx-auto mt-0.5">
-                                    Petugas IT BBPOM sedang menelaah pengaduan Anda. Anda juga dapat menambahkan catatan atau respon melalui form di bawah.
+                            <div class="py-10 text-center bg-slate-50/70 rounded-2xl border border-dashed border-slate-200">
+                                <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 shadow-xs">
+                                    <i class="ri-chat-voice-line text-2xl text-slate-400"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-800">Belum Ada Tanggapan</h4>
+                                <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
+                                    Tim Helpdesk TIK BBPOM di Semarang sedang meninjau pengaduan Anda. Anda juga dapat memberikan pesan tambahan atau informasi pelengkap melalui form di bawah.
                                 </p>
                             </div>
                         @endforelse
                     </div>
 
-                    <!-- Form Tambah Balasan / Tanggapan -->
-                    <form method="POST" action="{{ route('tickets.reply', $ticket) }}" class="pt-4 border-t border-gray-100">
+                    <!-- Form Balasan / Kirim Tanggapan -->
+                    <form method="POST" action="{{ route('tickets.reply', $ticket) }}" class="pt-6 border-t border-slate-100">
                         @csrf
                         <div class="space-y-3">
-                            <label for="response_text" class="block text-xs font-semibold text-gray-700">
-                                Berikan Balasan / Informasi Tambahan
-                            </label>
+                            <div class="flex items-center justify-between">
+                                <label for="response_text" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="ri-reply-line text-emerald-700"></i>
+                                    Berikan Tanggapan / Informasi Tambahan:
+                                </label>
+                                <span class="text-[11px] text-slate-400">Tercatat ke sistem Helpdesk</span>
+                            </div>
+
                             <textarea 
                                 id="response_text" 
                                 name="response_text" 
                                 rows="3" 
-                                class="w-full rounded-xl border-gray-300 text-xs sm:text-sm text-gray-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-sm placeholder:text-gray-400"
-                                placeholder="Ketik tanggapan Anda di sini untuk berkomunikasi dengan staf IT..."
+                                class="w-full rounded-xl border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-emerald-600 focus:ring-emerald-600 shadow-xs placeholder:text-slate-400"
+                                placeholder="Tuliskan keterangan tambahan, konfirmasi status, atau pertanyaan untuk tim IT BBPOM..."
                                 required
                             >{{ old('response_text') }}</textarea>
                             <x-input-error :messages="$errors->get('response_text')" />
                             
-                            <div class="flex justify-end">
-                                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-sm transition">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                    </svg>
-                                    Kirim Tanggapan
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                                <p class="text-[11px] text-slate-500 flex items-center gap-1">
+                                    <i class="ri-information-line text-slate-400"></i>
+                                    Tanggapan Anda akan langsung dapat dibaca oleh staf penanggung jawab tiket.
+                                </p>
+                                <button 
+                                    type="submit" 
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all"
+                                >
+                                    <i class="ri-send-plane-2-fill text-sm"></i>
+                                    <span>Kirim Tanggapan</span>
                                 </button>
                             </div>
                         </div>
@@ -265,54 +502,183 @@
                 </div>
             </div>
 
-            <!-- Kolom Kanan (1 Kolom): Metadata Card -->
-            <div class="space-y-6">
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400">Ringkasan Tiket</h4>
+            <!-- Right Sidebar Column (4 cols): Metadata, Pemohon, Helpdesk Info -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- Card 1: Ringkasan Status & ITSM Metadata -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i class="ri-information-line text-emerald-700"></i>
+                            Ringkasan Tiket
+                        </h4>
+                        <span class="text-[10px] font-mono text-slate-400">#{{ $ticket->id }}</span>
+                    </div>
                     
-                    <div class="divide-y divide-gray-100 text-xs">
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Nomor Tiket:</span>
-                            <span class="font-bold text-gray-900">{{ $ticket->ticket_number }}</span>
+                    <div class="space-y-3.5 text-xs">
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
+                            <span class="text-slate-500 flex items-center gap-1.5">
+                                <i class="ri-barcode-line text-slate-400"></i>
+                                Nomor Tiket:
+                            </span>
+                            <span class="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
+                                {{ $ticket->ticket_number }}
+                            </span>
                         </div>
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Status Saat Ini:</span>
+
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
+                            <span class="text-slate-500 flex items-center gap-1.5">
+                                <i class="ri-pulse-line text-slate-400"></i>
+                                Status Saat Ini:
+                            </span>
                             <x-ticket-status-badge :status="$ticket->status" />
                         </div>
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Kategori:</span>
-                            <span class="font-semibold text-gray-800">{{ $ticket->category->name }}</span>
+
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
+                            <span class="text-slate-500 flex items-center gap-1.5">
+                                <i class="ri-apps-2-line text-slate-400"></i>
+                                Kategori Layanan:
+                            </span>
+                            <span class="font-semibold text-slate-800 text-right">
+                                {{ $ticket->category->name }}
+                            </span>
                         </div>
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Pelapor:</span>
-                            <span class="font-medium text-gray-800">{{ $ticket->user->name }}</span>
+
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
+                            <span class="text-slate-500 flex items-center gap-1.5">
+                                <i class="ri-calendar-line text-slate-400"></i>
+                                Waktu Pengajuan:
+                            </span>
+                            <span class="font-medium text-slate-800 text-right">
+                                {{ $ticket->created_at->format('d/m/Y H:i') }} WIB
+                            </span>
                         </div>
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Email Pelapor:</span>
-                            <span class="text-gray-700">{{ $ticket->user->email }}</span>
+
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
+                            <span class="text-slate-500 flex items-center gap-1.5">
+                                <i class="ri-history-line text-slate-400"></i>
+                                Pembaruan Terakhir:
+                            </span>
+                            <span class="font-medium text-slate-700 text-right">
+                                {{ $ticket->updated_at->diffForHumans() }}
+                            </span>
                         </div>
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Waktu Dibuat:</span>
-                            <span class="text-gray-700">{{ $ticket->created_at->format('d/m/Y H:i') }}</span>
-                        </div>
-                        <div class="py-2.5 flex justify-between">
-                            <span class="text-gray-500">Terakhir Update:</span>
-                            <span class="text-gray-700">{{ $ticket->updated_at->diffForHumans() }}</span>
+
+                        <div class="flex items-center justify-between py-1">
+                            <span class="text-slate-500 flex items-center gap-1.5">
+                                <i class="ri-time-line text-slate-400"></i>
+                                Target Respon (SLA):
+                            </span>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                1x24 Jam Kerja
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-100/70 rounded-2xl p-5 border border-slate-200/60 text-xs text-slate-600 space-y-2">
-                    <h5 class="font-bold text-slate-800 flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Informasi Layanan
-                    </h5>
-                    <p class="leading-relaxed">
-                        Jika penanganan telah selesai dan kendala telah teratasi, staf IT BBPOM akan menandai tiket ini sebagai <strong>Selesai</strong>.
-                    </p>
+                <!-- Card 2: Profil Pemohon -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i class="ri-user-shared-line text-emerald-700"></i>
+                            Identitas Pemohon
+                        </h4>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                            Pegawai
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white font-bold text-base flex items-center justify-center shrink-0 shadow-xs">
+                            {{ strtoupper(substr($ticket->user->name, 0, 1)) }}
+                        </div>
+                        <div class="overflow-hidden">
+                            <h5 class="font-bold text-sm text-slate-900 truncate" title="{{ $ticket->user->name }}">
+                                {{ $ticket->user->name }}
+                            </h5>
+                            <p class="text-xs text-slate-500 truncate mt-0.5" title="{{ $ticket->user->email }}">
+                                {{ $ticket->user->email }}
+                            </p>
+                            <span class="inline-block mt-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                BBPOM di Semarang
+                            </span>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Card 3: Helpdesk & Layanan Dukungan BBPOM -->
+                <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm space-y-4 print:hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                            <i class="ri-customer-service-2-line text-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Pusat Bantuan TIK</h5>
+                            <p class="text-[11px] text-slate-400">Helpdesk & Tim Teknis</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2.5 text-xs text-slate-300">
+                        <div class="flex items-start gap-2">
+                            <i class="ri-map-pin-2-line text-emerald-400 mt-0.5 shrink-0"></i>
+                            <span>Subbag Tata Usaha / Tim TIK Lt. 2, BBPOM Semarang</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="ri-phone-line text-emerald-400 shrink-0"></i>
+                            <span>(024) 7612305 &bull; Ext. TIK</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <i class="ri-time-line text-emerald-400 mt-0.5 shrink-0"></i>
+                            <span>Senin - Kamis: 07.30 - 16.00 WIB<br>Jumat: 07.30 - 16.30 WIB</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+                        Jika kendala bersifat darurat yang menghentikan operasional pelayanan publik, segera hubungi kontak ekstensi TIK.
+                    </div>
+                </div>
+
+                <!-- Card 4: Quick Action Buttons -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-2.5 print:hidden">
+                    <button 
+                        type="button" 
+                        onclick="window.print()" 
+                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
+                    >
+                        <i class="ri-printer-line text-sm"></i>
+                        <span>Cetak Bukti Pendaftaran</span>
+                    </button>
+
+                    <a 
+                        href="{{ route('tickets.index') }}" 
+                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition-colors"
+                    >
+                        <i class="ri-arrow-left-line text-sm"></i>
+                        <span>Kembali ke Daftar Pengaduan</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Official Print View Signature Section (Visible ONLY during print) -->
+        <div class="hidden print:block mt-12 pt-8 border-t border-slate-300">
+            <div class="grid grid-cols-2 gap-8 text-center text-xs">
+                <div>
+                    <p class="text-slate-600 mb-1">Pemohon Layanan / Pengadu,</p>
+                    <p class="text-[10px] text-slate-400 mb-16">Tanggal: {{ now()->format('d/m/Y') }}</p>
+                    <p class="font-bold underline text-slate-900">{{ $ticket->user->name }}</p>
+                    <p class="text-[11px] text-slate-500">Pegawai BBPOM di Semarang</p>
+                </div>
+                <div>
+                    <p class="text-slate-600 mb-1">Petugas Penerima Layanan TIK,</p>
+                    <p class="text-[10px] text-slate-400 mb-16">Tanggal: {{ now()->format('d/m/Y') }}</p>
+                    <p class="font-bold text-slate-900 underline">( ............................................ )</p>
+                    <p class="text-[11px] text-slate-500">Tim Teknologi Informasi BBPOM</p>
+                </div>
+            </div>
+            <div class="mt-12 text-center text-[10px] text-slate-400 italic">
+                Dokumen ini dicetak secara otomatis melalui Sistem Manajemen Layanan Teknologi Informasi (ITSM) BBPOM di Semarang pada {{ now()->format('d/m/Y H:i') }} WIB.
             </div>
         </div>
     </div>
