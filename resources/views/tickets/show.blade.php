@@ -151,9 +151,7 @@
                             @if($ticket->bsreDetail->deskripsi)
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-gray-50 border border-gray-100">
                                     <span class="text-gray-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
-                                    <p class="text-gray-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
-                                        {{ $ticket->bsreDetail->deskripsi }}
-                                    </p>
+                                    <p class="text-gray-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->bsreDetail->deskripsi) }}</p>
                                 </div>
                             @endif
 
@@ -224,9 +222,7 @@
                             @if($ticket->zoomDetail->deskripsi)
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
-                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
-                                        {{ $ticket->zoomDetail->deskripsi }}
-                                    </p>
+                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->zoomDetail->deskripsi) }}</p>
                                 </div>
                             @endif
 
@@ -372,9 +368,7 @@
                             @if($ticket->kegiatanDetail->deskripsi)
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
-                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
-                                        {{ $ticket->kegiatanDetail->deskripsi }}
-                                    </p>
+                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->kegiatanDetail->deskripsi) }}</p>
                                 </div>
                             @endif
 
@@ -452,9 +446,7 @@
                             @if($ticket->windowsDetail->deskripsi)
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
-                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
-                                        {{ $ticket->windowsDetail->deskripsi }}
-                                    </p>
+                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->windowsDetail->deskripsi) }}</p>
                                 </div>
                             @endif
 
@@ -532,9 +524,7 @@
                             @if($ticket->officeDetail->deskripsi)
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
-                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
-                                        {{ $ticket->officeDetail->deskripsi }}
-                                    </p>
+                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->officeDetail->deskripsi) }}</p>
                                 </div>
                             @endif
 
@@ -589,9 +579,7 @@
                             @if($ticket->lainnyaDetail->deskripsi)
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Deskripsi Permintaan / Kendala:</span>
-                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
-                                        {{ $ticket->lainnyaDetail->deskripsi }}
-                                    </p>
+                                    <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->lainnyaDetail->deskripsi) }}</p>
                                 </div>
                             @endif
 
@@ -891,9 +879,7 @@
                                                         Pemohon
                                                     </span>
                                                 </div>
-                                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line">
-                                                    {{ $response->response_text }}
-                                                </p>
+                                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line">{{ trim($response->response_text) }}</p>
                                                 <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
                                                     {{ $response->created_at->format('H:i') }} WIB
                                                 </div>
@@ -913,9 +899,7 @@
                                                         Petugas IT
                                                     </span>
                                                 </div>
-                                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line">
-                                                    {{ $response->response_text }}
-                                                </p>
+                                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line">{{ trim($response->response_text) }}</p>
                                                 <div class="text-[10px] text-slate-400 text-right mt-0.5 font-mono">
                                                     {{ $response->created_at->format('H:i') }} WIB
                                                 </div>

@@ -1081,7 +1081,7 @@ class TicketController extends Controller
 
         $ticket->responses()->create([
             'user_id' => $request->user()->id,
-            'response_text' => $validated['response_text'],
+            'response_text' => trim($validated['response_text']),
         ]);
 
         return redirect()->route('tickets.show', $ticket)
