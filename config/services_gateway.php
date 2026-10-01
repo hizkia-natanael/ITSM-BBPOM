@@ -10,11 +10,11 @@ return [
     */
 
     'groups' => [
-        'all' => 'Semua Layanan',
+        'all' => 'Semua',
         'sistem' => 'Sistem & Aplikasi',
-        'akun' => 'Akun & Sertifikasi',
+        'akun' => 'Akun & BSrE',
         'kegiatan' => 'Kegiatan & Media',
-        'infrastruktur' => 'Infrastruktur & OS',
+        'infrastruktur' => 'Infrastruktur',
     ],
 
     'services' => [

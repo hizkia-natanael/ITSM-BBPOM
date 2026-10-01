@@ -43,6 +43,7 @@
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                 App Gateway Layanan TI
                             </span>
+                            <span class="text-[11px] text-slate-300/80 font-medium px-2 py-0.5 rounded-full bg-white/[0.08] border border-white/10" x-text="visibleCount + ' Layanan Tersedia'"></span>
                         </div>
                         <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-tight">
                             Pilih Menu Layanan yang Ingin Anda Laporkan
@@ -73,9 +74,12 @@
                             </button>
                         </div>
 
-                        <!-- Group Tabs Filter -->
-                        <div class="mt-3.5 flex flex-wrap items-center gap-1.5 pt-3 border-t border-slate-700/50">
-                            <span class="text-[11px] text-slate-400 font-medium me-1">Kategori:</span>
+                        <!-- Group Tabs Filter (Strictly Single Row) -->
+                        <div class="mt-3.5 flex items-center gap-1.5 pt-3 border-t border-slate-700/50 flex-nowrap overflow-x-auto pb-1 no-scrollbar">
+                            <span class="text-[11px] text-slate-400 font-medium me-0.5 shrink-0 flex items-center gap-1">
+                                <i class="ri-filter-3-line text-xs text-slate-400"></i>
+                                <span>Kategori:</span>
+                            </span>
                             <template x-for="(label, key) in groups" :key="key">
                                 <button 
                                     type="button" 
@@ -83,11 +87,10 @@
                                     :class="activeGroup === key 
                                         ? 'bg-emerald-600 text-white font-bold shadow-xs' 
                                         : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 font-medium'"
-                                    class="px-2.5 py-1 rounded-lg text-[11px] transition duration-150"
+                                    class="px-2.5 py-1 rounded-lg text-[11px] transition duration-150 shrink-0 whitespace-nowrap"
                                     x-text="label"
                                 ></button>
                             </template>
-                            <span class="ms-auto text-[11px] text-slate-400 font-medium hidden sm:inline" x-text="visibleCount + ' Layanan Tersedia'"></span>
                         </div>
                     </div>
 
