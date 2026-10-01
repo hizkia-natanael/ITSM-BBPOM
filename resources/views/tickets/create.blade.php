@@ -84,6 +84,105 @@
             get visibleCount() {
                 return Object.keys(this.services).filter(k => this.isMatch(k)).length;
             },
+            hasDraft: false,
+            draftTimeText: '',
+            showRestoredToast: false,
+            isSubmitting: false,
+            checkDraft() {
+                try {
+                    const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
+                    if (!raw) return;
+                    const data = JSON.parse(raw);
+                    if (data && data._saved_at && (data._service_key || Object.keys(data).length > 2)) {
+                        this.hasDraft = true;
+                        const diffMin = Math.round((new Date() - new Date(data._saved_at)) / 60000);
+                        if (diffMin < 1) {
+                            this.draftTimeText = 'Baru saja';
+                        } else if (diffMin < 60) {
+                            this.draftTimeText = diffMin + ' menit lalu';
+                        } else {
+                            this.draftTimeText = 'Tersimpan sebelumnya';
+                        }
+                    }
+                } catch (e) {
+                    localStorage.removeItem('bbpom_itsm_ticket_draft');
+                }
+            },
+            saveDraft() {
+                if (this.isSubmitting) return;
+                const form = document.querySelector('form[action*="tickets"]');
+                if (!form) return;
+                
+                const formData = {};
+                let hasContent = false;
+                
+                for (let el of form.elements) {
+                    if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
+                    if (el.value && el.value.trim().length > 0) {
+                        formData[el.name] = el.value;
+                        if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id') {
+                            hasContent = true;
+                        }
+                    }
+                }
+                
+                if (this.selectedServiceKey || hasContent) {
+                    formData._service_key = this.selectedServiceKey;
+                    formData._subcategory_key = this.selectedSubcategory;
+                    formData._saved_at = new Date().toISOString();
+                    localStorage.setItem('bbpom_itsm_ticket_draft', JSON.stringify(formData));
+                }
+            },
+            restoreDraft() {
+                try {
+                    const raw = localStorage.getItem('bbpom_itsm_ticket_draft');
+                    if (!raw) return;
+                    const data = JSON.parse(raw);
+                    
+                    if (data._service_key) {
+                        this.selectService(data._service_key);
+                    }
+                    if (data._subcategory_key) {
+                        this.selectedSubcategory = data._subcategory_key;
+                    }
+                    
+                    this.$nextTick(() => {
+                        const form = document.querySelector('form[action*="tickets"]');
+                        if (form) {
+                            for (let key in data) {
+                                if (key.startsWith('_')) continue;
+                                const el = form.elements[key];
+                                if (el) {
+                                    el.value = data[key];
+                                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+                            }
+                        }
+                        this.hasDraft = false;
+                        this.showRestoredToast = true;
+                        setTimeout(() => this.showRestoredToast = false, 3500);
+                    });
+                } catch (e) {
+                    console.error(e);
+                }
+            },
+            discardDraft() {
+                localStorage.removeItem('bbpom_itsm_ticket_draft');
+                this.hasDraft = false;
+            },
+            isDirty() {
+                if (this.isSubmitting) return false;
+                const form = document.querySelector('form[action*="tickets"]');
+                if (!form) return false;
+                for (let el of form.elements) {
+                    if (!el.name || el.name === '_token' || el.type === 'file' || el.type === 'submit') continue;
+                    if (el.name !== 'service_key' && el.name !== 'subcategory_key' && el.name !== 'category_id' && el.value && el.value.trim().length > 0) {
+                        return true;
+                    }
+                }
+                return false;
+            },
             init() {
                 if (this.selectedServiceKey && (!this.selectedSubcategory || this.selectedSubcategory === '')) {
                     const s = this.services[this.selectedServiceKey];
@@ -91,10 +190,24 @@
                         this.selectedSubcategory = Object.keys(s.subcategories)[0];
                     }
                 }
+
+                this.checkDraft();
+
+                window.addEventListener('beforeunload', (e) => {
+                    if (this.isDirty() && !this.isSubmitting) {
+                        this.saveDraft();
+                        e.preventDefault();
+                        e.returnValue = '';
+                        return '';
+                    }
+                });
             }
         }"
         class="space-y-6"
     >
+
+        <!-- Alert Pemulihan Draf Isian Formulir (Atomic Component) -->
+        <x-draft-recovery-alert />
 
         <!-- VIEW 1: APP GATEWAY CATALOG (Shown when no service is selected) -->
         <div x-show="!selectedServiceKey" x-transition.opacity.duration.300ms class="space-y-6">
@@ -276,7 +389,15 @@
                             </div>
                         </div>
 
-                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
+                        <form 
+                            method="POST" 
+                            action="{{ route('tickets.store') }}" 
+                            enctype="multipart/form-data" 
+                            class="space-y-6"
+                            @submit="isSubmitting = true; discardDraft()"
+                            @input.debounce.500ms="saveDraft()"
+                            @change="saveDraft()"
+                        >
                             @csrf
 
                             <!-- Hidden fields to identify service and subcategory -->
