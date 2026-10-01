@@ -13,6 +13,8 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('home');
 
+Route::redirect('/admin/login', '/login');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // User Portal Dashboard
     Route::get('/dashboard', [TicketController::class, 'dashboard'])->name('dashboard');

@@ -624,5 +624,70 @@ class HelpdeskTest extends TestCase
             $response->assertSee('App Gateway Layanan');
         }
     }
+
+    public function test_admin_panel_is_fixed_light_mode_and_renders_interactive_widgets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Verify Fixed Light Mode, Top Navigation, and Global Search configuration
+        $panel = \Filament\Facades\Filament::getPanel('admin');
+        $this->assertFalse($panel->hasDarkMode());
+        $this->assertTrue($panel->hasTopNavigation());
+        $this->assertNull($panel->getGlobalSearchProvider());
+
+        // Verify widget data contracts
+        $chartWidget = new \App\Filament\Widgets\TicketTrendChart();
+        $counts = $chartWidget->getStatusCounts();
+        $this->assertArrayHasKey('total', $counts);
+        $this->assertArrayHasKey('pending', $counts);
+        $this->assertArrayHasKey('diproses', $counts);
+        $this->assertArrayHasKey('selesai', $counts);
+        $this->assertArrayHasKey('ditolak', $counts);
+
+        // Verify admin dashboard HTTP response
+        $response = $this->actingAs($admin)->get('/admin');
+        $response->assertSuccessful();
+        $response->assertSee('Dashboard Admin');
+        $response->assertSee('logo-bpom.png');
+        $response->assertSee('Layanan Admin TIK');
+        $response->assertSee('BBPOM Di Semarang');
+        $response->assertSee('Keluar');
+        $response->assertSee('admin/logout');
+        $response->assertSee('Pengaduan (Tickets)');
+        $response->assertSee('Kategori Layanan');
+        $response->assertSee('Data Pegawai');
+        $response->assertDontSee('fi-global-search-ctn');
+
+        // Verify /admin/login redirects to /login and admin logout redirects to /login
+        $this->get('/admin/login')->assertRedirect('/login');
+        $logoutResponse = $this->actingAs($admin)->post('/admin/logout');
+        $logoutResponse->assertRedirect('/login');
+
+        // Verify Livewire Widgets render properly
+        \Livewire\Livewire::actingAs($admin)
+            ->test(\App\Filament\Widgets\TicketTrendChart::class)
+            ->assertSee('Tren Pengaduan Layanan TI')
+            ->assertSee('Per Bulan')
+            ->assertSee('Per Tahun')
+            ->assertSee('Rentang Waktu')
+            ->assertSee('Pending')
+            ->assertSee('Diproses')
+            ->assertSee('Selesai')
+            ->assertSee('Ditolak')
+            ->call('setPeriod', 'tahun')
+            ->assertSet('period', 'tahun')
+            ->call('setPeriod', 'custom')
+            ->assertSet('period', 'custom')
+            ->assertSee('Dari:')
+            ->assertSee('Sampai:');
+
+        \Livewire\Livewire::actingAs($admin)
+            ->test(\App\Filament\Widgets\TicketStatsOverview::class)
+            ->assertSee('Total Pengaduan')
+            ->assertSee('Tiket Pending')
+            ->assertSee('Tiket Diproses')
+            ->assertSee('Tiket Selesai')
+            ->assertSee('Tiket Ditolak');
+    }
 }
 
