@@ -42,6 +42,16 @@ class Ticket extends Model
                 }
             }
         });
+
+        static::created(function ($ticket) {
+            if ($ticket->status === 'pending' && is_null($ticket->handled_by_id)) {
+                try {
+                    app(\App\Services\WebPushService::class)->sendTicketNotification($ticket);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Error sending web push on ticket created: ' . $e->getMessage());
+                }
+            }
+        });
     }
 
     public function user(): BelongsTo

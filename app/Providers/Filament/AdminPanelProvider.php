@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\TicketStatsOverview;
 use App\Filament\Widgets\TicketTrendChart;
+use App\Filament\Widgets\UnhandledTicketsAlertWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Layanan Admin TIK BBPOM Di Semarang')
+            ->brandName('Admin Layanan TIK BBPOM Di Semarang')
             ->brandLogo(fn () => view('components.admin-brand-logo'))
             ->brandLogoHeight('2.5rem')
             ->topNavigation()
@@ -42,17 +43,60 @@ class AdminPanelProvider extends PanelProvider
                 'danger' => Color::Rose,
             ])
             ->font('Inter')
-            ->favicon(null)
+            ->favicon(asset('images/logo-bpom.png'))
             ->renderHook(
                 \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): \Illuminate\Contracts\View\View => view('components.admin-logout-button')
+                fn (): \Illuminate\Contracts\View\View => view('components.admin-topbar-actions')
             )
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString('
                     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
                     <script>
+                        document.title = "Admin Layanan TIK BBPOM Di Semarang";
+                        document.addEventListener("livewire:navigated", function () {
+                            document.title = "Admin Layanan TIK BBPOM Di Semarang";
+                        });
+                        window.addEventListener("DOMContentLoaded", function () {
+                            document.title = "Admin Layanan TIK BBPOM Di Semarang";
+                        });
+                    </script>
+                    <script>
                         window.filamentChartJsGlobalPlugins = window.filamentChartJsGlobalPlugins || [];
+                        window.filamentChartJsGlobalPlugins.push({
+                            id: "bbpomSmoothAnimationPlugin",
+                            beforeInit: function (chart) {
+                                if (!chart.options) chart.options = {};
+                                chart.options.animation = Object.assign({
+                                    duration: 500,
+                                    easing: "easeOutQuart"
+                                }, chart.options.animation);
+                                chart.options.transitions = Object.assign({
+                                    resize: {
+                                        animation: {
+                                            duration: 450,
+                                            easing: "easeOutQuart"
+                                        }
+                                    }
+                                }, chart.options.transitions);
+                            }
+                        });
+                        window.filamentChartJsGlobalPlugins.push({
+                            id: "bbpomChartBridgePlugin",
+                            beforeInit: function (chart) {
+                                if (chart && chart.canvas) {
+                                    chart.canvas.__bbpomChart = chart;
+                                }
+                                window.__bbpomChart = chart;
+                            },
+                            afterUpdate: function (chart) {
+                                if (chart && chart.canvas) {
+                                    chart.canvas.__bbpomChart = chart;
+                                }
+                                window.__bbpomChart = chart;
+                            }
+                        });
+
                         window.filamentChartJsGlobalPlugins.push({
                             id: "bbpomSoloLegendPlugin",
                             beforeInit: function (chart) {
@@ -86,6 +130,50 @@ class AdminPanelProvider extends PanelProvider
                                 };
                             }
                         });
+
+                        window.bbpomTrendStatusController = function(initialFilter) {
+                            return {
+                                activeFilter: initialFilter || "all",
+                                getChart() {
+                                    if (window.__bbpomChart) return window.__bbpomChart;
+                                    const canvas = document.querySelector(".fi-wi-chart canvas");
+                                    if (canvas && canvas.__bbpomChart) return canvas.__bbpomChart;
+                                    if (typeof Chart !== "undefined" && Chart.getChart && canvas) {
+                                        return Chart.getChart(canvas);
+                                    }
+                                    return null;
+                                },
+                                onHover(status) {
+                                    if (this.activeFilter === status) return;
+                                    this.activeFilter = status;
+                                    this.applyToChart(status);
+                                },
+                                onClick(status) {
+                                    if (this.activeFilter === status && status !== "all") {
+                                        this.activeFilter = "all";
+                                        this.applyToChart("all");
+                                    } else {
+                                        this.activeFilter = status;
+                                        this.applyToChart(status);
+                                    }
+                                },
+                                applyToChart(status) {
+                                    const chart = this.getChart();
+                                    if (!chart) return;
+                                    const map = { "pending": 0, "diproses": 1, "selesai": 2, "ditolak": 3 };
+                                    if (status === "all") {
+                                        for (let i = 0; i < 4; i++) {
+                                            chart.setDatasetVisibility(i, true);
+                                        }
+                                    } else if (map[status] !== undefined) {
+                                        for (let i = 0; i < 4; i++) {
+                                            chart.setDatasetVisibility(i, i === map[status]);
+                                        }
+                                    }
+                                    chart.update();
+                                }
+                            };
+                        };
                     </script>
                     <style>
                         /* BBPOM Fixed Light Mode & Design System Enhancements */
@@ -216,6 +304,529 @@ class AdminPanelProvider extends PanelProvider
                         .fi-wi-stats-overview-stat:hover {
                             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
                         }
+                        /* Ticket detail 2-column flex alignment */
+                        .ticket-form-column {
+                            display: flex !important;
+                            flex-direction: column !important;
+                            height: 100% !important;
+                        }
+                        .ticket-form-column > .fi-section {
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .ticket-form-column > .fi-section.flex-1 {
+                            flex: 1 1 0% !important;
+                        }
+                        .ticket-form-column > .fi-section > .fi-section-content-ctn {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .ticket-form-column > .fi-section > .fi-section-content-ctn > .fi-section-content {
+                            flex: 1 1 0% !important;
+                        }
+                        .ticket-form-card-full {
+                            height: 100% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .ticket-form-card-full > .fi-section-content-ctn {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .ticket-form-card-full > .fi-section-content-ctn > .fi-section-content {
+                            flex: 1 1 0% !important;
+                        }
+                        /* Dashboard Equal-Height Side-by-Side Widgets */
+                        .fi-wi-grid {
+                            align-items: stretch !important;
+                        }
+                        .fi-wi-chart {
+                            height: 100% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-chart > .fi-section {
+                            height: 100% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-chart > .fi-section > .fi-section-content-ctn {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-chart > .fi-section > .fi-section-content-ctn > .fi-section-content {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-unhandled-tickets-alert {
+                            height: 100% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-unhandled-tickets-alert > .fi-section {
+                            height: 100% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-unhandled-tickets-alert > .fi-section > .fi-section-content-ctn {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .fi-wi-unhandled-tickets-alert > .fi-section > .fi-section-content-ctn > .fi-section-content {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            padding: 0.75rem 1rem !important;
+                        }
+                        .fi-wi-chart > .fi-section > .fi-section-content-ctn > .fi-section-content {
+                            padding: 0.75rem 1rem !important;
+                        }
+
+                        /* BBPOM Option 2 Minimalist Status Chips */
+                        .bbpom-status-chips-wrap {
+                            display: flex !important;
+                            flex-direction: row !important;
+                            flex-wrap: wrap !important;
+                            align-items: center !important;
+                            gap: 0.45rem !important;
+                            margin-bottom: 0.75rem !important;
+                            padding-bottom: 0.65rem !important;
+                            border-bottom: 1px solid #f1f5f9 !important;
+                        }
+                        .bbpom-status-chip {
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            gap: 0.35rem !important;
+                            padding: 0.32rem 0.68rem !important;
+                            border-radius: 9999px !important;
+                            font-size: 0.75rem !important;
+                            font-weight: 600 !important;
+                            cursor: pointer !important;
+                            white-space: nowrap !important;
+                            line-height: 1 !important;
+                            border: 1px solid !important;
+                            transition: all 0.15s ease-in-out !important;
+                            user-select: none !important;
+                            outline: none !important;
+                            text-decoration: none !important;
+                        }
+                        .bbpom-status-chip .chip-dot {
+                            display: inline-block !important;
+                            width: 0.45rem !important;
+                            height: 0.45rem !important;
+                            border-radius: 9999px !important;
+                            flex-shrink: 0 !important;
+                            transition: background-color 0.15s ease !important;
+                        }
+                        .bbpom-status-chip .chip-count {
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            padding: 0.1rem 0.45rem !important;
+                            border-radius: 9999px !important;
+                            font-size: 0.6875rem !important;
+                            font-weight: 700 !important;
+                            line-height: 1 !important;
+                            flex-shrink: 0 !important;
+                            margin-left: 0.15rem !important;
+                            transition: all 0.15s ease !important;
+                        }
+
+                        /* Minimalist Border-Only Theming */
+                        .bbpom-chip-all {
+                            background-color: #ffffff !important;
+                            color: #334155 !important;
+                            border-color: #cbd5e1 !important;
+                        }
+                        .bbpom-chip-all .chip-count {
+                            background-color: #f1f5f9 !important;
+                            color: #475569 !important;
+                        }
+                        .bbpom-chip-all.is-active,
+                        .bbpom-chip-all:hover {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border-color: #0f172a !important;
+                            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2) !important;
+                        }
+                        .bbpom-chip-all.is-active .chip-count,
+                        .bbpom-chip-all:hover .chip-count {
+                            background-color: rgba(255, 255, 255, 0.22) !important;
+                            color: #ffffff !important;
+                        }
+
+                        .bbpom-chip-pending {
+                            background-color: #ffffff !important;
+                            color: #b45309 !important;
+                            border-color: #fed7aa !important;
+                        }
+                        .bbpom-chip-pending .chip-dot {
+                            background-color: #d97706 !important;
+                        }
+                        .bbpom-chip-pending .chip-count {
+                            background-color: #fef3c7 !important;
+                            color: #92400e !important;
+                        }
+                        .bbpom-chip-pending.is-active,
+                        .bbpom-chip-pending:hover {
+                            background-color: #d97706 !important;
+                            color: #ffffff !important;
+                            border-color: #b45309 !important;
+                            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.25) !important;
+                        }
+                        .bbpom-chip-pending.is-active .chip-dot,
+                        .bbpom-chip-pending:hover .chip-dot {
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-chip-pending.is-active .chip-count,
+                        .bbpom-chip-pending:hover .chip-count {
+                            background-color: rgba(255, 255, 255, 0.25) !important;
+                            color: #ffffff !important;
+                        }
+
+                        .bbpom-chip-diproses {
+                            background-color: #ffffff !important;
+                            color: #1d4ed8 !important;
+                            border-color: #bfdbfe !important;
+                        }
+                        .bbpom-chip-diproses .chip-dot {
+                            background-color: #2563eb !important;
+                        }
+                        .bbpom-chip-diproses .chip-count {
+                            background-color: #dbeafe !important;
+                            color: #1e40af !important;
+                        }
+                        .bbpom-chip-diproses.is-active,
+                        .bbpom-chip-diproses:hover {
+                            background-color: #2563eb !important;
+                            color: #ffffff !important;
+                            border-color: #1d4ed8 !important;
+                            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25) !important;
+                        }
+                        .bbpom-chip-diproses.is-active .chip-dot,
+                        .bbpom-chip-diproses:hover .chip-dot {
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-chip-diproses.is-active .chip-count,
+                        .bbpom-chip-diproses:hover .chip-count {
+                            background-color: rgba(255, 255, 255, 0.25) !important;
+                            color: #ffffff !important;
+                        }
+
+                        .bbpom-chip-selesai {
+                            background-color: #ffffff !important;
+                            color: #047857 !important;
+                            border-color: #a7f3d0 !important;
+                        }
+                        .bbpom-chip-selesai .chip-dot {
+                            background-color: #059669 !important;
+                        }
+                        .bbpom-chip-selesai .chip-count {
+                            background-color: #d1fae5 !important;
+                            color: #065f46 !important;
+                        }
+                        .bbpom-chip-selesai.is-active,
+                        .bbpom-chip-selesai:hover {
+                            background-color: #059669 !important;
+                            color: #ffffff !important;
+                            border-color: #047857 !important;
+                            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.25) !important;
+                        }
+                        .bbpom-chip-selesai.is-active .chip-dot,
+                        .bbpom-chip-selesai:hover .chip-dot {
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-chip-selesai.is-active .chip-count,
+                        .bbpom-chip-selesai:hover .chip-count {
+                            background-color: rgba(255, 255, 255, 0.25) !important;
+                            color: #ffffff !important;
+                        }
+
+                        .bbpom-chip-ditolak {
+                            background-color: #ffffff !important;
+                            color: #be123c !important;
+                            border-color: #fecdd3 !important;
+                        }
+                        .bbpom-chip-ditolak .chip-dot {
+                            background-color: #e11d48 !important;
+                        }
+                        .bbpom-chip-ditolak .chip-count {
+                            background-color: #ffe4e6 !important;
+                            color: #9f1239 !important;
+                        }
+                        .bbpom-chip-ditolak.is-active,
+                        .bbpom-chip-ditolak:hover {
+                            background-color: #e11d48 !important;
+                            color: #ffffff !important;
+                            border-color: #be123c !important;
+                            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.25) !important;
+                        }
+                        .bbpom-chip-ditolak.is-active .chip-dot,
+                        .bbpom-chip-ditolak:hover .chip-dot {
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-chip-ditolak.is-active .chip-count,
+                        .bbpom-chip-ditolak:hover .chip-count {
+                            background-color: rgba(255, 255, 255, 0.25) !important;
+                            color: #ffffff !important;
+                        }
+
+                        /* Alert Widget Mini Navbar Perfection */
+                        .bbpom-alert-title-group {
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            gap: 0.5rem !important;
+                            min-width: 0 !important;
+                            flex-wrap: nowrap !important;
+                        }
+                        .bbpom-alert-icon-box {
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: 1.75rem !important;
+                            height: 1.75rem !important;
+                            border-radius: 0.5rem !important;
+                            flex-shrink: 0 !important;
+                            line-height: 1 !important;
+                        }
+                        .bbpom-alert-icon-box i {
+                            font-size: 1rem !important;
+                            line-height: 1 !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                        }
+                        .bbpom-alert-title-text {
+                            font-weight: 700 !important;
+                            font-size: 0.875rem !important;
+                            color: #0f172a !important;
+                            white-space: nowrap !important;
+                            line-height: 1.25 !important;
+                            overflow: hidden !important;
+                            text-overflow: ellipsis !important;
+                            margin: 0 !important;
+                        }
+                        .bbpom-alert-beacon {
+                            display: inline-flex !important;
+                            position: relative !important;
+                            width: 0.5rem !important;
+                            height: 0.5rem !important;
+                            flex-shrink: 0 !important;
+                        }
+                        .bbpom-alert-beacon-dot {
+                            width: 0.5rem !important;
+                            height: 0.5rem !important;
+                            border-radius: 9999px !important;
+                            background-color: #e11d48 !important;
+                        }
+                        .bbpom-alert-badge {
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            gap: 0.3rem !important;
+                            padding: 0.22rem 0.55rem !important;
+                            border-radius: 9999px !important;
+                            font-size: 0.6875rem !important;
+                            font-weight: 700 !important;
+                            line-height: 1 !important;
+                            white-space: nowrap !important;
+                            flex-shrink: 0 !important;
+                        }
+
+                        /* Table Tooltip Light Grey Theme */
+                        .tippy-box,
+                        [data-tippy-root] .tippy-box {
+                            font-size: 0.75rem !important;
+                            line-height: 1.35 !important;
+                            max-width: 24rem !important;
+                            border-radius: 0.5rem !important;
+                            background-color: #f1f5f9 !important;
+                            color: #0f172a !important;
+                            border: 1px solid #cbd5e1 !important;
+                            padding: 0.35rem 0.6rem !important;
+                            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12), 0 2px 4px -2px rgba(15, 23, 42, 0.06) !important;
+                        }
+                        .tippy-content,
+                        [data-tippy-root] .tippy-content {
+                            font-size: 0.75rem !important;
+                            font-weight: 500 !important;
+                            color: #0f172a !important;
+                            padding: 0 !important;
+                        }
+                        .tippy-box > .tippy-arrow {
+                            color: #f1f5f9 !important;
+                        }
+                        .tippy-box > .tippy-arrow::before {
+                            color: #f1f5f9 !important;
+                        }
+
+                        /* BBPOM Primary Header Action Buttons (Hijau Gelap BPOM & Teks Putih Terang) */
+                        .bbpom-header-create-btn,
+                        .fi-page-header .fi-btn-color-primary,
+                        .fi-page-header-actions .fi-btn-color-primary,
+                        .fi-header-actions .fi-btn-color-primary,
+                        .fi-page-header a.fi-btn-color-primary,
+                        .fi-page-header button.fi-btn-color-primary {
+                            background: linear-gradient(135deg, #065f46 0%, #064e3b 60%, #022c22 100%) !important;
+                            color: #ffffff !important;
+                            border: 1px solid rgba(52, 211, 153, 0.4) !important;
+                            border-radius: 0.625rem !important;
+                            font-weight: 600 !important;
+                            font-size: 0.8125rem !important;
+                            padding: 0.5rem 1.1rem !important;
+                            box-shadow: 0 4px 12px -2px rgba(6, 78, 59, 0.4), 0 2px 4px -2px rgba(6, 78, 59, 0.2) !important;
+                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            gap: 0.45rem !important;
+                        }
+                        .bbpom-header-create-btn:hover,
+                        .fi-page-header .fi-btn-color-primary:hover,
+                        .fi-page-header-actions .fi-btn-color-primary:hover,
+                        .fi-header-actions .fi-btn-color-primary:hover,
+                        .fi-page-header a.fi-btn-color-primary:hover,
+                        .fi-page-header button.fi-btn-color-primary:hover {
+                            background: linear-gradient(135deg, #047857 0%, #065f46 60%, #064e3b 100%) !important;
+                            color: #ffffff !important;
+                            border-color: rgba(110, 231, 183, 0.7) !important;
+                            transform: translateY(-1px) !important;
+                            box-shadow: 0 6px 18px -2px rgba(6, 95, 70, 0.5), 0 3px 6px -2px rgba(6, 95, 70, 0.25) !important;
+                        }
+                        .bbpom-header-create-btn:active,
+                        .fi-page-header .fi-btn-color-primary:active,
+                        .fi-page-header-actions .fi-btn-color-primary:active,
+                        .fi-header-actions .fi-btn-color-primary:active,
+                        .fi-page-header a.fi-btn-color-primary:active,
+                        .fi-page-header button.fi-btn-color-primary:active {
+                            transform: translateY(0) !important;
+                            box-shadow: 0 2px 6px -1px rgba(6, 78, 59, 0.3) !important;
+                        }
+                        .bbpom-header-create-btn .fi-btn-label,
+                        .bbpom-header-create-btn .fi-btn-icon,
+                        .bbpom-header-create-btn svg,
+                        .bbpom-header-create-btn span,
+                        .fi-page-header .fi-btn-color-primary .fi-btn-label,
+                        .fi-page-header .fi-btn-color-primary .fi-btn-icon,
+                        .fi-page-header .fi-btn-color-primary svg,
+                        .fi-page-header-actions .fi-btn-color-primary .fi-btn-label,
+                        .fi-page-header-actions .fi-btn-color-primary .fi-btn-icon,
+                        .fi-page-header-actions .fi-btn-color-primary svg {
+                            color: #ffffff !important;
+                            stroke: #ffffff !important;
+                        }
+
+                        /* Edit Ticket: Unified Teal Gradient Theming & 1rem Rounded Cards */
+                        .ticket-left-column {
+                            display: flex !important;
+                            flex-direction: column !important;
+                            height: 100% !important;
+                            gap: 1.25rem !important;
+                        }
+                        .ticket-right-column {
+                            display: flex !important;
+                            flex-direction: column !important;
+                            height: 100% !important;
+                        }
+                        .ticket-left-column .fi-section,
+                        .ticket-right-column .fi-section,
+                        .ticket-form-card-full {
+                            border-color: rgba(51, 65, 85, 0.25) !important;
+                            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04) !important;
+                            background-color: #ffffff !important;
+                            border-radius: 1rem !important;
+                            overflow: visible !important;
+                        }
+                        /* Unified Slate-to-Emerald Hero Gradient Header (Matching Homepage Welcome Banner) */
+                        .ticket-left-column .fi-section-header,
+                        .ticket-right-column .fi-section-header {
+                            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #022c22 100%) !important;
+                            border-bottom: 1px solid rgba(51, 65, 85, 0.6) !important;
+                            border-top-left-radius: 1rem !important;
+                            border-top-right-radius: 1rem !important;
+                            padding: 0.85rem 1.25rem !important;
+                        }
+                        .ticket-left-column .fi-section-header-heading,
+                        .ticket-left-column .fi-section-header-heading *,
+                        .ticket-right-column .fi-section-header-heading,
+                        .ticket-right-column .fi-section-header-heading * {
+                            color: #ffffff !important;
+                            font-weight: 700 !important;
+                            font-size: 0.95rem !important;
+                            letter-spacing: -0.01em !important;
+                        }
+                        .ticket-left-column .fi-section-header-description,
+                        .ticket-left-column .fi-section-header-description *,
+                        .ticket-right-column .fi-section-header-description,
+                        .ticket-right-column .fi-section-header-description * {
+                            color: #a7f3d0 !important;
+                            font-size: 0.8125rem !important;
+                        }
+
+                        /* Dropdown Styling for Custom Select (Clean, Non-Clipping, Downward Oriented) */
+                        .fi-dropdown-panel {
+                            z-index: 9999 !important;
+                            background-color: #ffffff !important;
+                            border-radius: 0.75rem !important;
+                            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
+                            border: 1px solid rgba(203, 213, 225, 0.9) !important;
+                            padding: 0.35rem !important;
+                        }
+                        .fi-dropdown-list {
+                            display: flex !important;
+                            flex-direction: column !important;
+                            gap: 0.2rem !important;
+                            list-style: none !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                        }
+                        .fi-dropdown-list-item.fi-select-input-option {
+                            padding: 0.6rem 0.85rem !important;
+                            border-radius: 0.5rem !important;
+                            font-size: 0.8125rem !important;
+                            font-weight: 500 !important;
+                            color: #1e293b !important;
+                            cursor: pointer !important;
+                            transition: all 0.15s ease-in-out !important;
+                            display: flex !important;
+                            align-items: center !important;
+                        }
+                        .fi-dropdown-list-item.fi-select-input-option:hover,
+                        .fi-dropdown-list-item.fi-select-input-option.is-highlighted,
+                        .fi-dropdown-list-item.fi-select-input-option[aria-selected="true"] {
+                            background-color: #ecfdf5 !important;
+                            color: #065f46 !important;
+                            font-weight: 600 !important;
+                        }
+
+                        /* Actions container in left column */
+                        .ticket-left-actions {
+                            margin-top: auto !important;
+                            padding-top: 0.5rem !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            gap: 0.75rem !important;
+                        }
+
+                        .ticket-right-column > .fi-section {
+                            height: 100% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .ticket-right-column > .fi-section > .fi-section-content-ctn {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                        }
+                        .ticket-right-column > .fi-section > .fi-section-content-ctn > .fi-section-content {
+                            flex: 1 1 0% !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            justify-content: space-between !important;
+                        }
                     </style>
                 ')
             )
@@ -228,6 +839,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 TicketStatsOverview::class,
                 TicketTrendChart::class,
+                UnhandledTicketsAlertWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

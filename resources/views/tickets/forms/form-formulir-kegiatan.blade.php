@@ -1,5 +1,4 @@
-<!-- 6. FORMULIR & KEGIATAN (Daftar Hadir, QR Code, Survey, Pretest/Posttest, Linktree) -->
-<div 
+<div
     class="space-y-6"
     x-data="{
         surveyQuestions: [{ text: '', tipe: 'Pilihan Skala 4' }],

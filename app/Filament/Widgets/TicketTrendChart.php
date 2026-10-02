@@ -12,7 +12,14 @@ class TicketTrendChart extends ChartWidget
 
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'default' => 'full',
+        'lg' => 7,
+        'xl' => 7,
+        '2xl' => 8,
+    ];
+
+    protected ?string $maxHeight = '230px';
 
     protected string $view = 'filament.widgets.ticket-trend-chart';
 
@@ -39,6 +46,13 @@ class TicketTrendChart extends ChartWidget
         }
     }
 
+    public function applyHoverFilter(string $status): void
+    {
+        if ($this->filter !== $status) {
+            $this->filter = $status;
+        }
+    }
+
     public function setPeriod(string $period): void
     {
         $this->period = $period;
@@ -50,6 +64,13 @@ class TicketTrendChart extends ChartWidget
             if (! $this->endDate) {
                 $this->endDate = Carbon::now()->format('Y-m-d');
             }
+        }
+    }
+
+    public function applyHoverPeriod(string $period): void
+    {
+        if ($this->period !== $period) {
+            $this->setPeriod($period);
         }
     }
 
@@ -226,14 +247,17 @@ class TicketTrendChart extends ChartWidget
             ],
         ];
 
-        if ($this->filter && $this->filter !== 'all' && isset($allDatasets[$this->filter])) {
-            $datasets = [$allDatasets[$this->filter]];
-        } else {
-            $datasets = array_values($allDatasets);
+        foreach ($allDatasets as $key => &$ds) {
+            if ($this->filter && $this->filter !== 'all') {
+                $ds['hidden'] = ($this->filter !== $key);
+            } else {
+                $ds['hidden'] = false;
+            }
         }
+        unset($ds);
 
         return [
-            'datasets' => $datasets,
+            'datasets' => array_values($allDatasets),
             'labels' => $labels,
         ];
     }
@@ -241,5 +265,75 @@ class TicketTrendChart extends ChartWidget
     protected function getType(): string
     {
         return 'line';
+    }
+
+    protected function getOptions(): ?array
+    {
+        return [
+            'maintainAspectRatio' => false,
+            'responsive' => true,
+            'animation' => [
+                'duration' => 500,
+                'easing' => 'easeOutQuart',
+            ],
+            'transitions' => [
+                'active' => [
+                    'animation' => [
+                        'duration' => 300,
+                    ],
+                ],
+                'resize' => [
+                    'animation' => [
+                        'duration' => 450,
+                        'easing' => 'easeOutQuart',
+                    ],
+                ],
+            ],
+            'interaction' => [
+                'mode' => 'index',
+                'intersect' => false,
+            ],
+            'layout' => [
+                'padding' => [
+                    'top' => 6,
+                    'bottom' => 4,
+                    'left' => 4,
+                    'right' => 4,
+                ],
+            ],
+            'plugins' => [
+                'legend' => [
+                    'display' => false,
+                ],
+                'tooltip' => [
+                    'padding' => 8,
+                    'cornerRadius' => 8,
+                ],
+            ],
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'precision' => 0,
+                        'font' => [
+                            'size' => 11,
+                        ],
+                    ],
+                    'grid' => [
+                        'color' => 'rgba(226, 232, 240, 0.6)',
+                    ],
+                ],
+                'x' => [
+                    'ticks' => [
+                        'font' => [
+                            'size' => 11,
+                        ],
+                    ],
+                    'grid' => [
+                        'display' => false,
+                    ],
+                ],
+            ],
+        ];
     }
 }

@@ -1248,4 +1248,25 @@ class TicketController extends Controller
 
         return $primaryPath;
     }
+
+    protected function resolveCategoryId(Request $request, string $defaultSlug = 'aplikasi-software', ?string $serviceKey = null): int
+    {
+        $catId = $request->input('category_id');
+        if ($catId && Category::where('id', $catId)->exists()) {
+            return (int) $catId;
+        }
+
+        if ($serviceKey) {
+            $cat = Category::resolveForService($serviceKey);
+            if ($cat) {
+                return (int) $cat->id;
+            }
+        }
+
+        $cat = Category::where('slug', $defaultSlug)->first()
+            ?? Category::where('slug', 'aplikasi-software')->first()
+            ?? Category::first();
+
+        return $cat ? (int) $cat->id : 1;
+    }
 }

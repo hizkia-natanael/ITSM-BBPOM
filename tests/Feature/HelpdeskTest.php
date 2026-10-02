@@ -10,6 +10,28 @@ use Tests\TestCase;
 
 class HelpdeskTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $categoriesData = [
+            ['name' => 'Jaringan & Konektivitas Internet', 'slug' => 'jaringan-internet'],
+            ['name' => 'Perangkat Keras (Hardware & PC)', 'slug' => 'perangkat-keras-hardware'],
+            ['name' => 'Aplikasi & Sistem Informasi (Software)', 'slug' => 'aplikasi-software'],
+            ['name' => 'Printer, Scanner & Periferal', 'slug' => 'printer-scanner'],
+            ['name' => 'Akun, Email & Keamanan Informasi', 'slug' => 'akun-email-keamanan'],
+        ];
+
+        foreach ($categoriesData as $data) {
+            Category::firstOrCreate(
+                ['slug' => $data['slug']],
+                ['name' => $data['name']]
+            );
+        }
+    }
+
     public function test_admin_is_redirected_to_admin_panel_after_login(): void
     {
         $email = 'admintest_' . uniqid() . '@bbpom.go.id';
@@ -1025,6 +1047,347 @@ class HelpdeskTest extends TestCase
             $showResponse = $this->actingAs($user)->get(route('tickets.show', $ticket));
             $showResponse->assertOk();
             $showResponse->assertSee($ticket->service_name);
+        }
+    }
+    public function test_tab_favicon_logo_bpom_is_configured_across_portal_views(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Home / Login page
+        $resHome = $this->get('/');
+        $resHome->assertSee('images/logo-bpom.png');
+
+        // User dashboard
+        $resDash = $this->actingAs($user)->get('/dashboard');
+        $resDash->assertSee('images/logo-bpom.png');
+
+        // User create ticket
+        $resCreate = $this->actingAs($user)->get('/tickets/create');
+        $resCreate->assertSee('images/logo-bpom.png');
+
+        // Admin Filament panel
+        $resAdmin = $this->actingAs($admin)->get('/admin');
+        $resAdmin->assertSee('images/logo-bpom.png');
+    }
+
+    public function test_all_twelve_services_and_all_subcategories_can_be_submitted_and_viewed_by_admin(): void
+    {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+        Category::firstOrCreate(['slug' => 'jaringan-internet'], ['name' => 'Jaringan & Konektivitas Internet']);
+        Category::firstOrCreate(['slug' => 'perangkat-keras-hardware'], ['name' => 'Perangkat Keras (Hardware & PC)']);
+        Category::firstOrCreate(['slug' => 'aplikasi-software'], ['name' => 'Aplikasi & Sistem Informasi (Software)']);
+        Category::firstOrCreate(['slug' => 'printer-scanner'], ['name' => 'Printer, Scanner & Periferal']);
+        Category::firstOrCreate(['slug' => 'akun-email-keamanan'], ['name' => 'Akun, Email & Keamanan Informasi']);
+        Category::firstOrCreate(['slug' => 'sertifikat-bsre'], ['name' => 'Sertifikat BSrE / TTE']);
+
+        $user = User::factory()->create(['role' => 'user', 'name' => 'Test Pegawai', 'nip' => '199001012020011001']);
+        $admin = User::factory()->create(['role' => 'admin', 'name' => 'Admin Verifier']);
+
+        $submissions = [
+            // 1. SIPT
+            'sipt_reset' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'reset_password',
+                'sipt_username' => 'ahmad123',
+                'sipt_password' => 'PassBaru123!',
+            ],
+            'sipt_rollback' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'rollback_sampel',
+                'sipt_sample_number' => 'SMP-2026-X01',
+                'sipt_commodity' => 'Pangan',
+            ],
+            'sipt_repair' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'perbaikan_sampel',
+                'sipt_sample_code' => 'KD-9988',
+                'sipt_commodity' => 'Obat',
+                'sipt_sample_name' => 'Paracetamol Tab',
+                'sipt_before_repair' => 'Batch 01',
+                'sipt_after_repair' => 'Batch 02',
+            ],
+            'sipt_track' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'cek_posisi_sampel',
+                'sipt_sample_code' => 'KD-9989',
+                'sipt_commodity' => 'Kosmetik',
+                'sipt_sample_name' => 'Body Lotion',
+            ],
+            'sipt_other' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'lainnya',
+                'service_description' => 'Kendala error validasi data pengujian di modul SIPT',
+            ],
+
+            // 2. SRIKANDI
+            'srikandi_reset' => [
+                'service_key' => 'srikandi',
+                'subcategory' => 'reset_password',
+                'srikandi_username' => 'srikandi_user',
+                'srikandi_password' => 'SrikandiPass123!',
+            ],
+            'srikandi_create' => [
+                'service_key' => 'srikandi',
+                'subcategory' => 'buat_akun',
+                'srikandi_fullname' => 'Pegawai Baru',
+                'srikandi_nik' => '3301234567890002',
+                'srikandi_phone' => '081234567891',
+                'srikandi_email' => 'baru@bbpom.go.id',
+                'srikandi_req_username' => 'pegawai_baru',
+                'srikandi_req_password' => 'AwalPass123!',
+            ],
+            'srikandi_disable' => [
+                'service_key' => 'srikandi',
+                'subcategory' => 'nonaktif_akun',
+                'srikandi_username' => 'pegawai_mutasi',
+                'srikandi_disable_reason' => 'Mutasi ke unit kerja BBPOM lain',
+            ],
+            'srikandi_mfa' => [
+                'service_key' => 'srikandi',
+                'subcategory' => 'reset_mfa',
+                'srikandi_username' => 'pegawai_mfa',
+            ],
+            'srikandi_other' => [
+                'service_key' => 'srikandi',
+                'subcategory' => 'lainnya',
+                'service_description' => 'Gagal verifikasi berkas naskah keluar di Srikandi',
+            ],
+
+            // 3. EMAIL CORPORATE
+            'email_reset' => [
+                'service_key' => 'email_corporate',
+                'subcategory' => 'reset_password',
+                'email_nip' => '199001012020011001',
+                'email_password' => 'EmailNewPass123!',
+            ],
+            'email_other' => [
+                'service_key' => 'email_corporate',
+                'subcategory' => 'lainnya',
+                'service_description' => 'Kuota penyimpanan webmail telah mencapai 98%',
+            ],
+
+            // 4. SERTIFIKAT BSRE
+            'bsre_reset' => [
+                'service_key' => 'sertifikat_bse',
+                'subcategory' => 'reset_password',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'nip' => '199001012020011001',
+                'nik' => '3301234567890001',
+                'email' => 'pegawai@bbpom.go.id',
+                'nomor_telepon' => '081234567890',
+            ],
+            'bsre_otp' => [
+                'service_key' => 'sertifikat_bse',
+                'subcategory' => 'permintaan_otp',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'nip' => '199001012020011001',
+                'nik' => '3301234567890001',
+                'email' => 'pegawai@bbpom.go.id',
+                'nomor_telepon' => '081234567890',
+            ],
+            'bsre_other' => [
+                'service_key' => 'sertifikat_bse',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'deskripsi' => 'Perpanjangan masa berlaku sertifikat elektronik BSrE',
+            ],
+
+            // 5. ZOOM
+            'zoom_link' => [
+                'service_key' => 'zoom',
+                'subcategory' => 'permintaan_link_zoom',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'nama_acara' => 'Rapat Koordinasi Tim Pengawasan',
+                'jam' => '09:00 - 12:00 WIB',
+            ],
+            'zoom_other' => [
+                'service_key' => 'zoom',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'deskripsi' => 'Pengaturan 8 breakout rooms webinar dinas',
+            ],
+
+            // 6. FORMULIR & KEGIATAN
+            'kegiatan_hadir' => [
+                'service_key' => 'formulir_kegiatan',
+                'subcategory' => 'permintaan_daftar_hadir',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'nama_acara' => 'Bimtek Keamanan Pangan Bagi UMKM',
+                'jam' => '08:30 - 15:30 WIB',
+            ],
+            'kegiatan_qrcode' => [
+                'service_key' => 'formulir_kegiatan',
+                'subcategory' => 'permintaan_qrcode',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'link_qrcode' => 'https://bbpomsemarang.pom.go.id/bimtek-pangan',
+            ],
+            'kegiatan_survey' => [
+                'service_key' => 'formulir_kegiatan',
+                'subcategory' => 'survey',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'judul_survey' => 'Survei Kepuasan Stakeholder 2026',
+                'pertanyaan_json' => json_encode([['text' => 'Bagaimana kepuasan pelayanan kami?', 'tipe' => 'Pilihan Skala 4']]),
+            ],
+            'kegiatan_test' => [
+                'service_key' => 'formulir_kegiatan',
+                'subcategory' => 'post_test_pretest',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'judul_acara' => 'Pelatihan Uji Laboratorium Kimia',
+                'jenis_test' => 'pretest',
+                'pertanyaan_json' => json_encode([['text' => 'Berapa standar pH pengujian?', 'tipe' => 'Multiple Answer']]),
+            ],
+            'kegiatan_other' => [
+                'service_key' => 'formulir_kegiatan',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'deskripsi' => 'Pembuatan link landing page kegiatan monitoring',
+            ],
+
+            // 7. INTERNET & JARINGAN
+            'internet_lemot' => [
+                'service_key' => 'internet',
+                'subcategory' => 'lemot_mati',
+                'ap_location' => 'Lantai 2 Ruang Infokom',
+                'complaint_details' => 'Koneksi WiFi sering mengalami Request Time Out (RTO)',
+            ],
+            'internet_ap' => [
+                'service_key' => 'internet',
+                'subcategory' => 'tambah_ap',
+                'ap_location' => 'Ruang Arsip Baru',
+                'complaint_details' => 'Ruangan tidak terjangkau sinyal WiFi kantor',
+            ],
+            'internet_other' => [
+                'service_key' => 'internet',
+                'subcategory' => 'lainnya',
+                'service_description' => 'Kabel LAN port 12 di meja kerja tidak tersambung',
+            ],
+
+            // 8. SUBSITE
+            'subsite_news' => [
+                'service_key' => 'subsite',
+                'subcategory' => 'upload_berita',
+                'news_title' => 'BBPOM Semarang Gelar Pengawasan Pasar',
+                'news_content' => 'Kegiatan pengawasan serentak obat dan makanan...',
+                'target_date' => '2026-10-05',
+            ],
+            'subsite_doc' => [
+                'service_key' => 'subsite',
+                'subcategory' => 'upload_dokumen',
+                'doc_name' => 'SK Standar Pelayanan Tahun 2026',
+                'doc_location' => 'Menu Standar Pelayanan Publik',
+            ],
+            'subsite_del' => [
+                'service_key' => 'subsite',
+                'subcategory' => 'hapus_dokumen',
+                'doc_name' => 'Pengumuman Tender 2021',
+                'doc_url' => 'https://semarang.pom.go.id/dokumen/tender2021.pdf',
+            ],
+
+            // 9. INFOGRAFIS
+            'infografis_create' => [
+                'service_key' => 'infografis',
+                'subcategory' => 'pembuatan_infografis',
+                'infographic_title' => 'Edukasi Cek KLIK Obat Aman',
+                'infographic_content' => 'Informasi langkah Cek Kemasan, Label, Izin Edar, dan Kedaluwarsa',
+            ],
+
+            // 10. INSTALL WINDOWS
+            'windows_install' => [
+                'service_key' => 'install_windows',
+                'subcategory' => 'permintaan_install_windows',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'bidang' => 'Tata Usaha',
+                'merk_perangkat' => 'Lenovo ThinkPad L14',
+                'kode_bmn' => '3.05.02.01.002.88888',
+                'deskripsi' => 'Sistem operasi korup dan blue screen berulang',
+            ],
+            'windows_other' => [
+                'service_key' => 'install_windows',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'deskripsi' => 'Pembersihan malware dan optimalisasi startup Windows',
+            ],
+
+            // 11. LISENSI OFFICE
+            'office_license' => [
+                'service_key' => 'lisensi_office',
+                'subcategory' => 'permintaan_lisensi_office',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'bidang' => 'Pengujian',
+                'merk_perangkat' => 'Dell Latitude 3420',
+                'kode_bmn' => '3.05.02.01.002.77777',
+                'deskripsi' => 'Aktivasi lisensi resmi Microsoft 365 unlicensed',
+            ],
+            'office_other' => [
+                'service_key' => 'lisensi_office',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'deskripsi' => 'Microsoft Word freeze dan crash saat membuka dokumen template dinas',
+            ],
+
+            // 12. LAINNYA
+            'general_other' => [
+                'service_key' => 'lainnya',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-01',
+                'nama' => 'Test Pegawai',
+                'deskripsi' => 'Printer Epson di ruang TU mengalami paper jam konstan',
+            ],
+        ];
+
+        foreach ($submissions as $label => $payload) {
+            $prevCount = Ticket::count();
+
+            $response = $this->actingAs($user)->post('/tickets', $payload);
+            $response->assertSessionHasNoErrors();
+
+            $newCount = Ticket::count();
+            $this->assertEquals($prevCount + 1, $newCount, "Submission failed for [{$label}]");
+
+            $ticket = Ticket::latest('id')->first();
+            $this->assertNotNull($ticket, "Ticket record was not found for [{$label}]");
+            $this->assertEquals('pending', $ticket->status);
+            $this->assertEquals($payload['service_key'], $ticket->service_key);
+            $this->assertEquals($payload['subcategory'], $ticket->subcategory);
+            $this->assertNotNull($ticket->category_id);
+            $this->assertTrue(Category::where('id', $ticket->category_id)->exists(), "Category ID {$ticket->category_id} not found in database for [{$label}]");
+
+            // Verify specific detail relation exists when applicable
+            if ($payload['service_key'] === 'sertifikat_bse') {
+                $this->assertNotNull($ticket->bsreDetail, "bsreDetail missing for [{$label}]");
+            } elseif ($payload['service_key'] === 'zoom') {
+                $this->assertNotNull($ticket->zoomDetail, "zoomDetail missing for [{$label}]");
+            } elseif ($payload['service_key'] === 'formulir_kegiatan') {
+                $this->assertNotNull($ticket->kegiatanDetail, "kegiatanDetail missing for [{$label}]");
+            } elseif ($payload['service_key'] === 'install_windows') {
+                $this->assertNotNull($ticket->windowsDetail, "windowsDetail missing for [{$label}]");
+            } elseif ($payload['service_key'] === 'lisensi_office') {
+                $this->assertNotNull($ticket->officeDetail, "officeDetail missing for [{$label}]");
+            } elseif ($payload['service_key'] === 'lainnya') {
+                $this->assertNotNull($ticket->lainnyaDetail, "lainnyaDetail missing for [{$label}]");
+            }
+
+            // Admin can view the ticket in Filament Admin
+            \Livewire\Livewire::actingAs($admin)
+                ->test(\App\Filament\Resources\Tickets\Pages\EditTicket::class, [
+                    'record' => $ticket->getKey(),
+                ])
+                ->assertSuccessful();
         }
     }
 }
