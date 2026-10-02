@@ -120,8 +120,8 @@
         if ($currentLongKey !== null && !isset($longFields[$currentLongKey])) {
             $longFields[$currentLongKey] = implode("\n", $currentLongVal);
         }
-    } elseif (empty($longFields) && !empty($desc)) {
-        // Fallback plain description jika bukan terstruktur
+    } elseif (! $ticket->hasSubDetail() && empty($longFields) && !empty($desc) && !str_starts_with(trim($desc), 'Permohonan Layanan') && !str_starts_with(trim($desc), 'Pengaduan / Permohonan')) {
+        // Fallback plain description HANYA untuk tiket pengaduan umum non-katalog formulir
         $longFields['Deskripsi Pengaduan / Masalah'] = $desc;
     }
 
