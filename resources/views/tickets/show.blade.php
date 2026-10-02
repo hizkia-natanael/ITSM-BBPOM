@@ -83,7 +83,7 @@
             <div class="lg:col-span-8 space-y-6">
 
             @php
-                $hasSubDetail = (bool) ($ticket->bsreDetail || $ticket->zoomDetail || $ticket->kegiatanDetail || $ticket->windowsDetail || $ticket->officeDetail || $ticket->lainnyaDetail);
+                $hasSubDetail = $ticket->hasSubDetail();
             @endphp
 
             @if($ticket->bsreDetail)
@@ -155,18 +155,6 @@
                                 <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->bsreDetail->deskripsi) }}</p>
                             </div>
                         @endif
-
-                        @if($ticket->bsreDetail->file_lampiran)
-                            <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                                <div>
-                                    <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas BSrE:</span>
-                                    <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen pendukung pengajuan</span>
-                                </div>
-                                <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'bsre', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                    Lihat Berkas &rarr;
-                                </a>
-                            </div>
-                        @endif
                     </div>
 
                     <x-ticket-attachments-list :ticket="$ticket" />
@@ -226,18 +214,6 @@
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
                                     <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->zoomDetail->deskripsi) }}</p>
-                                </div>
-                            @endif
-
-                            @if($ticket->zoomDetail->file_lampiran)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                                    <div>
-                                        <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas Zoom:</span>
-                                        <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen pendukung pengajuan</span>
-                                    </div>
-                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'zoom', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                        Lihat Berkas &rarr;
-                                    </a>
                                 </div>
                             @endif
                         </div>
@@ -376,18 +352,6 @@
                                     <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->kegiatanDetail->deskripsi) }}</p>
                                 </div>
                             @endif
-
-                            @if($ticket->kegiatanDetail->file_lampiran)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                                    <div>
-                                        <span class="text-slate-400 block text-[11px] font-medium">Berkas Dokumen Lampiran:</span>
-                                        <span class="font-semibold text-slate-900 text-xs mt-0.5 block">File draf / kuesioner / soal kegiatan</span>
-                                    </div>
-                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'kegiatan', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                        Lihat Berkas &rarr;
-                                    </a>
-                                </div>
-                            @endif
                         </div>
 
                         <x-ticket-attachments-list :ticket="$ticket" />
@@ -454,18 +418,6 @@
                                 <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                     <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
                                     <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->windowsDetail->deskripsi) }}</p>
-                                </div>
-                            @endif
-
-                            @if($ticket->windowsDetail->file_lampiran)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                                    <div>
-                                        <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas:</span>
-                                        <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen / Foto Perangkat</span>
-                                    </div>
-                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'windows', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                        Lihat Berkas &rarr;
-                                    </a>
                                 </div>
                             @endif
                         </div>
@@ -536,18 +488,6 @@
                                     <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->officeDetail->deskripsi) }}</p>
                                 </div>
                             @endif
-
-                            @if($ticket->officeDetail->file_lampiran)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                                    <div>
-                                        <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas:</span>
-                                        <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen / Bukti Lampiran</span>
-                                    </div>
-                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'office', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                        Lihat Berkas &rarr;
-                                    </a>
-                                </div>
-                            @endif
                         </div>
 
                         <x-ticket-attachments-list :ticket="$ticket" />
@@ -593,18 +533,6 @@
                                     <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->lainnyaDetail->deskripsi) }}</p>
                                 </div>
                             @endif
-
-                            @if($ticket->lainnyaDetail->file_lampiran)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                                    <div>
-                                        <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas:</span>
-                                        <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Foto / Dokumen Pendukung</span>
-                                    </div>
-                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'lainnya', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                        Lihat Berkas &rarr;
-                                    </a>
-                                </div>
-                            @endif
                         </div>
 
                         <x-ticket-attachments-list :ticket="$ticket" />
@@ -615,17 +543,21 @@
                     <!-- Card 1: Rincian Lengkap Pengaduan & Spesifikasi Formulir (Layanan Katalog Standard Tanpa Sub-Detail) -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
                         <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-                                    <i class="ri-file-list-3-line text-sm"></i>
-                                    Informasi & Spesifikasi Pengaduan
-                                </span>
-                                <h2 class="text-lg font-bold text-slate-900 mt-1">
-                                    {{ $ticket->subject }}
-                                </h2>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center font-bold text-lg">
+                                    <i class="ri-file-list-3-line"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Formulir Layanan TI</span>
+                                    <h2 class="text-base font-extrabold text-slate-900 mt-0.5">
+                                        {{ $ticket->service_name ?: $ticket->category->name }}
+                                    </h2>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                                <x-ticket-category-badge :ticket="$ticket" :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/60">
+                                    {{ $ticket->subcategory_label ?: 'Katalog TI' }}
+                                </span>
                             </div>
                         </div>
 

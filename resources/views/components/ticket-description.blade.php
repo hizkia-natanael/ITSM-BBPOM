@@ -84,27 +84,24 @@
 
 @if($isStructured)
     <div class="space-y-5">
-        <!-- Tag Header Layanan & Subkategori -->
-        @if(!empty($meta))
-            <div class="flex flex-wrap items-center gap-2.5 p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl">
-                @if(isset($meta['Layanan']))
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
-                        <i class="ri-apps-2-line text-emerald-700"></i>
-                        <span>Layanan: {{ $meta['Layanan'] }}</span>
-                    </div>
-                @endif
-
-                @if(isset($meta['Sub Kategori']))
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-xs font-semibold">
-                        <i class="ri-price-tag-3-line text-blue-700"></i>
-                        <span>Sub Kategori: {{ $meta['Sub Kategori'] }}</span>
-                    </div>
-                @endif
-
+        <!-- Metadata Header Formulir (Tanggal & Pemohon) -->
+        @if(isset($meta['Tanggal Pengajuan']) || isset($meta['Nama Pemohon']))
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 @if(isset($meta['Tanggal Pengajuan']))
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white text-slate-600 border border-slate-200 text-xs font-medium ml-auto">
-                        <i class="ri-calendar-check-line text-slate-500"></i>
-                        <span>{{ $meta['Tanggal Pengajuan'] }} WIB</span>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="text-slate-400 block text-[11px] font-medium">Tanggal Pengajuan:</span>
+                        <span class="font-bold text-slate-900 text-sm mt-0.5 block">
+                            {{ $meta['Tanggal Pengajuan'] }} WIB
+                        </span>
+                    </div>
+                @endif
+
+                @if(isset($meta['Nama Pemohon']))
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="text-slate-400 block text-[11px] font-medium">Nama Pemohon:</span>
+                        <span class="font-bold text-slate-900 text-sm mt-0.5 block">
+                            {{ $meta['Nama Pemohon'] }}
+                        </span>
                     </div>
                 @endif
             </div>

@@ -3,7 +3,15 @@
 @php
     $attachments = $ticket->attachments;
     $hasMultiple = $attachments->isNotEmpty();
-    $hasLegacy = !empty($ticket->attachment);
+    $legacyPath = $ticket->attachment ?: (
+        $ticket->bsreDetail?->file_lampiran
+        ?: ($ticket->zoomDetail?->file_lampiran
+        ?: ($ticket->kegiatanDetail?->file_lampiran
+        ?: ($ticket->windowsDetail?->file_lampiran
+        ?: ($ticket->officeDetail?->file_lampiran
+        ?: $ticket->lainnyaDetail?->file_lampiran))))
+    );
+    $hasLegacy = !empty($legacyPath);
 @endphp
 
 @if($hasMultiple || $hasLegacy)
@@ -92,7 +100,7 @@
 
         @elseif($hasLegacy)
             @php
-                $ext = strtolower(pathinfo($ticket->attachment, PATHINFO_EXTENSION));
+                $ext = strtolower(pathinfo($legacyPath, PATHINFO_EXTENSION));
                 $isImage = in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp']);
                 $isPdf = $ext === 'pdf';
                 $isDoc = in_array($ext, ['doc', 'docx']);
@@ -105,7 +113,7 @@
                     $isZip => 'ri-file-zip-line text-amber-600',
                     default => 'ri-file-line text-slate-600',
                 };
-                $fileName = basename($ticket->attachment);
+                $fileName = basename($legacyPath);
             @endphp
 
             <div class="p-4 rounded-2xl border border-slate-200/90 bg-slate-50/70 hover:bg-slate-50 transition-colors">

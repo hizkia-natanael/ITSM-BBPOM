@@ -174,4 +174,37 @@ class Ticket extends Model
 
         return $this->category?->name ?? 'Layanan TIK';
     }
+
+    public function hasSubDetail(): bool
+    {
+        return (bool) (
+            $this->bsreDetail
+            || $this->zoomDetail
+            || $this->kegiatanDetail
+            || $this->windowsDetail
+            || $this->officeDetail
+            || $this->lainnyaDetail
+        );
+    }
+
+    public function getSubcategoryLabelAttribute(): ?string
+    {
+        if ($this->bsreDetail) return $this->bsreDetail->sub_category_label;
+        if ($this->zoomDetail) return $this->zoomDetail->sub_category_label;
+        if ($this->kegiatanDetail) return $this->kegiatanDetail->sub_category_label;
+        if ($this->windowsDetail) return $this->windowsDetail->sub_category_label;
+        if ($this->officeDetail) return $this->officeDetail->sub_category_label;
+        if ($this->lainnyaDetail) return 'Layanan Umum';
+
+        if ($this->subcategory) {
+            $services = config('services_gateway.services', []);
+            $resolvedKey = $this->service_key_resolved;
+            if ($resolvedKey && isset($services[$resolvedKey]['subcategories'][$this->subcategory])) {
+                return $services[$resolvedKey]['subcategories'][$this->subcategory];
+            }
+            return ucwords(str_replace('_', ' ', $this->subcategory));
+        }
+
+        return null;
+    }
 }

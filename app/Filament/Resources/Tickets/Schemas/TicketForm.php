@@ -93,7 +93,8 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->rows(4)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => $record && !$record->hasSubDetail()),
 
                         Placeholder::make('attachment')
                             ->label('Berkas Lampiran Pendukung')
@@ -176,17 +177,6 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
-
-                        Placeholder::make('bsre_lampiran')
-                            ->label('Berkas Lampiran BSrE')
-                            ->visible(fn ($record) => !empty($record?->bsreDetail?->file_lampiran))
-                            ->content(function ($record) {
-                                if (!$record || !$record->bsreDetail?->file_lampiran) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                                }
-                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'bsre']);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran BSrE</a>');
-                            }),
                     ]),
 
                 Section::make('Rincian Layanan Zoom Meeting / Webinar')
@@ -236,17 +226,6 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
-
-                        Placeholder::make('zoom_lampiran')
-                            ->label('Berkas Lampiran Zoom')
-                            ->visible(fn ($record) => !empty($record?->zoomDetail?->file_lampiran))
-                            ->content(function ($record) {
-                                if (!$record || !$record->zoomDetail?->file_lampiran) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                                }
-                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'zoom']);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Zoom</a>');
-                            }),
                     ]),
 
                 Section::make('Rincian Layanan Formulir & Fasilitas Kegiatan')
@@ -348,17 +327,6 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
-
-                        Placeholder::make('kegiatan_lampiran')
-                            ->label('Berkas Dokumen Lampiran')
-                            ->visible(fn ($record) => !empty($record?->kegiatanDetail?->file_lampiran))
-                            ->content(function ($record) {
-                                if (!$record || !$record->kegiatanDetail?->file_lampiran) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                                }
-                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'kegiatan']);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Dokumen Kegiatan</a>');
-                            }),
                     ]),
 
                 Section::make('Rincian Layanan Install Ulang Windows')
@@ -415,17 +383,6 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
-
-                        Placeholder::make('windows_lampiran')
-                            ->label('Berkas Lampiran Perangkat')
-                            ->visible(fn ($record) => !empty($record?->windowsDetail?->file_lampiran))
-                            ->content(function ($record) {
-                                if (!$record || !$record->windowsDetail?->file_lampiran) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                                }
-                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'windows']);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Windows</a>');
-                            }),
                     ]),
 
                 Section::make('Rincian Layanan Lisensi Microsoft Office')
@@ -482,17 +439,6 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
-
-                        Placeholder::make('office_lampiran')
-                            ->label('Berkas Lampiran Lisensi')
-                            ->visible(fn ($record) => !empty($record?->officeDetail?->file_lampiran))
-                            ->content(function ($record) {
-                                if (!$record || !$record->officeDetail?->file_lampiran) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                                }
-                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'office']);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Office</a>');
-                            }),
                     ]),
 
                 Section::make('Rincian Layanan TIK Umum / Lainnya')
@@ -521,17 +467,6 @@ class TicketForm
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
-
-                        Placeholder::make('lainnya_lampiran')
-                            ->label('Berkas Lampiran')
-                            ->visible(fn ($record) => !empty($record?->lainnyaDetail?->file_lampiran))
-                            ->content(function ($record) {
-                                if (!$record || !$record->lainnyaDetail?->file_lampiran) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                                }
-                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'lainnya']);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran</a>');
-                            }),
                     ]),
             ]);
     }
