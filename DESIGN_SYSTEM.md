@@ -66,6 +66,7 @@ resources/views/components/
 ├── ticket-status-badge.blade.php        # Molecule: Badge status tiket warna-warni & identitas admin penangan
 ├── ticket-category-badge.blade.php      # Molecule: Badge kategori layanan berformat rounded-full & ikon Remix Icon kontekstual
 ├── ticket-handler-card.blade.php         # Molecule: Kartu profil & status teknisi/admin penanggung jawab
+├── user-profile-menu.blade.php           # Molecule: Pill & dropdown menu profil pengguna executive glassmorphic
 ├── sla-info-card.blade.php              # Molecule: Kartu aturan SLA layanan
 ├── draft-recovery-alert.blade.php       # Organism: Modal glassmorphism draf tersimpan
 ├── leave-form-confirmation-modal.blade.php # Organism: Modal konfirmasi keluar halaman

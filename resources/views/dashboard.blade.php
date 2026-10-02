@@ -176,11 +176,13 @@
                                         </a>
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
-                                        <x-ticket-category-badge :category="$ticket->category" />
+                                        <x-ticket-category-badge :ticket="$ticket" :category="$ticket->category" />
                                     </td>
-                                    <td class="py-3 px-4 max-w-xs sm:max-w-sm">
+                                    <td class="py-3 px-4 max-w-xs sm:max-w-sm md:max-w-md">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-xs font-semibold text-slate-900 truncate">{{ $ticket->subject }}</span>
+                                            <a href="{{ route('tickets.show', $ticket) }}" class="text-sm font-semibold text-slate-900 hover:text-emerald-700 transition truncate" title="{{ $ticket->subject }}">
+                                                {{ $ticket->subject }}
+                                            </a>
                                             @if($ticket->attachment)
                                                 <span class="inline-flex items-center gap-0.5 text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded shrink-0 border border-slate-200/60" title="Memiliki lampiran berkas">
                                                     <i class="ri-attachment-2 text-xs text-slate-500"></i>

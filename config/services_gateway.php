@@ -29,7 +29,6 @@ return [
             'description' => 'Kendala akses pelaporan, input pengujian, validasi data, dan error operasional aplikasi SIPT.',
             'keywords' => ['sipt', 'laporan', 'pelaporan', 'pengujian', 'data', 'bpom', 'sistem'],
             'color' => 'indigo',
-            'default_category_id' => 5,
             'subcategories' => [
                 'reset_password' => 'Reset Password',
                 'rollback_sampel' => 'Rollback Sampel',
@@ -50,7 +49,6 @@ return [
             'description' => 'Bantuan registrasi naskah dinas, penandatanganan elektronik (TTE), login, dan mutasi akun Srikandi.',
             'keywords' => ['srikandi', 'surat', 'arsip', 'tte', 'naskah dinas', 'kearsipan', 'persuratan'],
             'color' => 'blue',
-            'default_category_id' => 5,
             'subcategories' => [
                 'reset_password' => 'Reset Password',
                 'buat_akun' => 'Pembuatan Akun Baru',
@@ -71,7 +69,6 @@ return [
             'description' => 'Pembuatan akun baru, reset password, kuota penyimpanan penuh, serta kendala kirim/terima webmail.',
             'keywords' => ['email', 'mail', 'corporate', 'webmail', 'password', 'bbpom.go.id', 'kuota', 'inbox'],
             'color' => 'sky',
-            'default_category_id' => 7,
             'subcategories' => [
                 'reset_password' => 'Reset Password',
                 'lainnya' => 'Lainnya',
@@ -89,7 +86,6 @@ return [
             'description' => 'Layanan resmi terkait Sertifikat Elektronik BSrE: Reset Password BSRE, Permintaan Kode OTP, dan pengaduan lainnya.',
             'keywords' => ['bsre', 'bse', 'sertifikat', 'elektronik', 'tte', 'tanda tangan', 'passphrase', 'pin', 'otp', 'reset password'],
             'color' => 'amber',
-            'default_category_id' => 5,
             'subcategories' => [
                 'reset_password' => 'Reset password BSRE',
                 'permintaan_otp' => 'Permintaan OTP',
@@ -108,7 +104,6 @@ return [
             'description' => 'Peminjaman lisensi akun Zoom, pendampingan teknis rapat, pengaturan breakout room, dan live streaming.',
             'keywords' => ['zoom', 'meeting', 'webinar', 'virtual', 'rapat', 'breakout', 'streaming'],
             'color' => 'cyan',
-            'default_category_id' => 5,
             'subcategories' => [
                 'permintaan_link_zoom' => 'Permintaan Link Zoom',
                 'lainnya' => 'Lainnya',
@@ -126,7 +121,6 @@ return [
             'description' => 'Pembuatan presensi online, generate QR Code resmi, form survei kepuasan, pretest/posttest, dan tautan kegiatan.',
             'keywords' => ['daftar hadir', 'presensi', 'qrcode', 'qr code', 'survey', 'kuesioner', 'pretest', 'posttest', 'link tree', 'linktree', 'formulir'],
             'color' => 'emerald',
-            'default_category_id' => 5,
             'subcategories' => [
                 'permintaan_daftar_hadir' => 'Permintaan Daftar Hadir',
                 'permintaan_qrcode' => 'Permintaan QRCODE',
@@ -147,7 +141,6 @@ return [
             'description' => 'Kendala koneksi internet lambat/putus, kabel LAN ruangan, akun WiFi kantor, dan konfigurasi akses VPN.',
             'keywords' => ['internet', 'wifi', 'wi-fi', 'lan', 'kabel', 'jaringan', 'koneksi', 'vpn', 'hotspot', 'rto', 'router'],
             'color' => 'teal',
-            'default_category_id' => 3,
             'subcategories' => [
                 'lemot_mati' => 'Keluhan Internet Lemot / Mati',
                 'tambah_ap' => 'Request Penambahan Access Point',
@@ -166,7 +159,6 @@ return [
             'description' => 'Pembaruan berita/artikel, penambahan menu informasi publik, dan penyesuaian tata letak subsite resmi.',
             'keywords' => ['subsite', 'website', 'web', 'artikel', 'berita', 'menu', 'portal', 'semarang', 'laman'],
             'color' => 'violet',
-            'default_category_id' => 5,
             'subcategories' => [
                 'upload_berita' => 'Upload Berita Internal',
                 'upload_dokumen' => 'Upload Dokumen',
@@ -185,7 +177,6 @@ return [
             'description' => 'Permohonan desain materi sosialisasi, spanduk acara dinas, infografis medsos, dan materi presentasi resmi.',
             'keywords' => ['infografis', 'desain', 'grafis', 'banner', 'spanduk', 'poster', 'flyer', 'publikasi', 'media', 'canva'],
             'color' => 'rose',
-            'default_category_id' => 5,
             'subcategories' => [
                 'pembuatan_infografis' => 'Pembuatan Infografis',
             ],
@@ -202,7 +193,6 @@ return [
             'description' => 'Re-instalasi OS Windows, pembersihan virus/malware, PC lambat, upgrade versi, dan pemulihan data sistem.',
             'keywords' => ['install', 'windows', 'os', 'format', 'laptop', 'pc', 'komputer', 'virus', 'lambat', 'reinstall', 'win 11'],
             'color' => 'slate',
-            'default_category_id' => 4,
             'subcategories' => [
                 'permintaan_install_windows' => 'Permintaan Install Ulang Windows',
                 'lainnya' => 'Lainnya',
@@ -220,7 +210,6 @@ return [
             'description' => 'Aktivasi lisensi resmi, penanganan error unlicensed/expired, dan instalasi software perkantoran Microsoft.',
             'keywords' => ['lisensi', 'license', 'microsoft', 'office', 'word', 'excel', 'powerpoint', 'ms office', 'unlicensed', 'aktivasi'],
             'color' => 'orange',
-            'default_category_id' => 5,
             'subcategories' => [
                 'permintaan_lisensi_office' => 'Permintaan Lisensi Microsoft Office',
                 'lainnya' => 'Lainnya',
@@ -238,7 +227,6 @@ return [
             'description' => 'Kerusakan printer, scanner, proyektor ruang rapat, atau konsultasi kebutuhan teknologi informasi lainnya.',
             'keywords' => ['lainnya', 'printer', 'scanner', 'proyektor', 'audio', 'hardware', 'bantuan', 'kendala', 'konsultasi', 'mati'],
             'color' => 'gray',
-            'default_category_id' => 6,
             'subcategories' => [
                 'lainnya' => 'Lainnya',
             ],

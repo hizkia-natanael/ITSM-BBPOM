@@ -99,6 +99,11 @@ class Ticket extends Model
         return $this->hasOne(TicketLainnyaDetail::class, 'ticket_id');
     }
 
+    public function getSubjectAttribute($value): string
+    {
+        return preg_replace('/^\[[^\]]+\]\s*/', '', (string)$value);
+    }
+
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
@@ -119,5 +124,54 @@ class Ticket extends Model
             'ditolak' => 'danger',
             default => 'gray',
         };
+    }
+
+    public function getServiceKeyResolvedAttribute(): ?string
+    {
+        if (!empty($this->service_key)) {
+            return $this->service_key;
+        }
+
+        if ($this->relationLoaded('bsreDetail') ? $this->bsreDetail : $this->bsreDetail()->exists()) {
+            return 'sertifikat_bse';
+        }
+        if ($this->relationLoaded('zoomDetail') ? $this->zoomDetail : $this->zoomDetail()->exists()) {
+            return 'zoom';
+        }
+        if ($this->relationLoaded('kegiatanDetail') ? $this->kegiatanDetail : $this->kegiatanDetail()->exists()) {
+            return 'formulir_kegiatan';
+        }
+        if ($this->relationLoaded('windowsDetail') ? $this->windowsDetail : $this->windowsDetail()->exists()) {
+            return 'install_windows';
+        }
+        if ($this->relationLoaded('officeDetail') ? $this->officeDetail : $this->officeDetail()->exists()) {
+            return 'lisensi_office';
+        }
+        if ($this->relationLoaded('lainnyaDetail') ? $this->lainnyaDetail : $this->lainnyaDetail()->exists()) {
+            return 'lainnya';
+        }
+
+        if ($this->category) {
+            $slug = str_replace('-', '_', $this->category->slug);
+            if ($slug === 'sertifikat_bsre') {
+                return 'sertifikat_bse';
+            }
+            return $slug;
+        }
+
+        return null;
+    }
+
+    public function getServiceNameAttribute(): string
+    {
+        $resolvedKey = $this->service_key_resolved;
+        if ($resolvedKey) {
+            $services = config('services_gateway.services', []);
+            if (isset($services[$resolvedKey]['name'])) {
+                return $services[$resolvedKey]['name'];
+            }
+        }
+
+        return $this->category?->name ?? 'Layanan TIK';
     }
 }

@@ -365,7 +365,7 @@
                                 @include('tickets.forms.form-lainnya')
                             </fieldset>
 
-                            <input type="hidden" id="category_id" name="category_id" :value="currentService ? currentService.default_category_id : 5">
+                            <input type="hidden" id="category_id" name="category_id" :value="currentService && currentService.default_category_id ? currentService.default_category_id : ''">
 
                             <!-- Form Action Buttons (Unified Enterprise Bar) -->
                             <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">

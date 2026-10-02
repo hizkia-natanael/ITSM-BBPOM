@@ -157,10 +157,11 @@ class HelpdeskTest extends TestCase
         ]);
 
         $ticket = Ticket::where('user_id', $user->id)
-            ->where('subject', 'like', '%SIPT%')
+            ->where('service_key', 'sipt')
             ->first();
 
         $this->assertNotNull($ticket);
+        $this->assertStringContainsString('Rollback Sampel', $ticket->subject);
         $this->assertStringContainsString('SMP-2026-X99', $ticket->description);
         $this->assertStringContainsString('Pangan', $ticket->description);
         $response->assertRedirect(route('tickets.show', $ticket));
@@ -296,7 +297,7 @@ class HelpdeskTest extends TestCase
     public function test_user_can_view_bsre_ticket_details(): void
     {
         $user = User::factory()->create(['role' => 'user']);
-        $category = Category::firstOrCreate(['name' => 'Sertifikat BSrE / TTE', 'slug' => 'sertifikat-bsre']);
+        $category = Category::firstOrCreate(['slug' => 'sertifikat-bsre'], ['name' => 'Sertifikat Elektronik (BSrE)']);
 
         $ticket = Ticket::create([
             'user_id' => $user->id,
@@ -641,6 +642,42 @@ class HelpdeskTest extends TestCase
         $response->assertRedirect(route('tickets.show', $ticket));
     }
 
+    public function test_user_can_submit_email_corporate_reset_password_ticket(): void
+    {
+        $user = User::factory()->create(['role' => 'user', 'nip' => '198501012010121001']);
+        $category = Category::firstOrCreate(
+            ['slug' => 'email-corporate'],
+            ['name' => 'Email Corporate']
+        );
+
+        $response = $this->actingAs($user)->post('/tickets', [
+            'service_key' => 'email_corporate',
+            'subcategory_key' => 'reset_password',
+            'category_id' => $category->id,
+            'email_nip' => '198501012010121001',
+            'email_password' => 'BbpomSemarang2026!',
+        ]);
+
+        $ticket = $user->tickets()->where('service_key', 'email_corporate')->latest('id')->first();
+        $this->assertNotNull($ticket);
+        $this->assertEquals($category->id, $ticket->category_id);
+        $this->assertStringContainsString('Reset Password', $ticket->subject);
+        $this->assertStringContainsString('198501012010121001', $ticket->description);
+        $this->assertStringContainsString('BbpomSemarang2026!', $ticket->description);
+
+        $response->assertRedirect(route('tickets.show', $ticket));
+
+        // Test fallback when category_id is invalid (e.g. legacy id 7 or 999)
+        $responseFallback = $this->actingAs($user)->post('/tickets', [
+            'service_key' => 'email_corporate',
+            'subcategory_key' => 'reset_password',
+            'category_id' => 9999, // Non-existent category
+            'email_nip' => '198501012010121001',
+            'email_password' => 'BbpomSemarang2026!',
+        ]);
+        $responseFallback->assertSessionHasNoErrors();
+    }
+
     public function test_user_can_view_create_screen_for_services(): void
     {
         $user = User::factory()->create(['role' => 'user']);
@@ -865,6 +902,130 @@ class HelpdeskTest extends TestCase
         // User views ticket and sees Admin 2 finished it
         $response2 = $this->actingAs($user)->get(route('tickets.show', $ticket));
         $response2->assertSee('Selesai ditangani oleh Admin 2 - Layanan TIK');
+    }
+
+    public function test_all_12_catalog_services_can_be_submitted_and_resolve_proper_categories(): void
+    {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+        $user = User::factory()->create(['role' => 'user']);
+
+        $servicePayloads = [
+            'sipt' => [
+                'service_key' => 'sipt',
+                'subcategory_key' => 'perbaikan_sampel',
+                'sipt_sample_code' => 'SMP-2026-001',
+                'sipt_commodity' => 'Obat Tradisional',
+                'sipt_sample_name' => 'Sampel Uji A',
+                'sipt_before_repair' => 'Salah input',
+                'sipt_after_repair' => 'Data benar',
+            ],
+            'srikandi' => [
+                'service_key' => 'srikandi',
+                'subcategory_key' => 'reset_password',
+                'srikandi_username' => 'ahmad_bbpom',
+                'srikandi_password' => 'SrikandiPass2026!',
+            ],
+            'email_corporate' => [
+                'service_key' => 'email_corporate',
+                'subcategory_key' => 'reset_password',
+                'email_nip' => '199104152015031002',
+                'email_password' => 'EmailPass2026!',
+            ],
+            'sertifikat_bse' => [
+                'service_key' => 'sertifikat_bse',
+                'subcategory' => 'reset_password',
+                'tanggal_pengajuan' => '2026-10-02',
+                'nama' => 'Ahmad Pegawai',
+                'nip' => '199104152015031002',
+                'nik' => '3301234567890001',
+                'email' => 'ahmad@bbpom.go.id',
+                'nomor_telepon' => '081234567890',
+            ],
+            'zoom' => [
+                'service_key' => 'zoom',
+                'subcategory' => 'permintaan_link_zoom',
+                'tanggal_pengajuan' => '2026-10-02',
+                'nama' => 'Ahmad Pegawai',
+                'nama_acara' => 'Rapat Pleno BBPOM',
+                'jam' => '09:00 - selesai',
+            ],
+            'formulir_kegiatan' => [
+                'service_key' => 'formulir_kegiatan',
+                'subcategory' => 'permintaan_daftar_hadir',
+                'tanggal_pengajuan' => '2026-10-02',
+                'nama' => 'Ahmad Pegawai',
+                'nama_acara' => 'Bimtek IT',
+                'jam' => '08:00 - selesai',
+            ],
+            'internet' => [
+                'service_key' => 'internet',
+                'subcategory_key' => 'lemot_mati',
+                'ap_location' => 'Lantai 1 Front Office',
+                'complaint_details' => 'Koneksi lambat tidak bisa akses',
+            ],
+            'subsite' => [
+                'service_key' => 'subsite',
+                'subcategory_key' => 'upload_berita',
+                'news_title' => 'Rilis Berita BBPOM 2026',
+                'news_content' => 'Konten rilis pers...',
+            ],
+            'infografis' => [
+                'service_key' => 'infografis',
+                'subcategory_key' => 'pembuatan_infografis',
+                'infographic_title' => 'Infografis Layanan',
+                'infographic_content' => 'Materi infografis...',
+            ],
+            'install_windows' => [
+                'service_key' => 'install_windows',
+                'subcategory' => 'permintaan_install_windows',
+                'tanggal_pengajuan' => '2026-10-02',
+                'nama' => 'Ahmad Pegawai',
+                'bidang' => 'Tata Usaha',
+                'merk_perangkat' => 'HP ProBook',
+                'kode_bmn' => 'BMN-001',
+                'deskripsi' => 'Perlu install ulang OS',
+            ],
+            'lisensi_office' => [
+                'service_key' => 'lisensi_office',
+                'subcategory' => 'permintaan_lisensi_office',
+                'tanggal_pengajuan' => '2026-10-02',
+                'nama' => 'Ahmad Pegawai',
+                'bidang' => 'Pengujian',
+                'merk_perangkat' => 'Lenovo ThinkPad',
+                'kode_bmn' => 'BMN-002',
+                'deskripsi' => 'Lisensi office habis',
+            ],
+            'lainnya' => [
+                'service_key' => 'lainnya',
+                'subcategory' => 'lainnya',
+                'tanggal_pengajuan' => '2026-10-02',
+                'nama' => 'Ahmad Pegawai',
+                'deskripsi' => 'Kendala perangkat scanner macet',
+            ],
+        ];
+
+        foreach ($servicePayloads as $serviceKey => $payload) {
+            $expectedCategory = Category::resolveForService($serviceKey);
+            $this->assertNotNull($expectedCategory, "Category for service {$serviceKey} must exist");
+
+            $response = $this->actingAs($user)->post('/tickets', $payload);
+            $response->assertSessionHasNoErrors();
+
+            $ticket = Ticket::where('user_id', $user->id)
+                ->where('service_key', $payload['service_key'])
+                ->latest('id')
+                ->first();
+
+            $this->assertNotNull($ticket, "Ticket for {$serviceKey} must be created");
+            $this->assertEquals($expectedCategory->id, $ticket->category_id, "Ticket category for {$serviceKey} must match catalog category");
+            $this->assertNotEmpty($ticket->subject);
+            $this->assertNotEmpty($ticket->description);
+
+            // Test detail view renders successfully
+            $showResponse = $this->actingAs($user)->get(route('tickets.show', $ticket));
+            $showResponse->assertOk();
+            $showResponse->assertSee($ticket->service_name);
+        }
     }
 }
 

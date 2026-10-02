@@ -84,20 +84,27 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Seed Master Kategori ITSM
+        // 2. Seed Master Kategori ITSM (12 Katalog Layanan Resmi dengan ID 1-12)
         $categoriesData = [
-            ['name' => 'Jaringan & Konektivitas Internet', 'slug' => 'jaringan-internet'],
-            ['name' => 'Perangkat Keras (Hardware & PC)', 'slug' => 'perangkat-keras-hardware'],
-            ['name' => 'Aplikasi & Sistem Informasi (Software)', 'slug' => 'aplikasi-software'],
-            ['name' => 'Printer, Scanner & Periferal', 'slug' => 'printer-scanner'],
-            ['name' => 'Akun, Email & Keamanan Informasi', 'slug' => 'akun-email-keamanan'],
+            1 => ['name' => 'SIPT', 'slug' => 'sipt'],
+            2 => ['name' => 'Srikandi', 'slug' => 'srikandi'],
+            3 => ['name' => 'Email Corporate', 'slug' => 'email-corporate'],
+            4 => ['name' => 'Sertifikat Elektronik (BSrE)', 'slug' => 'sertifikat-bsre'],
+            5 => ['name' => 'Fasilitas Zoom', 'slug' => 'zoom'],
+            6 => ['name' => 'Formulir & Kegiatan', 'slug' => 'formulir-kegiatan'],
+            7 => ['name' => 'Internet & Jaringan', 'slug' => 'internet'],
+            8 => ['name' => 'Pengelolaan Subsite', 'slug' => 'subsite'],
+            9 => ['name' => 'Desain Infografis', 'slug' => 'infografis'],
+            10 => ['name' => 'Install Ulang Windows', 'slug' => 'install-windows'],
+            11 => ['name' => 'Lisensi Microsoft Office', 'slug' => 'lisensi-office'],
+            12 => ['name' => 'Layanan TIK Lainnya', 'slug' => 'lainnya'],
         ];
 
         $categories = [];
-        foreach ($categoriesData as $data) {
-            $categories[$data['slug']] = Category::firstOrCreate(
-                ['slug' => $data['slug']],
-                ['name' => $data['name']]
+        foreach ($categoriesData as $id => $data) {
+            $categories[$data['slug']] = Category::updateOrCreate(
+                ['id' => $id],
+                ['name' => $data['name'], 'slug' => $data['slug']]
             );
         }
 
@@ -107,7 +114,8 @@ class DatabaseSeeder extends Seeder
                 'ticket_number' => 'TIK-BBPOM-001',
                 'user_id' => $user1->id,
                 'handled_by_id' => $admin1->id,
-                'category_id' => $categories['jaringan-internet']->id,
+                'category_id' => $categories['internet']->id,
+                'service_key' => 'internet',
                 'subject' => 'Koneksi WiFi Ruang Infokom Terputus Sejak Pagi',
                 'description' => "Selamat pagi tim IT, koneksi WiFi di Ruang Infokom Lantai 2 tidak bisa diakses dari beberapa laptop pegawai. Indikator lampu di Access Point berkedip merah. Mohon bantuan pengecekan switch atau access point-nya. Terima kasih.",
                 'status' => 'selesai',
@@ -135,7 +143,8 @@ class DatabaseSeeder extends Seeder
                 'ticket_number' => 'TIK-BBPOM-002',
                 'user_id' => $user2->id,
                 'handled_by_id' => $admin2->id,
-                'category_id' => $categories['perangkat-keras-hardware']->id,
+                'category_id' => $categories['install-windows']->id,
+                'service_key' => 'install_windows',
                 'subject' => 'Monitor PC Laboratorium Kimia Mati Total',
                 'description' => "Monitor LG pada PC instrumentasi pengujian kimia di Lab Lantai 1 mati total dan tidak keluar gambar sama sekali saat tombol power ditekan. Lampu indikator power tidak menyala. Mohon bantuan penggantian kabel power atau perbaikan.",
                 'status' => 'diproses',
@@ -153,7 +162,8 @@ class DatabaseSeeder extends Seeder
                 'ticket_number' => 'TIK-BBPOM-003',
                 'user_id' => $user3->id,
                 'handled_by_id' => $admin1->id,
-                'category_id' => $categories['aplikasi-software']->id,
+                'category_id' => $categories['sipt']->id,
+                'service_key' => 'sipt',
                 'subject' => 'Gagal Mengunggah Berkas BAP pada Aplikasi Internal',
                 'description' => "Saat hendak menyimpan dan mengunggah dokumen Berita Acara Pemeriksaan (BAP) PDF ukuran 1.8MB, aplikasi memunculkan notifikasi 'HTTP 500 Internal Server Error'. Kejadian ini berulang sejak kemarin sore.",
                 'status' => 'diproses',
@@ -171,7 +181,8 @@ class DatabaseSeeder extends Seeder
                 'ticket_number' => 'TIK-BBPOM-004',
                 'user_id' => $user1->id,
                 'handled_by_id' => null,
-                'category_id' => $categories['printer-scanner']->id,
+                'category_id' => $categories['lainnya']->id,
+                'service_key' => 'lainnya',
                 'subject' => 'Printer Network Canon di Ruang Subbag Tata Usaha Paper Jam',
                 'description' => "Kertas tersangkut di roller penarik printer jaringan Canon ImageRunner. Sudah dicoba ditarik perlahan tetapi indikator error paper jam masih menyala dan tidak bisa print.",
                 'status' => 'pending',
@@ -183,7 +194,8 @@ class DatabaseSeeder extends Seeder
                 'ticket_number' => 'TIK-BBPOM-005',
                 'user_id' => $user2->id,
                 'handled_by_id' => $admin2->id,
-                'category_id' => $categories['akun-email-keamanan']->id,
+                'category_id' => $categories['email-corporate']->id,
+                'service_key' => 'email_corporate',
                 'subject' => 'Permohonan Reset Password Akun Email Dinas @pom.go.id',
                 'description' => "Saya lupa kata sandi akun email dinas dikarenakan baru selesai masa cuti panjang. Mohon bantuan reset password dan tautan verifikasi ke nomor WA dinas.",
                 'status' => 'selesai',
@@ -201,7 +213,8 @@ class DatabaseSeeder extends Seeder
                 'ticket_number' => 'TIK-BBPOM-006',
                 'user_id' => $user3->id,
                 'handled_by_id' => $admin1->id,
-                'category_id' => $categories['perangkat-keras-hardware']->id,
+                'category_id' => $categories['lainnya']->id,
+                'service_key' => 'lainnya',
                 'subject' => 'Permintaan Pembelian Mouse Gaming Pribadi',
                 'description' => "Mohon diajukan pengadaan mouse ergonomis dengan spesifikasi gaming untuk operasional harian meja kerja.",
                 'status' => 'ditolak',

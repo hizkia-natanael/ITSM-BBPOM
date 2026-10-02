@@ -35,57 +35,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="56">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-slate-200 text-sm leading-4 font-medium rounded-xl !text-slate-700 !bg-white hover:!bg-slate-50 focus:outline-none transition ease-in-out duration-150 shadow-2xs">
-                            <div class="flex items-center gap-2">
-                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                </span>
-                                <div class="text-start">
-                                    <div class="font-semibold text-xs !text-slate-900 leading-tight">{{ Auth::user()->name }}</div>
-                                    <div class="text-[10px] !text-slate-500 uppercase leading-tight mt-0.5">{{ Auth::user()->role }}</div>
-                                </div>
-                            </div>
-
-                            <div class="ms-2">
-                                <svg class="fill-current h-4 w-4 !text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <div class="px-4 py-2.5 border-b border-slate-100 text-xs !text-slate-500 !bg-white">
-                            Masuk sebagai <strong class="!text-slate-900 block truncate">{{ Auth::user()->email }}</strong>
-                        </div>
-
-                        <div class="!bg-white py-1">
-                            <x-dropdown-link :href="route('profile.edit')" class="text-xs !text-slate-700 hover:!text-emerald-800 hover:!bg-slate-50">
-                                <i class="ri-user-line me-1.5 text-slate-400"></i>
-                                {{ __('Profil Saya') }}
-                            </x-dropdown-link>
-
-                            @if(Auth::user()->isAdmin())
-                                <x-dropdown-link href="/admin" class="text-xs !text-emerald-800 font-semibold hover:!bg-emerald-50">
-                                    <i class="ri-dashboard-line me-1.5 text-emerald-600"></i>
-                                    {{ __('Masuk Panel Admin') }}
-                                </x-dropdown-link>
-                            @endif
-
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault(); this.closest('form').submit();" class="text-xs !text-rose-600 hover:!bg-rose-50">
-                                    <i class="ri-logout-box-line me-1.5 text-rose-500"></i>
-                                    {{ __('Keluar (Log Out)') }}
-                                </x-dropdown-link>
-                            </form>
-                        </div>
-                    </x-slot>
-                </x-dropdown>
+                <x-user-profile-menu />
             </div>
 
             <!-- Hamburger -->
@@ -121,13 +71,28 @@
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-3 border-t border-slate-200 !bg-white">
-            <div class="px-4">
-                <div class="font-semibold text-base !text-slate-900">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-xs !text-slate-500">{{ Auth::user()->email }} ({{ Auth::user()->role }})</div>
+            @php
+                $mobileUser = Auth::user();
+                $mobileParts = explode(' ', trim($mobileUser->name));
+                $mobileInitials = count($mobileParts) >= 2
+                    ? strtoupper(substr($mobileParts[0], 0, 1) . substr($mobileParts[1], 0, 1))
+                    : strtoupper(substr($mobileUser->name, 0, 2));
+            @endphp
+            <div class="px-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs ring-2 ring-emerald-500/20">
+                    {{ $mobileInitials }}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="font-bold text-sm text-slate-900 truncate">{{ $mobileUser->name }}</div>
+                    <div class="text-xs text-slate-500 font-mono truncate mt-0.5">
+                        {{ $mobileUser->nip ? 'NIP. ' . $mobileUser->nip : 'Pegawai BBPOM' }}
+                    </div>
+                </div>
             </div>
 
             <div class="mt-3 space-y-1 !bg-white">
                 <x-responsive-nav-link :href="route('profile.edit')">
+                    <i class="ri-user-line me-1.5 text-slate-400"></i>
                     {{ __('Profil') }}
                 </x-responsive-nav-link>
 
@@ -135,6 +100,7 @@
                     @csrf
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault(); this.closest('form').submit();" class="!text-rose-600">
+                        <i class="ri-logout-box-r-line me-1.5 text-rose-500"></i>
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>

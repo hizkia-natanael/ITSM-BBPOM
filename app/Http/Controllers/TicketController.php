@@ -62,6 +62,8 @@ class TicketController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('ticket_number', 'like', "%{$search}%")
                   ->orWhere('subject', 'like', "%{$search}%")
+                  ->orWhere('service_key', 'like', "%{$search}%")
+                  ->orWhere('subcategory', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
         }
@@ -85,6 +87,13 @@ class TicketController extends Controller
     {
         $categories = Category::orderBy('name')->get();
         $services = config('services_gateway.services', []);
+        foreach ($services as $key => &$service) {
+            $cat = Category::resolveForService($key);
+            $service['category_id'] = $cat?->id;
+            $service['default_category_id'] = $cat?->id;
+        }
+        unset($service);
+
         $groups = config('services_gateway.groups', []);
         $initialService = $request->query('service');
         $initialSubcategory = $request->query('subcategory');
@@ -126,6 +135,7 @@ class TicketController extends Controller
     protected function storeBsreTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'reset_password');
+        $category = Category::resolveForService('sertifikat_bse');
 
         if (in_array($subCategory, ['reset_password', 'permintaan_otp'])) {
             $validated = $request->validate([
@@ -145,8 +155,7 @@ class TicketController extends Controller
             ]);
 
             $subLabel = $subCategory === 'reset_password' ? 'Reset Password BSRE' : 'Permintaan OTP';
-            $subject = "[Sertifikat BSrE] {$subLabel} - {$validated['nama']}";
-
+            $subject = "{$subLabel} - {$validated['nama']}";
             $description = "Permohonan Layanan Sertifikat BSrE: {$subLabel}\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Nama Pemohon: {$validated['nama']}\n"
@@ -155,11 +164,9 @@ class TicketController extends Controller
                 . "• Email: {$validated['email']}\n"
                 . "• Nomor Telepon/WA: {$validated['nomor_telepon']}";
 
-            $category = Category::where('slug', 'sertifikat-bsre')->first() ?? Category::first();
-
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'sertifikat_bse',
                 'subcategory' => $subCategory,
                 'subject' => $subject,
@@ -200,17 +207,15 @@ class TicketController extends Controller
             'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
 
-        $subject = "[Sertifikat BSrE] Layanan Lainnya - {$validated['nama']}";
+        $subject = "Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Sertifikat BSrE: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Nama Pemohon: {$validated['nama']}\n\n"
             . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
 
-        $category = Category::where('slug', 'sertifikat-bsre')->first() ?? Category::first();
-
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $category->id,
             'service_key' => 'sertifikat_bse',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -250,18 +255,18 @@ class TicketController extends Controller
                 'jam.required' => 'Jam / waktu pelaksanaan acara wajib diisi.',
             ]);
 
-            $subject = "[Zoom] Permintaan Link Zoom - {$validated['nama_acara']}";
+            $subject = "Permintaan Link Zoom - {$validated['nama_acara']}";
             $description = "Permohonan Layanan Akun Zoom Meeting / Webinar\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Nama Pemohon: {$validated['nama']}\n"
                 . "• Nama Acara: {$validated['nama_acara']}\n"
                 . "• Jam / Waktu Pelaksanaan: {$validated['jam']}";
 
-            $category = Category::where('slug', 'zoom')->first() ?? Category::first();
+            $category = Category::resolveForService('zoom');
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'zoom',
                 'subcategory' => 'permintaan_link_zoom',
                 'subject' => $subject,
@@ -292,17 +297,17 @@ class TicketController extends Controller
             'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
 
-        $subject = "[Zoom] Layanan Lainnya - {$validated['nama']}";
+        $subject = "Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Zoom: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Nama Pemohon: {$validated['nama']}\n\n"
             . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
 
-        $category = Category::where('slug', 'zoom')->first() ?? Category::first();
+        $category = Category::resolveForService('zoom');
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $category->id,
             'service_key' => 'zoom',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -330,7 +335,7 @@ class TicketController extends Controller
     protected function storeKegiatanTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'permintaan_daftar_hadir');
-        $category = Category::where('slug', 'formulir-kegiatan')->first() ?? Category::first();
+        $category = Category::resolveForService('formulir_kegiatan');
 
         if ($subCategory === 'permintaan_daftar_hadir') {
             $validated = $request->validate([
@@ -343,7 +348,7 @@ class TicketController extends Controller
                 'jam.required' => 'Jam / jadwal acara wajib diisi.',
             ]);
 
-            $subject = "[Formulir & Kegiatan] Permintaan Daftar Hadir - {$validated['nama_acara']}";
+            $subject = "Permintaan Daftar Hadir - {$validated['nama_acara']}";
             $description = "Permohonan Pembuatan Presensi / Daftar Hadir Online\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
@@ -352,7 +357,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'permintaan_daftar_hadir',
                 'subject' => $subject,
@@ -381,7 +386,7 @@ class TicketController extends Controller
                 'link_qrcode.required' => 'Tautan / Link yang akan dijadikan QR Code wajib diisi.',
             ]);
 
-            $subject = "[Formulir & Kegiatan] Permintaan QR Code - {$validated['nama']}";
+            $subject = "Permintaan QR Code - {$validated['nama']}";
             $description = "Permohonan Generate QR Code Resmi\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
@@ -389,7 +394,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'permintaan_qrcode',
                 'subject' => $subject,
@@ -437,7 +442,7 @@ class TicketController extends Controller
                 ]);
             }
 
-            $subject = "[Formulir & Kegiatan] Survey - {$validated['judul_survey']}";
+            $subject = "Survey - {$validated['judul_survey']}";
             $description = "Permohonan Pembuatan Formulir Survei Online\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
@@ -446,7 +451,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'survey',
                 'subject' => $subject,
@@ -500,7 +505,7 @@ class TicketController extends Controller
             }
 
             $jenisLabel = $validated['jenis_test'] === 'pretest' ? 'Pretest' : 'Post Test';
-            $subject = "[Formulir & Kegiatan] {$jenisLabel} - {$validated['judul_acara']}";
+            $subject = "{$jenisLabel} - {$validated['judul_acara']}";
             $description = "Permohonan Pembuatan {$jenisLabel} Online\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
@@ -510,7 +515,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'post_test_pretest',
                 'subject' => $subject,
@@ -545,7 +550,7 @@ class TicketController extends Controller
             'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
 
-        $subject = "[Formulir & Kegiatan] Layanan Lainnya - {$validated['nama']}";
+        $subject = "Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Formulir & Kegiatan: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
@@ -553,7 +558,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $category->id,
             'service_key' => 'formulir_kegiatan',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -581,7 +586,7 @@ class TicketController extends Controller
     protected function storeWindowsTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'permintaan_install_windows');
-        $category = Category::where('slug', 'sistem-operasi')->first() ?? Category::first();
+        $category = Category::resolveForService('install_windows');
 
         if ($subCategory === 'permintaan_install_windows') {
             $validated = $request->validate([
@@ -598,7 +603,7 @@ class TicketController extends Controller
                 'deskripsi.required' => 'Deskripsi kendala / alasan install ulang wajib diisi.',
             ]);
 
-            $subject = "[Install Windows] {$validated['merk_perangkat']} ({$validated['bidang']}) - {$validated['nama']}";
+            $subject = "Install Windows ({$validated['merk_perangkat']}) - {$validated['nama']}";
             $description = "Permohonan Install Ulang Operating System Windows\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
@@ -609,7 +614,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'install_windows',
                 'subcategory' => 'permintaan_install_windows',
                 'subject' => $subject,
@@ -642,7 +647,7 @@ class TicketController extends Controller
             'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
 
-        $subject = "[Install Windows] Layanan Lainnya - {$validated['nama']}";
+        $subject = "Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Sistem Operasi: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
@@ -650,7 +655,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $category->id,
             'service_key' => 'install_windows',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -678,7 +683,7 @@ class TicketController extends Controller
     protected function storeOfficeTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'permintaan_lisensi_office');
-        $category = Category::where('slug', 'aplikasi-perkantoran')->first() ?? Category::first();
+        $category = Category::resolveForService('lisensi_office');
 
         if ($subCategory === 'permintaan_lisensi_office') {
             $validated = $request->validate([
@@ -695,7 +700,7 @@ class TicketController extends Controller
                 'deskripsi.required' => 'Deskripsi kendala / kebutuhan lisensi wajib diisi.',
             ]);
 
-            $subject = "[Lisensi Office] {$validated['merk_perangkat']} ({$validated['bidang']}) - {$validated['nama']}";
+            $subject = "Lisensi Office ({$validated['merk_perangkat']}) - {$validated['nama']}";
             $description = "Permohonan Lisensi Resmi Microsoft Office\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
@@ -706,7 +711,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $category->id,
                 'service_key' => 'lisensi_office',
                 'subcategory' => 'permintaan_lisensi_office',
                 'subject' => $subject,
@@ -739,7 +744,7 @@ class TicketController extends Controller
             'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
 
-        $subject = "[Lisensi Office] Layanan Lainnya - {$validated['nama']}";
+        $subject = "Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Lisensi Office: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
@@ -747,7 +752,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $category->id,
             'service_key' => 'lisensi_office',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -786,17 +791,17 @@ class TicketController extends Controller
             'deskripsi.required' => 'Deskripsi permintaan / kendala wajib diisi minimal 5 karakter.',
         ]);
 
-        $subject = "[Lainnya] Permintaan Dukungan TIK - {$validated['nama']}";
+        $subject = "Permintaan Dukungan TIK - {$validated['nama']}";
         $description = "Permohonan Dukungan Layanan TIK Umum\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
             . "Deskripsi Permintaan:\n" . $validated['deskripsi'];
 
-        $category = Category::where('slug', 'lainnya')->first() ?? Category::first();
+        $category = Category::resolveForService('lainnya');
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $category->id,
             'service_key' => 'lainnya',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -835,6 +840,19 @@ class TicketController extends Controller
         }
         if (!$request->filled('description') && $generatedDescription) {
             $request->merge(['description' => $generatedDescription]);
+        }
+
+        // Auto-resolve category safely based on serviceKey or valid category_id
+        $validCategory = $serviceKey ? Category::resolveForService($serviceKey) : null;
+        if (!$validCategory) {
+            $catId = $request->input('category_id');
+            $validCategory = $catId ? Category::find($catId) : null;
+        }
+        if (!$validCategory) {
+            $validCategory = Category::first();
+        }
+        if ($validCategory) {
+            $request->merge(['category_id' => $validCategory->id]);
         }
 
         $validated = $request->validate([
@@ -1045,7 +1063,7 @@ class TicketController extends Controller
             $subjectSuffix = $request->input('subject', $subLabel);
         }
 
-        $generatedSubject = "[{$serviceName}] " . ($subjectSuffix ?: $subLabel);
+        $generatedSubject = $subjectSuffix ?: $subLabel;
         $generatedDescription = implode("\n", $lines);
 
         return [

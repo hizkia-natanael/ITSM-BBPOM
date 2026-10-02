@@ -28,7 +28,7 @@
 
                     <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
 
-                    <x-ticket-category-badge :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
+                    <x-ticket-category-badge :ticket="$ticket" :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
                 </div>
 
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-2.5">
@@ -609,7 +609,7 @@
                             </h2>
                         </div>
                         <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                            <x-ticket-category-badge :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
+                            <x-ticket-category-badge :ticket="$ticket" :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
                         </div>
                     </div>
 
@@ -858,13 +858,13 @@
                             <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" class="text-[11px] sm:text-xs py-0.5" />
                         </div>
 
-                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
-                            <span class="text-slate-500 flex items-center gap-1.5">
+                        <div class="flex items-center justify-between py-1.5 border-b border-slate-100/80 gap-2">
+                            <span class="text-slate-500 flex items-center gap-1.5 shrink-0">
                                 <i class="ri-apps-2-line text-slate-400"></i>
                                 Kategori Layanan:
                             </span>
-                            <span class="font-semibold text-slate-800 text-right">
-                                {{ $ticket->category->name }}
+                            <span class="font-semibold text-slate-900 text-right">
+                                {{ $ticket->service_name ?: $ticket->category->name }}
                             </span>
                         </div>
 
