@@ -36,17 +36,13 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Upload File Materi <span class="text-rose-500">*</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition" x-data="{ fileName: '' }">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Dokumen</span>
-                        <input type="file" name="attachment" class="sr-only" @change="fileName = $event.target.files[0]?.name">
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: PDF, Word, PPT, ZIP, JPG, PNG (Maks 5MB)'"></span>
-                </div>
-                <p class="text-[11px] text-slate-400 mt-1">Unggah dokumen draf naskah materi lengkap atau file pendukung lainnya.</p>
+                <x-file-dropzone-uploader 
+                    id="dropzone_infografis" 
+                    name="attachments[]" 
+                    label="Unggah File Materi Naskah / Dokumen Pendukung" 
+                    :optional="true"
+                    helperText="Format: PDF, Word, PPT, ZIP, JPG, PNG (Maks 5MB per berkas, dapat memilih beberapa berkas)"
+                />
             </div>
         </div>
     </template>

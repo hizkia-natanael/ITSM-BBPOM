@@ -28,10 +28,7 @@
 
                     <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
 
-                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                        <i class="ri-apps-2-line text-slate-500 text-xs"></i>
-                        {{ $ticket->category->name }}
-                    </span>
+                    <x-ticket-category-badge :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
                 </div>
 
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-2.5">
@@ -161,7 +158,7 @@
                                         <span class="text-gray-400 block text-[11px] font-medium">Lampiran Berkas BSrE:</span>
                                         <span class="font-semibold text-gray-900 text-xs mt-0.5 block">Dokumen pendukung pengajuan</span>
                                     </div>
-                                    <a href="{{ asset('storage/' . $ticket->bsreDetail->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'bsre', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                                         Lihat Berkas &rarr;
                                     </a>
                                 </div>
@@ -232,7 +229,7 @@
                                         <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas Zoom:</span>
                                         <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen pendukung pengajuan</span>
                                     </div>
-                                    <a href="{{ asset('storage/' . $ticket->zoomDetail->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'zoom', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                                         Lihat Berkas &rarr;
                                     </a>
                                 </div>
@@ -378,7 +375,7 @@
                                         <span class="text-slate-400 block text-[11px] font-medium">Berkas Dokumen Lampiran:</span>
                                         <span class="font-semibold text-slate-900 text-xs mt-0.5 block">File draf / kuesioner / soal kegiatan</span>
                                     </div>
-                                    <a href="{{ asset('storage/' . $ticket->kegiatanDetail->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'kegiatan', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                                         Lihat Berkas &rarr;
                                     </a>
                                 </div>
@@ -456,7 +453,7 @@
                                         <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas:</span>
                                         <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen / Foto Perangkat</span>
                                     </div>
-                                    <a href="{{ asset('storage/' . $ticket->windowsDetail->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'windows', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                                         Lihat Berkas &rarr;
                                     </a>
                                 </div>
@@ -534,7 +531,7 @@
                                         <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas:</span>
                                         <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen / Bukti Lampiran</span>
                                     </div>
-                                    <a href="{{ asset('storage/' . $ticket->officeDetail->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'office', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                                         Lihat Berkas &rarr;
                                     </a>
                                 </div>
@@ -589,7 +586,7 @@
                                         <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas:</span>
                                         <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Foto / Dokumen Pendukung</span>
                                     </div>
-                                    <a href="{{ asset('storage/' . $ticket->lainnyaDetail->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'lainnya', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                                         Lihat Berkas &rarr;
                                     </a>
                                 </div>
@@ -612,146 +609,15 @@
                             </h2>
                         </div>
                         <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                            <span class="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5">
-                                <i class="ri-folder-2-line text-slate-500"></i>
-                                {{ $ticket->category->name }}
-                            </span>
+                            <x-ticket-category-badge :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
                         </div>
                     </div>
 
                     <!-- Intelligent Structured Description Rendering -->
                     <x-ticket-description :description="$ticket->description" />
 
-                    <!-- Attachment Section (Preview / Download) -->
-                    @if($ticket->attachment)
-                        @php
-                            $ext = strtolower(pathinfo($ticket->attachment, PATHINFO_EXTENSION));
-                            $isImage = in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp']);
-                            $isPdf = $ext === 'pdf';
-                            $isDoc = in_array($ext, ['doc', 'docx']);
-                            $isZip = in_array($ext, ['zip', 'rar']);
-
-                            $fileIcon = match(true) {
-                                $isImage => 'ri-image-2-line text-blue-600',
-                                $isPdf => 'ri-file-pdf-2-line text-rose-600',
-                                $isDoc => 'ri-file-word-2-line text-blue-700',
-                                $isZip => 'ri-file-zip-line text-amber-600',
-                                default => 'ri-file-line text-slate-600',
-                            };
-
-                            $fileName = basename($ticket->attachment);
-                        @endphp
-
-                        <div class="mt-8 pt-6 border-t border-slate-100" x-data="{ showLightbox: false }">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                                <i class="ri-attachment-2 text-emerald-700 text-sm"></i>
-                                Berkas Lampiran Pendukung:
-                            </h4>
-
-                            <div class="p-4 rounded-2xl border border-slate-200/90 bg-slate-50/70 hover:bg-slate-50 transition-colors">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div class="flex items-center gap-3.5">
-                                        <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
-                                            <i class="{{ $fileIcon }} text-2xl"></i>
-                                        </div>
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <p class="font-bold text-xs sm:text-sm text-slate-900 truncate max-w-xs sm:max-w-md" title="{{ $fileName }}">
-                                                    {{ $fileName }}
-                                                </p>
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-slate-200 text-slate-700">
-                                                    {{ $ext }}
-                                                </span>
-                                            </div>
-                                            <p class="text-[11px] text-slate-500 mt-0.5">
-                                                Dokumen lampiran tersimpan secara aman di server ITSM BBPOM
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-center gap-2">
-                                        @if($isImage)
-                                            <button 
-                                                type="button" 
-                                                @click="showLightbox = true" 
-                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors shadow-xs"
-                                            >
-                                                <i class="ri-eye-line text-xs"></i>
-                                                <span>Pratinjau</span>
-                                            </button>
-                                        @endif
-
-                                        <a 
-                                            href="{{ asset('storage/' . $ticket->attachment) }}" 
-                                            target="_blank" 
-                                            download 
-                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-xs"
-                                        >
-                                            <i class="ri-download-2-line text-xs"></i>
-                                            <span>Unduh Berkas</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <!-- Image Thumbnail if Image -->
-                                @if($isImage)
-                                    <div class="mt-4 pt-3 border-t border-slate-200/60">
-                                        <button 
-                                            type="button" 
-                                            @click="showLightbox = true" 
-                                            class="group relative inline-block rounded-xl overflow-hidden border border-slate-200 bg-white hover:ring-2 hover:ring-emerald-500 transition-all cursor-zoom-in"
-                                        >
-                                            <img 
-                                                src="{{ asset('storage/' . $ticket->attachment) }}" 
-                                                alt="Lampiran {{ $ticket->ticket_number }}" 
-                                                class="max-h-48 w-auto rounded-lg object-contain group-hover:opacity-90 transition-opacity"
-                                            >
-                                            <div class="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-semibold transition-opacity">
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/60">
-                                                    <i class="ri-zoom-in-line text-sm"></i>
-                                                    Perbesar Gambar
-                                                </span>
-                                            </div>
-                                        </button>
-                                    </div>
-
-                                    <!-- Lightbox Modal using Alpine.js -->
-                                    <div 
-                                        x-show="showLightbox" 
-                                        x-cloak 
-                                        @keydown.escape.window="showLightbox = false"
-                                        class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
-                                    >
-                                        <div 
-                                            @click.away="showLightbox = false" 
-                                            class="relative bg-white rounded-2xl max-w-4xl w-full p-4 overflow-hidden shadow-2xl"
-                                        >
-                                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-                                                <div class="flex items-center gap-2">
-                                                    <i class="ri-image-2-line text-emerald-700"></i>
-                                                    <span class="text-xs font-bold text-slate-800">{{ $fileName }}</span>
-                                                </div>
-                                                <button 
-                                                    type="button" 
-                                                    @click="showLightbox = false" 
-                                                    class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition"
-                                                >
-                                                    <i class="ri-close-line text-lg"></i>
-                                                </button>
-                                            </div>
-                                            <div class="max-h-[75vh] overflow-auto flex items-center justify-center bg-slate-100/50 rounded-xl p-2">
-                                                <img 
-                                                    src="{{ asset('storage/' . $ticket->attachment) }}" 
-                                                    alt="Lampiran {{ $ticket->ticket_number }}" 
-                                                    class="max-h-[70vh] w-auto rounded-lg object-contain shadow-sm"
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
+                    <!-- Attachment Section (Multiple Documents / Legacy) -->
+                    <x-ticket-attachments-list :ticket="$ticket" />
                 </div>
 
                 <!-- Card 2: Percakapan WhatsApp Style -->
@@ -910,7 +776,6 @@
                                             <!-- Avatar Circle IT -->
                                             <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs">
                                                 {{ strtoupper(substr($response->user->name, 0, 2)) }}
-                                            </div>
                                             </div>
                                         </div>
                                     @endif

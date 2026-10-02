@@ -23,9 +23,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Tickets (Pengaduan)
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::post('/tickets', [TicketController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('tickets.store');
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
-    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
+    Route::get('/tickets/{ticket}/attachment/{type?}', [TicketController::class, 'downloadAttachment'])
+        ->name('tickets.attachment');
+    Route::get('/tickets/{ticket}/attachments/{attachment}', [TicketController::class, 'downloadAttachmentItem'])
+        ->name('tickets.attachments.item');
+    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])
+        ->middleware('throttle:30,1')
+        ->name('tickets.reply');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

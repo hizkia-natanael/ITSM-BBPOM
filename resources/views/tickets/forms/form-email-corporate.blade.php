@@ -62,22 +62,13 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Upload File <span class="text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Berkas</span>
-                        <input 
-                            type="file" 
-                            name="attachment" 
-                            class="sr-only"
-                            @change="emailOtherFileName = $event.target.files[0]?.name"
-                        >
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="emailOtherFileName ? 'File: ' + emailOtherFileName : 'Format: JPG, PNG, PDF, DOCX, ZIP (Maks 5MB)'"></span>
-                </div>
-                <x-input-error class="mt-1" :messages="$errors->get('attachment')" />
+                <x-file-dropzone-uploader 
+                    id="dropzone_email_corporate" 
+                    name="attachments[]" 
+                    label="Unggah Berkas / Tangkapan Layar Kendala Email" 
+                    helperText="Format didukung: JPG, PNG, PDF, DOCX, ZIP (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                />
+                <x-input-error class="mt-1" :messages="$errors->get('attachments')" />
             </div>
         </div>
     </template>

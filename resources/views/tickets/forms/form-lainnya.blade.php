@@ -15,22 +15,12 @@
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                Upload File Pendukung <span class="text-slate-400 font-normal">(Opsional)</span>
-            </label>
-            <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                    <span>Pilih Berkas</span>
-                    <input 
-                        type="file" 
-                        name="attachment" 
-                        class="sr-only"
-                        @change="lainnyaFileName = $event.target.files[0]?.name"
-                    >
-                </label>
-                <span class="text-xs text-slate-500 truncate" x-text="lainnyaFileName ? 'File: ' + lainnyaFileName : 'Format: JPG, PNG, PDF, DOCX, ZIP (Maks 5MB)'"></span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Unggah foto kendala perangkat atau dokumen pendukung permohonan jika ada.</p>
+            <x-file-dropzone-uploader 
+                id="dropzone_lainnya" 
+                name="attachments[]" 
+                label="Unggah Foto / Dokumen Pendukung" 
+                helperText="Format didukung: JPG, PNG, PDF, DOCX, ZIP, TXT (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+            />
         </div>
     </div>
 </div>

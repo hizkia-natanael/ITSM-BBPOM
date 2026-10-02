@@ -98,11 +98,24 @@ class TicketForm
                         Placeholder::make('attachment')
                             ->label('Berkas Lampiran Pendukung')
                             ->content(function ($record) {
-                                if (!$record || !$record->attachment) {
+                                if (!$record) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
                                 }
-                                $url = asset('storage/' . $record->attachment);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Lampiran Berkas</a>');
+                                $attachments = $record->attachments;
+                                if ($attachments && $attachments->isNotEmpty()) {
+                                    $html = '<div class="space-y-1.5 text-xs">';
+                                    foreach ($attachments as $att) {
+                                        $url = route('tickets.attachments.item', ['ticket' => $record, 'attachment' => $att]);
+                                        $html .= '<div class="flex items-center gap-2"><a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> ' . e($att->file_name) . ' (' . e($att->formatted_size) . ')</a></div>';
+                                    }
+                                    $html .= '</div>';
+                                    return new HtmlString($html);
+                                }
+                                if ($record->attachment) {
+                                    $url = route('tickets.attachment', $record);
+                                    return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Berkas</a>');
+                                }
+                                return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
                             }),
                     ]),
 
@@ -171,8 +184,8 @@ class TicketForm
                                 if (!$record || !$record->bsreDetail?->file_lampiran) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
                                 }
-                                $url = asset('storage/' . $record->bsreDetail->file_lampiran);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Lampiran BSrE</a>');
+                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'bsre']);
+                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran BSrE</a>');
                             }),
                     ]),
 
@@ -231,8 +244,8 @@ class TicketForm
                                 if (!$record || !$record->zoomDetail?->file_lampiran) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
                                 }
-                                $url = asset('storage/' . $record->zoomDetail->file_lampiran);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Lampiran Zoom</a>');
+                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'zoom']);
+                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Zoom</a>');
                             }),
                     ]),
 
@@ -343,8 +356,8 @@ class TicketForm
                                 if (!$record || !$record->kegiatanDetail?->file_lampiran) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
                                 }
-                                $url = asset('storage/' . $record->kegiatanDetail->file_lampiran);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Dokumen Kegiatan</a>');
+                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'kegiatan']);
+                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Dokumen Kegiatan</a>');
                             }),
                     ]),
 
@@ -410,8 +423,8 @@ class TicketForm
                                 if (!$record || !$record->windowsDetail?->file_lampiran) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
                                 }
-                                $url = asset('storage/' . $record->windowsDetail->file_lampiran);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Lampiran Windows</a>');
+                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'windows']);
+                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Windows</a>');
                             }),
                     ]),
 
@@ -477,8 +490,8 @@ class TicketForm
                                 if (!$record || !$record->officeDetail?->file_lampiran) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
                                 }
-                                $url = asset('storage/' . $record->officeDetail->file_lampiran);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Lampiran Office</a>');
+                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'office']);
+                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran Office</a>');
                             }),
                     ]),
 
@@ -516,8 +529,8 @@ class TicketForm
                                 if (!$record || !$record->lainnyaDetail?->file_lampiran) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
                                 }
-                                $url = asset('storage/' . $record->lainnyaDetail->file_lampiran);
-                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition">📎 Lihat / Unduh Lampiran</a>');
+                                $url = route('tickets.attachment', ['ticket' => $record, 'type' => 'lainnya']);
+                                return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2"></i> Lihat / Unduh Lampiran</a>');
                             }),
                     ]),
             ]);

@@ -171,22 +171,12 @@
 
             <!-- Alternatif Dokumen Pertanyaan -->
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Atau Unggah Berkas Draf Pertanyaan (PDF / Word) <span class="text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Dokumen</span>
-                        <input 
-                            type="file" 
-                            name="attachment" 
-                            class="sr-only"
-                            @change="surveyFileName = $event.target.files[0]?.name"
-                        >
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="surveyFileName ? 'File: ' + surveyFileName : 'Format: PDF, DOC, DOCX (Maks 5MB)'"></span>
-                </div>
-                <p class="text-[11px] text-slate-400 mt-1">Jika mengunggah berkas kuesioner draf, kolom daftar pertanyaan di atas boleh dikosongkan.</p>
+                <x-file-dropzone-uploader 
+                    id="dropzone_kegiatan_survey" 
+                    name="attachments[]" 
+                    label="Atau Unggah Berkas Draf Pertanyaan (PDF / Word)" 
+                    helperText="Jika mengunggah berkas kuesioner draf, kolom daftar pertanyaan di atas boleh dikosongkan."
+                />
             </div>
         </div>
     </template>
@@ -278,21 +268,12 @@
 
             <!-- Alternatif Berkas Soal -->
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Atau Unggah Naskah Soal Lengkap (PDF / Word) <span class="text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Naskah Soal</span>
-                        <input 
-                            type="file" 
-                            name="attachment" 
-                            class="sr-only"
-                            @change="testFileName = $event.target.files[0]?.name"
-                        >
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="testFileName ? 'File: ' + testFileName : 'Format: PDF, DOC, DOCX (Maks 5MB)'"></span>
-                </div>
+                <x-file-dropzone-uploader 
+                    id="dropzone_kegiatan_test" 
+                    name="attachments[]" 
+                    label="Atau Unggah Naskah Soal Lengkap (PDF / Word)" 
+                    helperText="Dapat mengunggah naskah soal lengkap jika tidak mengisi daftar pertanyaan di atas."
+                />
             </div>
         </div>
     </template>
@@ -313,21 +294,12 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Upload File Lampiran <span class="text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Berkas</span>
-                        <input 
-                            type="file" 
-                            name="attachment" 
-                            class="sr-only"
-                            @change="kegiatanOtherFileName = $event.target.files[0]?.name"
-                        >
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="kegiatanOtherFileName ? 'File: ' + kegiatanOtherFileName : 'Format: JPG, PNG, PDF (Maks 5MB)'"></span>
-                </div>
+                <x-file-dropzone-uploader 
+                    id="dropzone_kegiatan_lainnya" 
+                    name="attachments[]" 
+                    label="Unggah Dokumen Lampiran Kegiatan" 
+                    helperText="Format didukung: JPG, PNG, PDF, DOCX (Maks. 5MB per berkas)"
+                />
             </div>
         </div>
     </template>

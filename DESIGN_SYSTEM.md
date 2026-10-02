@@ -64,6 +64,7 @@ resources/views/components/
 ├── text-input.blade.php                 # Atom: Input form standar
 ├── input-label.blade.php                # Atom: Label teks input
 ├── ticket-status-badge.blade.php        # Molecule: Badge status tiket warna-warni & identitas admin penangan
+├── ticket-category-badge.blade.php      # Molecule: Badge kategori layanan berformat rounded-full & ikon Remix Icon kontekstual
 ├── ticket-handler-card.blade.php         # Molecule: Kartu profil & status teknisi/admin penanggung jawab
 ├── sla-info-card.blade.php              # Molecule: Kartu aturan SLA layanan
 ├── draft-recovery-alert.blade.php       # Organism: Modal glassmorphism draf tersimpan

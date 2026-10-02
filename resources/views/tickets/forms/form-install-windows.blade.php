@@ -100,21 +100,12 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Upload File <span class="text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Berkas</span>
-                        <input 
-                            type="file" 
-                            name="attachment" 
-                            class="sr-only"
-                            @change="winOtherFileName = $event.target.files[0]?.name"
-                        >
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="winOtherFileName ? 'File: ' + winOtherFileName : 'Format: JPG, PNG, PDF (Maks 5MB)'"></span>
-                </div>
+                <x-file-dropzone-uploader 
+                    id="dropzone_win_lainnya" 
+                    name="attachments[]" 
+                    label="Unggah Foto / Berkas Kendala Windows" 
+                    helperText="Format didukung: JPG, PNG, PDF (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                />
             </div>
         </div>
     </template>

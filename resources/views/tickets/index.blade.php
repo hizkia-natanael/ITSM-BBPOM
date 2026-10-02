@@ -116,16 +116,15 @@
                             @foreach($tickets as $ticket)
                                 <tr class="hover:bg-slate-50/70 transition-colors group">
                                     <td class="py-3 px-4 sm:px-5 whitespace-nowrap">
-                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100/90 group-hover:bg-emerald-50 border border-slate-200/80 group-hover:border-emerald-300 transition shadow-2xs">
-                                            <span class="font-mono font-bold text-xs text-slate-900 group-hover:text-emerald-800">
+                                        <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100/90 group-hover:bg-emerald-50 border border-slate-200/80 group-hover:border-emerald-300 transition shadow-2xs" title="Lihat detail tiket {{ $ticket->ticket_number }}">
+                                            <i class="ri-hashtag text-[10px] text-slate-400 group-hover:text-emerald-600 transition-colors"></i>
+                                            <span class="font-mono font-bold text-[11px] text-slate-900 group-hover:text-emerald-800">
                                                 {{ $ticket->ticket_number }}
                                             </span>
                                         </a>
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
-                                            {{ $ticket->category->name }}
-                                        </span>
+                                        <x-ticket-category-badge :category="$ticket->category" />
                                     </td>
                                     <td class="py-3 px-4 max-w-xs sm:max-w-sm">
                                         <div class="flex items-center gap-1.5">
@@ -138,7 +137,7 @@
                                         </div>
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
-                                        <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" />
+                                        <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" :compact="true" />
                                     </td>
                                     <td class="py-3 px-4 whitespace-nowrap">
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60">

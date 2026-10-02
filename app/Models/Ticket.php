@@ -64,6 +64,11 @@ class Ticket extends Model
         return $this->hasMany(TicketResponse::class)->oldest();
     }
 
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketAttachment::class);
+    }
+
     public function bsreDetail(): HasOne
     {
         return $this->hasOne(TicketBsreDetail::class, 'ticket_id');

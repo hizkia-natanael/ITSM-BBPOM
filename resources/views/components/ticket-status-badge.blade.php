@@ -1,4 +1,8 @@
-@props(['status', 'handler' => null])
+@props([
+    'status',
+    'handler' => null,
+    'compact' => false,
+])
 
 @php
     $handlerName = is_object($handler) ? ($handler->name ?? null) : (is_string($handler) ? $handler : null);
@@ -19,24 +23,55 @@
         default => 'bg-slate-400',
     };
 
-    $label = match($status) {
+    $fullLabel = match($status) {
         'pending' => 'Menunggu (Pending)',
         'diproses' => $handlerName ? "Sedang diproses oleh {$handlerName}" : 'Sedang Diproses',
         'selesai' => $handlerName ? "Selesai ditangani oleh {$handlerName}" : 'Selesai',
         'ditolak' => 'Ditolak',
         default => ucfirst($status),
     };
+
+    $compactLabel = match($status) {
+        'pending' => 'Menunggu',
+        'diproses' => 'Sedang Diproses',
+        'selesai' => 'Selesai',
+        'ditolak' => 'Ditolak',
+        default => ucfirst($status),
+    };
+
+    $label = $compact ? $compactLabel : $fullLabel;
 @endphp
 
-<span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border shadow-2xs {$classes}"]) }}>
-    <span class="relative flex h-2 w-2 shrink-0">
-        @if(in_array($status, ['pending', 'diproses']))
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 {{ $dotClasses }}"></span>
+@if($compact)
+    <div class="flex flex-col items-start gap-1">
+        <span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shadow-2xs {$classes}"]) }} title="{{ $fullLabel }}">
+            <span class="relative flex h-1.5 w-1.5 shrink-0">
+                @if(in_array($status, ['pending', 'diproses']))
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 {{ $dotClasses }}"></span>
+                @endif
+                <span class="relative inline-flex rounded-full h-1.5 w-1.5 {{ $dotClasses }}"></span>
+            </span>
+            <span>{{ $label }}</span>
+        </span>
+        @if($handlerName && in_array($status, ['diproses', 'selesai']))
+            <span class="inline-flex items-center gap-1 text-[10px] text-slate-500 font-medium truncate max-w-[170px]" title="{{ $fullLabel }}">
+                <i class="ri-user-star-line text-[11px] shrink-0 {{ $status === 'diproses' ? 'text-blue-600' : 'text-emerald-600' }}"></i>
+                <span class="truncate">{{ $handlerName }}</span>
+                <span class="sr-only">{{ $fullLabel }}</span>
+            </span>
         @endif
-        <span class="relative inline-flex rounded-full h-2 w-2 {{ $dotClasses }}"></span>
+    </div>
+@else
+    <span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border shadow-2xs {$classes}"]) }}>
+        <span class="relative flex h-2 w-2 shrink-0">
+            @if(in_array($status, ['pending', 'diproses']))
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 {{ $dotClasses }}"></span>
+            @endif
+            <span class="relative inline-flex rounded-full h-2 w-2 {{ $dotClasses }}"></span>
+        </span>
+        @if($handlerName && in_array($status, ['diproses', 'selesai']))
+            <i class="ri-user-star-line text-xs shrink-0 {{ $status === 'diproses' ? 'text-blue-700' : 'text-emerald-700' }}"></i>
+        @endif
+        <span>{{ $label }}</span>
     </span>
-    @if($handlerName && in_array($status, ['diproses', 'selesai']))
-        <i class="ri-user-star-line text-xs shrink-0 {{ $status === 'diproses' ? 'text-blue-700' : 'text-emerald-700' }}"></i>
-    @endif
-    <span>{{ $label }}</span>
-</span>
+@endif

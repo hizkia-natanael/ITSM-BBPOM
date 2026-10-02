@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Ticket;
+use App\Models\TicketAttachment;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class TicketController extends Controller
@@ -194,10 +196,9 @@ class TicketController extends Controller
             'deskripsi' => ['required', 'string', 'min:5'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $subject = "[Sertifikat BSrE] Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Sertifikat BSrE: Lainnya\n\n"
@@ -215,8 +216,9 @@ class TicketController extends Controller
             'subject' => $subject,
             'description' => $description,
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
         $ticket->bsreDetail()->create([
             'sub_category' => 'lainnya',
@@ -286,10 +288,9 @@ class TicketController extends Controller
             'deskripsi' => ['required', 'string', 'min:5'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $subject = "[Zoom] Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Zoom: Lainnya\n\n"
@@ -307,8 +308,9 @@ class TicketController extends Controller
             'subject' => $subject,
             'description' => $description,
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
         $ticket->zoomDetail()->create([
             'sub_category' => 'lainnya',
@@ -412,6 +414,9 @@ class TicketController extends Controller
                 'nama' => ['required', 'string', 'max:255'],
                 'judul_survey' => ['required', 'string', 'max:255'],
                 'file_lampiran' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
+                'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
+                'attachments' => ['nullable', 'array', 'max:5'],
+                'attachments.*' => ['file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
                 'pertanyaan_json' => ['nullable', 'string'],
             ], [
                 'judul_survey.required' => 'Judul survei wajib diisi.',
@@ -426,21 +431,18 @@ class TicketController extends Controller
             }
 
             // Jika tidak ada upload file lampiran, minimal 1 pertanyaan wajib diisi
-            if (!$request->hasFile('file_lampiran') && empty($questions)) {
+            if (!$request->hasFile('file_lampiran') && !$request->hasFile('attachment') && !$request->hasFile('attachments') && empty($questions)) {
                 return back()->withInput()->withErrors([
                     'pertanyaan_json' => 'Silakan isi minimal 1 pertanyaan survei atau unggah dokumen draf pertanyaan (PDF/Word).',
                 ]);
             }
-
-            $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-            $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
             $subject = "[Formulir & Kegiatan] Survey - {$validated['judul_survey']}";
             $description = "Permohonan Pembuatan Formulir Survei Online\n\n"
                 . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
                 . "• Pemohon: {$validated['nama']}\n"
                 . "• Judul Survei: {$validated['judul_survey']}\n"
-                . "• Jumlah Pertanyaan: " . count($questions) . ($attachmentPath ? " (Disertai Dokumen Lampiran)" : "");
+                . "• Jumlah Pertanyaan: " . count($questions);
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
@@ -450,8 +452,9 @@ class TicketController extends Controller
                 'subject' => $subject,
                 'description' => $description,
                 'status' => 'pending',
-                'attachment' => $attachmentPath,
             ]);
+
+            $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
             $ticket->kegiatanDetail()->create([
                 'sub_category' => 'survey',
@@ -474,6 +477,8 @@ class TicketController extends Controller
                 'jenis_test' => ['required', 'string', 'in:pretest,post_test'],
                 'file_lampiran' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
                 'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
+                'attachments' => ['nullable', 'array', 'max:5'],
+                'attachments.*' => ['file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
                 'pertanyaan_json' => ['nullable', 'string'],
             ], [
                 'judul_acara.required' => 'Judul acara wajib diisi.',
@@ -488,14 +493,11 @@ class TicketController extends Controller
                 }
             }
 
-            if (!$request->hasFile('file_lampiran') && !$request->hasFile('attachment') && empty($questions)) {
+            if (!$request->hasFile('file_lampiran') && !$request->hasFile('attachment') && !$request->hasFile('attachments') && empty($questions)) {
                 return back()->withInput()->withErrors([
                     'pertanyaan_json' => 'Silakan isi pertanyaan evaluasi atau unggah dokumen soal (PDF/Word).',
                 ]);
             }
-
-            $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-            $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
             $jenisLabel = $validated['jenis_test'] === 'pretest' ? 'Pretest' : 'Post Test';
             $subject = "[Formulir & Kegiatan] {$jenisLabel} - {$validated['judul_acara']}";
@@ -504,7 +506,7 @@ class TicketController extends Controller
                 . "• Pemohon: {$validated['nama']}\n"
                 . "• Judul Acara: {$validated['judul_acara']}\n"
                 . "• Jenis Evaluasi: {$jenisLabel}\n"
-                . "• Jumlah Soal: " . count($questions) . ($attachmentPath ? " (Disertai Dokumen Soal Lampiran)" : "");
+                . "• Jumlah Soal: " . count($questions);
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
@@ -514,8 +516,9 @@ class TicketController extends Controller
                 'subject' => $subject,
                 'description' => $description,
                 'status' => 'pending',
-                'attachment' => $attachmentPath,
             ]);
+
+            $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
             $ticket->kegiatanDetail()->create([
                 'sub_category' => 'post_test_pretest',
@@ -538,10 +541,9 @@ class TicketController extends Controller
             'deskripsi' => ['required', 'string', 'min:5'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $subject = "[Formulir & Kegiatan] Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Formulir & Kegiatan: Lainnya\n\n"
@@ -557,8 +559,9 @@ class TicketController extends Controller
             'subject' => $subject,
             'description' => $description,
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
         $ticket->kegiatanDetail()->create([
             'sub_category' => 'lainnya',
@@ -635,10 +638,9 @@ class TicketController extends Controller
             'deskripsi' => ['required', 'string', 'min:5'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $subject = "[Install Windows] Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Sistem Operasi: Lainnya\n\n"
@@ -654,8 +656,9 @@ class TicketController extends Controller
             'subject' => $subject,
             'description' => $description,
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
         $ticket->windowsDetail()->create([
             'sub_category' => 'lainnya',
@@ -732,10 +735,9 @@ class TicketController extends Controller
             'deskripsi' => ['required', 'string', 'min:5'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $subject = "[Lisensi Office] Layanan Lainnya - {$validated['nama']}";
         $description = "Permohonan Layanan Lisensi Office: Lainnya\n\n"
@@ -751,8 +753,9 @@ class TicketController extends Controller
             'subject' => $subject,
             'description' => $description,
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
         $ticket->officeDetail()->create([
             'sub_category' => 'lainnya',
@@ -777,12 +780,11 @@ class TicketController extends Controller
             'deskripsi' => ['required', 'string', 'min:5'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ], [
             'deskripsi.required' => 'Deskripsi permintaan / kendala wajib diisi minimal 5 karakter.',
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $subject = "[Lainnya] Permintaan Dukungan TIK - {$validated['nama']}";
         $description = "Permohonan Dukungan Layanan TIK Umum\n\n"
@@ -800,8 +802,9 @@ class TicketController extends Controller
             'subject' => $subject,
             'description' => $description,
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $attachmentPath = $this->handleUploadedAttachments($ticket, $request);
 
         $ticket->lainnyaDetail()->create([
             'tanggal_pengajuan' => $validated['tanggal_pengajuan'],
@@ -840,6 +843,8 @@ class TicketController extends Controller
             'description' => ['required', 'string', 'min:5'],
             'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
             'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
         ], [
             'category_id.required' => 'Silakan pilih kategori pengaduan.',
             'category_id.exists' => 'Kategori yang dipilih tidak valid.',
@@ -849,10 +854,10 @@ class TicketController extends Controller
             'attachment.mimes' => 'Format file lampiran harus berupa JPG, PNG, PDF, DOC, DOCX, ZIP, atau TXT.',
             'file_lampiran.max' => 'Ukuran lampiran maksimal 5MB.',
             'file_lampiran.mimes' => 'Format file lampiran harus berupa JPG, PNG, PDF, DOC, DOCX, ZIP, atau TXT.',
+            'attachments.max' => 'Maksimal jumlah berkas yang dapat diunggah adalah 5 file.',
+            'attachments.*.max' => 'Ukuran masing-masing berkas maksimal 5MB.',
+            'attachments.*.mimes' => 'Format berkas harus berupa JPG, PNG, PDF, DOC, DOCX, ZIP, atau TXT.',
         ]);
-
-        $uploadedFile = $request->file('file_lampiran') ?: $request->file('attachment');
-        $attachmentPath = $uploadedFile ? $uploadedFile->store('attachments', 'public') : null;
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
@@ -862,8 +867,9 @@ class TicketController extends Controller
             'subject' => $validated['subject'],
             'description' => $validated['description'],
             'status' => 'pending',
-            'attachment' => $attachmentPath,
         ]);
+
+        $this->handleUploadedAttachments($ticket, $request);
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', "Pengaduan berhasil diajukan dengan nomor tiket: {$ticket->ticket_number}. Tim IT BBPOM akan segera meninjau tiket Anda.");
@@ -1096,5 +1102,132 @@ class TicketController extends Controller
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Tanggapan Anda telah berhasil dikirim ke tim IT BBPOM.');
+    }
+
+    /**
+     * Unduh atau pratinjau berkas lampiran tiket secara aman dengan verifikasi hak akses.
+     */
+    public function downloadAttachment(Request $request, Ticket $ticket, ?string $type = null)
+    {
+        if ($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunduh lampiran tiket ini.');
+        }
+
+        $path = match ($type) {
+            'bsre' => $ticket->bsreDetail?->file_lampiran,
+            'zoom' => $ticket->zoomDetail?->file_lampiran,
+            'kegiatan' => $ticket->kegiatanDetail?->file_lampiran,
+            'windows' => $ticket->windowsDetail?->file_lampiran,
+            'office' => $ticket->officeDetail?->file_lampiran,
+            'lainnya' => $ticket->lainnyaDetail?->file_lampiran,
+            default => $ticket->attachment,
+        };
+
+        if (!$path) {
+            abort(404, 'Berkas lampiran tidak ditemukan.');
+        }
+
+        $disk = \Illuminate\Support\Facades\Storage::disk('public')->exists($path) ? 'public' : 'local';
+
+        if (!\Illuminate\Support\Facades\Storage::disk($disk)->exists($path)) {
+            abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
+        }
+
+        if ($request->boolean('inline')) {
+            return Storage::disk($disk)->response($path);
+        }
+
+        return Storage::disk($disk)->download($path);
+    }
+
+    /**
+     * Unduh atau pratinjau salah satu item lampiran dari banyak berkas tiket secara aman.
+     */
+    public function downloadAttachmentItem(Request $request, Ticket $ticket, TicketAttachment $attachment)
+    {
+        if ($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunduh lampiran tiket ini.');
+        }
+
+        if ((int) $attachment->ticket_id !== (int) $ticket->id) {
+            abort(404, 'Berkas lampiran tidak cocok dengan nomor tiket.');
+        }
+
+        $path = $attachment->file_path;
+        $disk = Storage::disk('public')->exists($path) ? 'public' : 'local';
+
+        if (!Storage::disk($disk)->exists($path)) {
+            abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
+        }
+
+        if ($request->boolean('inline')) {
+            return Storage::disk($disk)->response($path, $attachment->file_name);
+        }
+
+        return Storage::disk($disk)->download($path, $attachment->file_name);
+    }
+
+    /**
+     * Simpan file lampiran tunggal maupun multiple ke tabel ticket_attachments dan kembalikan path lampiran utama.
+     */
+    protected function handleUploadedAttachments(Ticket $ticket, Request $request): ?string
+    {
+        $files = [];
+
+        // 1. Ambil dari 'attachments' (multiple array atau single)
+        if ($request->hasFile('attachments')) {
+            $attFiles = $request->file('attachments');
+            if (is_array($attFiles)) {
+                $files = array_merge($files, $attFiles);
+            } elseif ($attFiles instanceof \Illuminate\Http\UploadedFile) {
+                $files[] = $attFiles;
+            }
+        }
+
+        // 2. Ambil dari 'attachment' (single atau array)
+        if ($request->hasFile('attachment')) {
+            $att = $request->file('attachment');
+            if (is_array($att)) {
+                $files = array_merge($files, $att);
+            } elseif ($att instanceof \Illuminate\Http\UploadedFile) {
+                $files[] = $att;
+            }
+        }
+
+        // 3. Ambil dari 'file_lampiran' (single atau array)
+        if ($request->hasFile('file_lampiran')) {
+            $fl = $request->file('file_lampiran');
+            if (is_array($fl)) {
+                $files = array_merge($files, $fl);
+            } elseif ($fl instanceof \Illuminate\Http\UploadedFile) {
+                $files[] = $fl;
+            }
+        }
+
+        $primaryPath = null;
+
+        foreach ($files as $file) {
+            if ($file && $file->isValid()) {
+                $path = $file->store('attachments', 'public');
+
+                $ticket->attachments()->create([
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ]);
+
+                if (!$primaryPath) {
+                    $primaryPath = $path;
+                }
+            }
+        }
+
+        if ($primaryPath && !$ticket->attachment) {
+            $ticket->attachment = $primaryPath;
+            $ticket->save();
+        }
+
+        return $primaryPath;
     }
 }

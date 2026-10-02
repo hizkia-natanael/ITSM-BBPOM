@@ -36,20 +36,16 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                        Upload Foto Dokumentasi <span class="text-rose-500">*</span>
-                    </label>
-                    <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition" x-data="{ fileName: '' }">
-                        <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                            <span>Pilih Berkas</span>
-                            <input type="file" name="attachment" class="sr-only" @change="fileName = $event.target.files[0]?.name">
-                        </label>
-                        <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: JPG, PNG (Maks 5MB)'"></span>
-                    </div>
+                <div class="sm:col-span-2">
+                    <x-file-dropzone-uploader 
+                        id="dropzone_subsite_news" 
+                        name="attachments[]" 
+                        label="Unggah Foto Dokumentasi Kegiatan" 
+                        helperText="Format didukung: JPG, PNG, WEBP (Maks. 5MB per berkas, dapat memilih beberapa foto)"
+                    />
                 </div>
 
-                <div>
+                <div class="sm:col-span-2">
                     <x-input-label for="subsite_target_date" :value="__('Request Tanggal Upload')" class="font-semibold text-xs text-slate-700" />
                     <x-text-input id="subsite_target_date" name="target_date" type="date" value="{{ date('Y-m-d') }}" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" required />
                     <p class="text-[11px] text-slate-400 mt-1">Target tanggal publikasi di portal subsite.</p>
@@ -73,16 +69,12 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">
-                    Upload File Dokumen <span class="text-rose-500">*</span>
-                </label>
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-white transition" x-data="{ fileName: '' }">
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm shrink-0">
-                        <span>Pilih Dokumen</span>
-                        <input type="file" name="attachment" class="sr-only" @change="fileName = $event.target.files[0]?.name">
-                    </label>
-                    <span class="text-xs text-slate-500 truncate" x-text="fileName ? 'File: ' + fileName : 'Format: PDF, Word, Excel, ZIP (Maks 5MB)'"></span>
-                </div>
+                <x-file-dropzone-uploader 
+                    id="dropzone_subsite_doc" 
+                    name="attachments[]" 
+                    label="Unggah Berkas Dokumen Publikasi" 
+                    helperText="Format didukung: PDF, Word, Excel, ZIP (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                />
             </div>
         </div>
     </template>
