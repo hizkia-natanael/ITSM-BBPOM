@@ -31,8 +31,9 @@
                 <h5 class="font-bold text-sm text-slate-900 truncate" title="{{ $handler->name }}">
                     {{ $handler->name }}
                 </h5>
-                <p class="text-xs text-slate-500 truncate mt-0.5">
-                    {{ $handler->nip ? 'NIP. ' . $handler->nip : $handler->email }}
+                <p class="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1.5" title="{{ $handler->email }}">
+                    <i class="ri-mail-line text-slate-400 shrink-0"></i>
+                    <span>{{ $handler->email }}</span>
                 </p>
                 <div class="mt-1 flex items-center gap-1.5">
                     @if($status === 'diproses')
@@ -56,10 +57,6 @@
                     @endif
                 </div>
             </div>
-        </div>
-
-        <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-[11px] text-slate-600 leading-relaxed">
-            <span class="font-semibold text-slate-800">Catatan Pelayanan:</span> Petugas ini memproses diagnosa, perbaikan, dan koordinasi solusi atas kendala yang Anda laporkan.
         </div>
     @else
         <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center">

@@ -1,31 +1,5 @@
 <!-- 6. FORMULIR & KEGIATAN (Daftar Hadir, QR Code, Survey, Pretest/Posttest, Linktree) -->
-<div 
-    class="space-y-6"
-    x-data="{
-        surveyQuestions: [{ text: '', tipe: 'Pilihan Skala 4' }],
-        addSurveyQuestion() {
-            this.surveyQuestions.push({ text: '', tipe: 'Pilihan Skala 4' });
-        },
-        removeSurveyQuestion(index) {
-            if (this.surveyQuestions.length > 1) {
-                this.surveyQuestions.splice(index, 1);
-            } else {
-                this.surveyQuestions[0].text = '';
-            }
-        },
-        testQuestions: [{ text: '', tipe: 'Multiple Answer' }],
-        addTestQuestion() {
-            this.testQuestions.push({ text: '', tipe: 'Multiple Answer' });
-        },
-        removeTestQuestion(index) {
-            if (this.testQuestions.length > 1) {
-                this.testQuestions.splice(index, 1);
-            } else {
-                this.testQuestions[0].text = '';
-            }
-        }
-    }"
->
+<div class="space-y-6" x-data="formulirKegiatanData()">
     <!-- Subkategori Selector Pills -->
     <div>
         <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-2.5 flex items-center gap-1.5">

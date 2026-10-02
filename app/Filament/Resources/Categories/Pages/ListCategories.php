@@ -13,7 +13,12 @@ class ListCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Kategori Layanan')
+                ->icon('heroicon-o-plus')
+                ->extraAttributes([
+                    'class' => 'bbpom-header-create-btn',
+                ]),
         ];
     }
 }

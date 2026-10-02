@@ -983,7 +983,7 @@
                                 <i class="ri-pulse-line text-slate-400"></i>
                                 Status Saat Ini:
                             </span>
-                            <x-ticket-status-badge :status="$ticket->status" :handler="$ticket->handledBy" class="text-[11px] sm:text-xs py-0.5" />
+                            <x-ticket-status-badge :status="$ticket->status" class="text-[11px] sm:text-xs py-0.5" />
                         </div>
 
                         <div class="flex items-center justify-between py-1 border-b border-slate-100/80">

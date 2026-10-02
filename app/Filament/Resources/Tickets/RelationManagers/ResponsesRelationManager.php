@@ -42,7 +42,7 @@ class ResponsesRelationManager extends RelationManager
                     ->label('Pengirim')
                     ->badge()
                     ->color(fn ($record) => $record->user?->isAdmin() ? 'success' : 'gray')
-                    ->formatStateUsing(fn ($record) => ($record->user?->isAdmin() ? '👨‍💻 Petugas IT: ' : '👤 Pelapor: ') . ($record->user?->name ?? 'Anonim')),
+                    ->formatStateUsing(fn ($record) => ($record->user?->isAdmin() ? 'Petugas IT: ' : 'Pelapor: ') . ($record->user?->name ?? 'Anonim')),
 
                 TextColumn::make('response_text')
                     ->label('Isi Pesan')

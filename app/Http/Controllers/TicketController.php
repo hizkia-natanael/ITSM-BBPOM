@@ -119,6 +119,31 @@ class TicketController extends Controller
     }
 
     /**
+     * Resolusi ID Kategori yang valid untuk tiket.
+     */
+    protected function resolveCategoryId(Request $request, string $defaultSlug = 'aplikasi-software', ?string $serviceKey = null): int
+    {
+        $catId = $request->input('category_id');
+        if ($catId && Category::where('id', $catId)->exists()) {
+            return (int) $catId;
+        }
+
+        if ($serviceKey) {
+            $service = config("services_gateway.services.{$serviceKey}");
+            $configCatId = $service['default_category_id'] ?? null;
+            if ($configCatId && Category::where('id', $configCatId)->exists()) {
+                return (int) $configCatId;
+            }
+        }
+
+        $cat = Category::where('slug', $defaultSlug)->first()
+            ?? Category::where('slug', 'aplikasi-software')->first()
+            ?? Category::first();
+
+        return $cat ? $cat->id : 1;
+    }
+
+    /**
      * 1. Handler Layanan Sertifikat BSrE
      */
     protected function storeBsreTicket(Request $request): RedirectResponse
@@ -153,11 +178,11 @@ class TicketController extends Controller
                 . "• Email: {$validated['email']}\n"
                 . "• Nomor Telepon/WA: {$validated['nomor_telepon']}";
 
-            $category = Category::where('slug', 'sertifikat-bsre')->first() ?? Category::first();
+            $categoryId = $this->resolveCategoryId($request, 'sertifikat-bsre', 'sertifikat_bse');
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'sertifikat_bse',
                 'subcategory' => $subCategory,
                 'subject' => $subject,
@@ -205,11 +230,11 @@ class TicketController extends Controller
             . "• Nama Pemohon: {$validated['nama']}\n\n"
             . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
 
-        $category = Category::where('slug', 'sertifikat-bsre')->first() ?? Category::first();
+        $categoryId = $this->resolveCategoryId($request, 'sertifikat-bsre', 'sertifikat_bse');
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $categoryId,
             'service_key' => 'sertifikat_bse',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -255,11 +280,11 @@ class TicketController extends Controller
                 . "• Nama Acara: {$validated['nama_acara']}\n"
                 . "• Jam / Waktu Pelaksanaan: {$validated['jam']}";
 
-            $category = Category::where('slug', 'zoom')->first() ?? Category::first();
+            $categoryId = $this->resolveCategoryId($request, 'aplikasi-software', 'zoom');
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'zoom',
                 'subcategory' => 'permintaan_link_zoom',
                 'subject' => $subject,
@@ -297,11 +322,11 @@ class TicketController extends Controller
             . "• Nama Pemohon: {$validated['nama']}\n\n"
             . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
 
-        $category = Category::where('slug', 'zoom')->first() ?? Category::first();
+        $categoryId = $this->resolveCategoryId($request, 'aplikasi-software', 'zoom');
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $categoryId,
             'service_key' => 'zoom',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -328,7 +353,7 @@ class TicketController extends Controller
     protected function storeKegiatanTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'permintaan_daftar_hadir');
-        $category = Category::where('slug', 'formulir-kegiatan')->first() ?? Category::first();
+        $categoryId = $this->resolveCategoryId($request, 'aplikasi-software', 'formulir_kegiatan');
 
         if ($subCategory === 'permintaan_daftar_hadir') {
             $validated = $request->validate([
@@ -350,7 +375,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'permintaan_daftar_hadir',
                 'subject' => $subject,
@@ -387,7 +412,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'permintaan_qrcode',
                 'subject' => $subject,
@@ -412,6 +437,7 @@ class TicketController extends Controller
                 'nama' => ['required', 'string', 'max:255'],
                 'judul_survey' => ['required', 'string', 'max:255'],
                 'file_lampiran' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
+                'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpeg,png,jpg,zip', 'max:5120'],
                 'pertanyaan_json' => ['nullable', 'string'],
             ], [
                 'judul_survey.required' => 'Judul survei wajib diisi.',
@@ -426,7 +452,7 @@ class TicketController extends Controller
             }
 
             // Jika tidak ada upload file lampiran, minimal 1 pertanyaan wajib diisi
-            if (!$request->hasFile('file_lampiran') && empty($questions)) {
+            if (!$request->hasFile('file_lampiran') && !$request->hasFile('attachment') && empty($questions)) {
                 return back()->withInput()->withErrors([
                     'pertanyaan_json' => 'Silakan isi minimal 1 pertanyaan survei atau unggah dokumen draf pertanyaan (PDF/Word).',
                 ]);
@@ -444,7 +470,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'survey',
                 'subject' => $subject,
@@ -508,7 +534,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'formulir_kegiatan',
                 'subcategory' => 'post_test_pretest',
                 'subject' => $subject,
@@ -551,7 +577,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $categoryId,
             'service_key' => 'formulir_kegiatan',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -578,7 +604,7 @@ class TicketController extends Controller
     protected function storeWindowsTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'permintaan_install_windows');
-        $category = Category::where('slug', 'sistem-operasi')->first() ?? Category::first();
+        $categoryId = $this->resolveCategoryId($request, 'perangkat-keras-hardware', 'install_windows');
 
         if ($subCategory === 'permintaan_install_windows') {
             $validated = $request->validate([
@@ -606,7 +632,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'install_windows',
                 'subcategory' => 'permintaan_install_windows',
                 'subject' => $subject,
@@ -648,7 +674,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $categoryId,
             'service_key' => 'install_windows',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -675,7 +701,7 @@ class TicketController extends Controller
     protected function storeOfficeTicket(Request $request): RedirectResponse
     {
         $subCategory = $request->input('subcategory', 'permintaan_lisensi_office');
-        $category = Category::where('slug', 'aplikasi-perkantoran')->first() ?? Category::first();
+        $categoryId = $this->resolveCategoryId($request, 'aplikasi-software', 'lisensi_office');
 
         if ($subCategory === 'permintaan_lisensi_office') {
             $validated = $request->validate([
@@ -703,7 +729,7 @@ class TicketController extends Controller
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
-                'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+                'category_id' => $categoryId,
                 'service_key' => 'lisensi_office',
                 'subcategory' => 'permintaan_lisensi_office',
                 'subject' => $subject,
@@ -745,7 +771,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $categoryId,
             'service_key' => 'lisensi_office',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -790,11 +816,11 @@ class TicketController extends Controller
             . "• Pemohon: {$validated['nama']}\n\n"
             . "Deskripsi Permintaan:\n" . $validated['deskripsi'];
 
-        $category = Category::where('slug', 'lainnya')->first() ?? Category::first();
+        $categoryId = $this->resolveCategoryId($request, 'perangkat-keras-hardware', 'lainnya');
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
-            'category_id' => $request->input('category_id') ?: ($category ? $category->id : 1),
+            'category_id' => $categoryId,
             'service_key' => 'lainnya',
             'subcategory' => 'lainnya',
             'subject' => $subject,
@@ -826,6 +852,10 @@ class TicketController extends Controller
 
         // Compile dynamic details and auto-generate subject & description if service is selected
         [$generatedSubject, $generatedDescription] = $this->compileDynamicPayload($request, $service, $subcategoryKey);
+
+        // Resolve valid category_id
+        $categoryId = $this->resolveCategoryId($request, 'aplikasi-software', $serviceKey);
+        $request->merge(['category_id' => $categoryId]);
 
         if (!$request->filled('subject') && $generatedSubject) {
             $request->merge(['subject' => $generatedSubject]);

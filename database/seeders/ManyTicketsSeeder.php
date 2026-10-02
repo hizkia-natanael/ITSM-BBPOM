@@ -13,12 +13,13 @@ class ManyTicketsSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::where('email', 'user@bbpom.go.id')->first();
-        if (!$user) {
-            $user = User::first();
+        $users = User::where('role', 'user')->get();
+        if ($users->isEmpty()) {
+            $users = User::all();
         }
 
-        $admin = User::where('role', 'admin')->first() ?? $user;
+        $admin1 = User::where('email', 'admin1@bbpom.go.id')->first() ?? User::where('role', 'admin')->first();
+        $admin2 = User::where('email', 'admin2@bbpom.go.id')->first() ?? $admin1;
 
         $categories = Category::all();
         if ($categories->isEmpty()) {
@@ -34,213 +35,136 @@ class ManyTicketsSeeder extends Seeder
 
         $sampleTickets = [
             [
-                'number' => 'TIK-BBPOM-008',
+                'number' => 'TIK-BBPOM-030',
                 'cat' => 'akun-email-keamanan',
-                'subject' => 'Permohonan Reset Password Akun Presensi Simpeg',
-                'desc' => 'Akun presensi mobile simpeg terkunci karena lupa kata sandi setelah pergantian hp dinas. Mohon reset.',
+                'subject' => 'Permohonan Reset Password Akun Presensi Simpeg Mobile',
+                'desc' => 'Akun presensi mobile simpeg terkunci karena lupa kata sandi setelah pergantian HP dinas. Mohon reset.',
                 'status' => 'selesai',
-                'days_ago' => 20,
+                'days_ago' => 25,
                 'resp' => 'Password akun simpeg telah direset ke default dan link ganti password dikirim via email.',
             ],
             [
-                'number' => 'TIK-BBPOM-009',
+                'number' => 'TIK-BBPOM-031',
                 'cat' => 'akun-email-keamanan',
-                'subject' => 'Kendala Sertifikat Elektronik BSrE Expired pada TTE Naskah Dinas',
-                'desc' => 'Saat menandatangani dokumen dinas di aplikasi persuratan muncul notifikasi sertifikat BSrE kadaluarsa.',
-                'status' => 'diproses',
-                'days_ago' => 18,
-                'resp' => 'Sedang diverifikasi ke portal BSrE BSSN untuk penerbitan perpanjangan sertifikat elektronik.',
+                'subject' => 'Verifikasi Perpanjangan Sertifikat Elektronik BSrE Pegawai Baru',
+                'desc' => 'Sertifikat TTE baru untuk verifikator uji naskah dinas siap diaktifkan melalui portal BSSN.',
+                'status' => 'selesai',
+                'days_ago' => 23,
+                'resp' => 'Perpanjangan sertifikat TTE telah diverifikasi dan aktif.',
             ],
             [
-                'number' => 'TIK-BBPOM-010',
+                'number' => 'TIK-BBPOM-032',
                 'cat' => 'aplikasi-software',
-                'subject' => 'Permintaan Akun Zoom Meeting untuk Rapat Koordinasi Balai',
+                'subject' => 'Permintaan Akun Zoom Meeting untuk Rapat Koordinasi Evaluasi Balai',
                 'desc' => 'Mohon dijadwalkan link Zoom meeting kapasitas 300 peserta untuk hari Kamis jam 09.00 WIB.',
                 'status' => 'selesai',
-                'days_ago' => 16,
+                'days_ago' => 21,
                 'resp' => 'Link zoom meeting dan host key telah dikirimkan ke email pemohon.',
             ],
             [
-                'number' => 'TIK-BBPOM-011',
+                'number' => 'TIK-BBPOM-033',
                 'cat' => 'perangkat-keras-hardware',
                 'subject' => 'Perbaikan PC Ruang Infokom Muncul Layar Biru (BSOD)',
                 'desc' => 'PC kerja mendadak restart sendiri dan menampilkan error blue screen saat membuka spreadsheet besar.',
-                'status' => 'pending',
-                'days_ago' => 15,
-                'resp' => null,
+                'status' => 'selesai',
+                'days_ago' => 19,
+                'resp' => 'Modul RAM yang bermasalah telah diganti dengan part baru cadangan BMN.',
             ],
             [
-                'number' => 'TIK-BBPOM-012',
+                'number' => 'TIK-BBPOM-034',
                 'cat' => 'aplikasi-software',
-                'subject' => 'Permohonan Pembuatan Link Presensi Online & QR Code Bimtek',
+                'subject' => 'Permohonan Pembuatan Link Presensi Online & QR Code Pelatihan Keamanan Pangan',
                 'desc' => 'Dibutuhkan form absensi daring dan generate QR code untuk kegiatan Bimbingan Teknis UMKM Pangan.',
                 'status' => 'selesai',
-                'days_ago' => 14,
+                'days_ago' => 16,
                 'resp' => 'Form presensi online dan file QR Code siap cetak telah selesai dibuat.',
             ],
             [
-                'number' => 'TIK-BBPOM-013',
-                'cat' => 'aplikasi-software',
-                'subject' => 'Lisensi Microsoft Office 365 Muncul Notifikasi Unlicensed Product',
-                'desc' => 'Word dan Excel tidak bisa menyimpan dokumen karena ada peringatan aktivasi lisensi produk.',
-                'status' => 'diproses',
-                'days_ago' => 12,
-                'resp' => 'Akun Microsoft 365 sedang direfresh kuota lisensinya oleh admin TIK.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-014',
-                'cat' => 'printer-scanner',
-                'subject' => 'Instalasi Ulang Driver Scanner Fujitsu Fi-7160 di Meja Arsip',
-                'desc' => 'Scanner arsip tidak terbaca di komputer setelah update Windows 11 otomatis semalam.',
-                'status' => 'selesai',
-                'days_ago' => 11,
-                'resp' => 'Driver PaperStream IP Fujitsu versi terbaru telah diinstal dan diuji coba berjalan normal.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-015',
+                'number' => 'TIK-BBPOM-035',
                 'cat' => 'jaringan-internet',
                 'subject' => 'Akses Jaringan WiFi BBPOM-Staff Terputus di Gedung B Lantai 3',
                 'desc' => 'Sinyal WiFi full bar tetapi no internet access sejak jam 10 pagi ini.',
-                'status' => 'pending',
-                'days_ago' => 10,
-                'resp' => null,
+                'status' => 'selesai',
+                'days_ago' => 14,
+                'resp' => 'Kabel uplink Access Point telah diperbaiki dan router switch di-reboot.',
             ],
             [
-                'number' => 'TIK-BBPOM-016',
+                'number' => 'TIK-BBPOM-036',
                 'cat' => 'aplikasi-software',
                 'subject' => 'Permohonan Pembuatan Kuesioner Survey Kepuasan Masyarakat (SKM)',
                 'desc' => 'Mohon dibuatkan link kuesioner evaluasi survei kepuasan pelanggan triwulan II dengan 9 indikator.',
                 'status' => 'selesai',
-                'days_ago' => 9,
+                'days_ago' => 12,
                 'resp' => 'Survei SKM telah dipublikasikan dan spreadsheet rekap otomatis telah dibagikan ke pemohon.',
             ],
             [
-                'number' => 'TIK-BBPOM-017',
-                'cat' => 'akun-email-keamanan',
-                'subject' => 'Permintaan Akun Email Dinas Baru untuk Pegawai Baru',
-                'desc' => 'Pengajuan pembuatan akun email resmi domain @pom.go.id bagi staf administrasi yang baru bertugas.',
-                'status' => 'selesai',
-                'days_ago' => 8,
-                'resp' => 'Akun email dinas telah diaktifkan di mail server pusat.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-018',
+                'number' => 'TIK-BBPOM-037',
                 'cat' => 'printer-scanner',
                 'subject' => 'Printer Epson L3110 Hasil Cetak Bergaris dan Tinta Putus-Putus',
                 'desc' => 'Sudah dilakukan head cleaning mandiri 2x tapi hasil cetak naskah tetap bergaris merah.',
-                'status' => 'diproses',
-                'days_ago' => 7,
-                'resp' => 'Teknisi sedang melakukan deep flush ink dan pembersihan printhead secara manual.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-019',
-                'cat' => 'aplikasi-software',
-                'subject' => 'Permohonan Pembuatan Subdomain & Subsite Inovasi Layanan',
-                'desc' => 'Dibutuhkan subdomain inovasi.bbpomsemarang.id untuk katalog pengujian sampel pangan.',
-                'status' => 'pending',
-                'days_ago' => 6,
-                'resp' => null,
-            ],
-            [
-                'number' => 'TIK-BBPOM-020',
-                'cat' => 'aplikasi-software',
-                'subject' => 'Desain Infografis Layanan Publik Pengawasan Obat Tradisional',
-                'desc' => 'Mohon bantuan tim media TIK untuk pembuatan infografis edukasi publik format media sosial.',
                 'status' => 'selesai',
-                'days_ago' => 5,
-                'resp' => 'Desain grafis selesai dan file resolusi tinggi telah diunggah ke Google Drive dinas.',
+                'days_ago' => 10,
+                'resp' => 'Teknisi melakukan deep flush ink dan pembersihan printhead secara manual.',
             ],
             [
-                'number' => 'TIK-BBPOM-021',
-                'cat' => 'perangkat-keras-hardware',
-                'subject' => 'Permintaan Pemulihan File Backup di Network Shared Folder (NAS)',
-                'desc' => 'Folder laporan triwulan tidak sengaja ter-replace oleh staf lain, mohon bantuan restore snapshot semalam.',
+                'number' => 'TIK-BBPOM-038',
+                'cat' => 'aplikasi-software',
+                'subject' => 'Permohonan Subdomain Inovasi Pengujian Sampel Pangan Pihak Ketiga',
+                'desc' => 'Dibutuhkan subdomain uji-pangan.bbpomsemarang.id untuk katalog pengujian sampel.',
                 'status' => 'selesai',
-                'days_ago' => 4,
-                'resp' => 'Snapshot volume NAS tanggal kemarin jam 23.00 telah direstore ke folder pemulihan.',
+                'days_ago' => 8,
+                'resp' => 'Subdomain dan virtual host web telah terdaftar dan aktif.',
             ],
             [
-                'number' => 'TIK-BBPOM-022',
+                'number' => 'TIK-BBPOM-039',
                 'cat' => 'perangkat-keras-hardware',
-                'subject' => 'Kamera Web Logitech C920 Tidak Terdeteksi saat Zoom Meeting',
+                'subject' => 'Kamera Web Logitech C920 Tidak Terdeteksi saat Zoom Meeting Rapat',
                 'desc' => 'Webcam eksternal di ruang rapat kecil tidak muncul di device manager laptop.',
                 'status' => 'selesai',
-                'days_ago' => 3,
+                'days_ago' => 6,
                 'resp' => 'Port USB hub di meja rapat diganti dengan port berkekuatan daya baru, kamera berfungsi normal.',
             ],
             [
-                'number' => 'TIK-BBPOM-023',
+                'number' => 'TIK-BBPOM-040',
                 'cat' => 'perangkat-keras-hardware',
                 'subject' => 'Permintaan Akses Instalasi Software Khusus Analisis Spektrofotometri',
                 'desc' => 'Membutuhkan hak akses administrator sementara untuk memasang software analisis lab pengujian.',
                 'status' => 'selesai',
-                'days_ago' => 2,
+                'days_ago' => 4,
                 'resp' => 'Instalasi telah didampingi langsung oleh teknisi IT dan software siap digunakan.',
             ],
             [
-                'number' => 'TIK-BBPOM-024',
+                'number' => 'TIK-BBPOM-041',
                 'cat' => 'jaringan-internet',
-                'subject' => 'Pemasangan Titik Kabel LAN Baru di Ruang Pelayanan Publik',
-                'desc' => 'Penambahan satu titik kabel data Cat6 dari switch utama menuju meja loket pengaduan konsumen.',
+                'subject' => 'Pemeriksaan Koneksi VPN Kantor yang Sering Mengalami RTO di Jam Sibuk',
+                'desc' => 'Akses tunnel VPN BBPOM mengalami lonjakan ping saat membuka aplikasi persuratan dari luar kantor.',
                 'status' => 'diproses',
-                'days_ago' => 1,
-                'resp' => 'Penarikan kabel dan crimping RJ45 sedang dalam pengerjaan teknisi jaringan.',
+                'days_ago' => 2,
+                'resp' => 'Sedang dilakukan pemantauan bandwidth gateway firewall dan routing table.',
             ],
             [
-                'number' => 'TIK-BBPOM-025',
-                'cat' => 'perangkat-keras-hardware',
-                'subject' => 'Pengajuan Penggantian Keyboard Mekanikal Gaming RGB',
-                'desc' => 'Mohon dibelikan keyboard mekanik RGB untuk kenyamanan mengetik laporan.',
-                'status' => 'ditolak',
-                'days_ago' => 1,
-                'resp' => 'Mohon maaf, pengadaan periferal dinas harus sesuai standar logistik kantor BBPOM (standar membrane office).',
-            ],
-            [
-                'number' => 'TIK-BBPOM-026',
-                'cat' => 'aplikasi-software',
-                'subject' => 'Aplikasi SIPT Terkunci Akibat Salah Masukkan PIN Berulang',
-                'desc' => 'Akun Sistem Informasi Pengawasan Terpadu terblokir sementara karena salah PIN 3 kali.',
-                'status' => 'selesai',
-                'days_ago' => 1,
-                'resp' => 'Status blokir akun SIPT telah dibuka kembali oleh admin.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-027',
-                'cat' => 'perangkat-keras-hardware',
-                'subject' => 'Kabel HDMI Wallplate Ruang Sidang Utama Longgar',
-                'desc' => 'Tampilan proyektor sering kedap-kedip saat proyektor tersambung ke laptop narasumber.',
-                'status' => 'selesai',
-                'days_ago' => 0,
-                'resp' => 'Konektor wallplate HDMI telah dikencangkan dan kabel extender diganti baru.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-028',
+                'number' => 'TIK-BBPOM-042',
                 'cat' => 'akun-email-keamanan',
-                'subject' => 'Pengecekan Keamanan Laptop Pegawai dari Indikasi Malware',
-                'desc' => 'Laptop sering muncul popup iklan tak dikenal saat membuka browser dinas. Mohon scanning virus.',
+                'subject' => 'Pengecekan Keamanan Laptop Pegawai dari Indikasi Pop-up Malware Browser',
+                'desc' => 'Laptop sering muncul popup iklan tak dikenal saat membuka browser dinas. Mohon scanning virus komprehensif.',
                 'status' => 'diproses',
-                'days_ago' => 0,
-                'resp' => 'Full scan antivirus corporate sedang dijalankan dan browser extensions mencurigakan dinonaktifkan.',
-            ],
-            [
-                'number' => 'TIK-BBPOM-029',
-                'cat' => 'jaringan-internet',
-                'subject' => 'Koneksi VPN Kantor Sering RTO (Request Time Out) di Jam Sibuk',
-                'desc' => 'Akses tunnel VPN BBPOM mengalami lonjakan ping dan lambat saat akses database naskah dinas.',
-                'status' => 'pending',
-                'days_ago' => 0,
-                'resp' => null,
+                'days_ago' => 1,
+                'resp' => 'Full scan corporate antivirus sedang berjalan dan ekstensi browser tidak resmi dinonaktifkan.',
             ],
         ];
 
         foreach ($sampleTickets as $idx => $t) {
             $cat = Category::where('slug', $t['cat'])->first() ?? $categories->first();
-            $createdAt = Carbon::now()->subDays($t['days_ago'])->subHours($idx * 2)->subMinutes($idx * 7);
+            $assignedUser = $users[$idx % $users->count()];
+            $handlingAdmin = ($t['status'] === 'pending') ? null : (($idx % 2 === 0) ? $admin1 : $admin2);
+
+            $createdAt = Carbon::now()->subDays($t['days_ago'])->subHours($idx * 2 + 1);
 
             $ticket = Ticket::updateOrCreate(
                 ['ticket_number' => $t['number']],
                 [
-                    'user_id' => $user->id,
+                    'user_id' => $assignedUser->id,
+                    'handled_by_id' => $handlingAdmin?->id,
                     'category_id' => $cat->id,
                     'subject' => $t['subject'],
                     'description' => $t['desc'],
@@ -250,11 +174,11 @@ class ManyTicketsSeeder extends Seeder
                 ]
             );
 
-            if (!empty($t['resp'])) {
+            if (!empty($t['resp']) && $handlingAdmin) {
                 TicketResponse::firstOrCreate(
                     [
                         'ticket_id' => $ticket->id,
-                        'user_id' => $admin->id,
+                        'user_id' => $handlingAdmin->id,
                         'response_text' => $t['resp'],
                     ],
                     [

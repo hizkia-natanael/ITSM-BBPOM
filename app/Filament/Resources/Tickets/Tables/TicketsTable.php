@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Tickets\Tables;
 
+use App\Filament\Resources\Tickets\TicketResource;
+use App\Models\Ticket;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -16,14 +18,15 @@ class TicketsTable
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            ->recordUrl(fn (Ticket $record): string => TicketResource::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('ticket_number')
                     ->label('No. Tiket')
                     ->searchable()
                     ->sortable()
-                    ->copyable()
                     ->weight('bold')
-                    ->color('primary'),
+                    ->color('primary')
+                    ->url(fn (Ticket $record): string => TicketResource::getUrl('edit', ['record' => $record])),
 
                 TextColumn::make('user.name')
                     ->label('Pelapor')
