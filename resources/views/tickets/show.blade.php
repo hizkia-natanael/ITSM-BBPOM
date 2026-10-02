@@ -82,90 +82,96 @@
             <!-- Left Primary Column (8 cols): Detail Tiket, Form Spec, Attachment, Discussion -->
             <div class="lg:col-span-8 space-y-6">
 
-                @if($ticket->bsreDetail)
-                    <!-- Card Khusus Formulir Sertifikat BSrE -->
-                    <div class="bg-white rounded-2xl border-2 border-emerald-500/30 shadow-sm p-6 sm:p-7 relative overflow-hidden">
-                        <div class="border-b border-gray-100 pb-4 mb-5 flex flex-wrap items-center justify-between gap-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center font-bold text-lg">
-                                    <i class="ri-shield-keyhole-line"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Formulir Khusus Layanan</span>
-                                    <h3 class="text-base font-extrabold text-gray-900 mt-0.5">Sertifikat BSrE / TTE</h3>
-                                </div>
+            @php
+                $hasSubDetail = (bool) ($ticket->bsreDetail || $ticket->zoomDetail || $ticket->kegiatanDetail || $ticket->windowsDetail || $ticket->officeDetail || $ticket->lainnyaDetail);
+            @endphp
+
+            @if($ticket->bsreDetail)
+                <!-- Card Khusus Formulir Sertifikat BSrE -->
+                <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7 relative overflow-hidden">
+                    <div class="border-b border-slate-100 pb-4 mb-5 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center font-bold text-lg">
+                                <i class="ri-shield-keyhole-line"></i>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                                {{ $ticket->bsreDetail->sub_category_label }}
+                            <div>
+                                <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Formulir Khusus Layanan</span>
+                                <h3 class="text-base font-extrabold text-slate-900 mt-0.5">Sertifikat BSrE / TTE</h3>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
+                            {{ $ticket->bsreDetail->sub_category_label }}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="text-slate-400 block text-[11px] font-medium">Tanggal Pengajuan:</span>
+                            <span class="font-bold text-slate-900 text-sm mt-0.5 block">
+                                {{ $ticket->bsreDetail->tanggal_pengajuan ? $ticket->bsreDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-' }}
                             </span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                            <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                <span class="text-gray-400 block text-[11px] font-medium">Tanggal Pengajuan:</span>
-                                <span class="font-bold text-gray-900 text-sm mt-0.5 block">
-                                    {{ $ticket->bsreDetail->tanggal_pengajuan ? $ticket->bsreDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-' }}
-                                </span>
-                            </div>
-
-                            <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                <span class="text-gray-400 block text-[11px] font-medium">Nama Pemohon:</span>
-                                <span class="font-bold text-gray-900 text-sm mt-0.5 block">
-                                    {{ $ticket->bsreDetail->nama }}
-                                </span>
-                            </div>
-
-                            @if(in_array($ticket->bsreDetail->sub_category, ['reset_password', 'permintaan_otp']))
-                                <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                    <span class="text-gray-400 block text-[11px] font-medium">NIP Pemohon:</span>
-                                    <span class="font-bold text-gray-900 font-mono text-sm mt-0.5 block">
-                                        {{ $ticket->bsreDetail->nip ?: '-' }}
-                                    </span>
-                                </div>
-
-                                <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                    <span class="text-gray-400 block text-[11px] font-medium">NIK Pemohon:</span>
-                                    <span class="font-bold text-gray-900 font-mono text-sm mt-0.5 block">
-                                        {{ $ticket->bsreDetail->nik ?: '-' }}
-                                    </span>
-                                </div>
-
-                                <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                    <span class="text-gray-400 block text-[11px] font-medium">Email Dinas Pemohon:</span>
-                                    <span class="font-semibold text-gray-900 text-sm mt-0.5 block">
-                                        {{ $ticket->bsreDetail->email ?: '-' }}
-                                    </span>
-                                </div>
-
-                                <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                    <span class="text-gray-400 block text-[11px] font-medium">Nomor Telepon / WhatsApp:</span>
-                                    <span class="font-semibold text-gray-900 text-sm mt-0.5 block">
-                                        {{ $ticket->bsreDetail->nomor_telepon ?: '-' }}
-                                    </span>
-                                </div>
-                            @endif
-
-                            @if($ticket->bsreDetail->deskripsi)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-gray-50 border border-gray-100">
-                                    <span class="text-gray-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
-                                    <p class="text-gray-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->bsreDetail->deskripsi) }}</p>
-                                </div>
-                            @endif
-
-                            @if($ticket->bsreDetail->file_lampiran)
-                                <div class="sm:col-span-2 p-3.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
-                                    <div>
-                                        <span class="text-gray-400 block text-[11px] font-medium">Lampiran Berkas BSrE:</span>
-                                        <span class="font-semibold text-gray-900 text-xs mt-0.5 block">Dokumen pendukung pengajuan</span>
-                                    </div>
-                                    <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'bsre', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
-                                        Lihat Berkas &rarr;
-                                    </a>
-                                </div>
-                            @endif
+                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="text-slate-400 block text-[11px] font-medium">Nama Pemohon:</span>
+                            <span class="font-bold text-slate-900 text-sm mt-0.5 block">
+                                {{ $ticket->bsreDetail->nama }}
+                            </span>
                         </div>
+
+                        @if(in_array($ticket->bsreDetail->sub_category, ['reset_password', 'permintaan_otp']))
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[11px] font-medium">NIP Pemohon:</span>
+                                <span class="font-bold text-slate-900 font-mono text-sm mt-0.5 block">
+                                    {{ $ticket->bsreDetail->nip ?: '-' }}
+                                </span>
+                            </div>
+
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[11px] font-medium">NIK Pemohon:</span>
+                                <span class="font-bold text-slate-900 font-mono text-sm mt-0.5 block">
+                                    {{ $ticket->bsreDetail->nik ?: '-' }}
+                                </span>
+                            </div>
+
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[11px] font-medium">Email Dinas Pemohon:</span>
+                                <span class="font-semibold text-slate-900 text-sm mt-0.5 block">
+                                    {{ $ticket->bsreDetail->email ?: '-' }}
+                                </span>
+                            </div>
+
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[11px] font-medium">Nomor Telepon / WhatsApp:</span>
+                                <span class="font-semibold text-slate-900 text-sm mt-0.5 block">
+                                    {{ $ticket->bsreDetail->nomor_telepon ?: '-' }}
+                                </span>
+                            </div>
+                        @endif
+
+                        @if($ticket->bsreDetail->deskripsi)
+                            <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-400 block text-[11px] font-medium mb-1">Rincian Deskripsi / Kendala:</span>
+                                <p class="text-slate-800 leading-relaxed whitespace-pre-line text-xs sm:text-sm">{{ trim($ticket->bsreDetail->deskripsi) }}</p>
+                            </div>
+                        @endif
+
+                        @if($ticket->bsreDetail->file_lampiran)
+                            <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-slate-400 block text-[11px] font-medium">Lampiran Berkas BSrE:</span>
+                                    <span class="font-semibold text-slate-900 text-xs mt-0.5 block">Dokumen pendukung pengajuan</span>
+                                </div>
+                                <a href="{{ route('tickets.attachment', ['ticket' => $ticket, 'type' => 'bsre', 'inline' => 1]) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                                    Lihat Berkas &rarr;
+                                </a>
+                            </div>
+                        @endif
                     </div>
-                @endif
+
+                    <x-ticket-attachments-list :ticket="$ticket" />
+                </div>
+            @endif
 
                 @if($ticket->zoomDetail)
                     <!-- Card Khusus Formulir Zoom -->
@@ -235,6 +241,8 @@
                                 </div>
                             @endif
                         </div>
+
+                        <x-ticket-attachments-list :ticket="$ticket" />
                     </div>
                 @endif
 
@@ -381,6 +389,8 @@
                                 </div>
                             @endif
                         </div>
+
+                        <x-ticket-attachments-list :ticket="$ticket" />
                     </div>
                 @endif
 
@@ -459,6 +469,8 @@
                                 </div>
                             @endif
                         </div>
+
+                        <x-ticket-attachments-list :ticket="$ticket" />
                     </div>
                 @endif
 
@@ -537,6 +549,8 @@
                                 </div>
                             @endif
                         </div>
+
+                        <x-ticket-attachments-list :ticket="$ticket" />
                     </div>
                 @endif
 
@@ -592,33 +606,36 @@
                                 </div>
                             @endif
                         </div>
+
+                        <x-ticket-attachments-list :ticket="$ticket" />
                     </div>
                 @endif
 
-                
-                <!-- Card 1: Rincian Lengkap Pengaduan & Spesifikasi Formulir -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
-                    <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-                                <i class="ri-file-list-3-line text-sm"></i>
-                                Informasi & Spesifikasi Pengaduan
-                            </span>
-                            <h2 class="text-lg font-bold text-slate-900 mt-1">
-                                {{ $ticket->subject }}
-                            </h2>
+                @if(! $hasSubDetail)
+                    <!-- Card 1: Rincian Lengkap Pengaduan & Spesifikasi Formulir (Layanan Katalog Standard Tanpa Sub-Detail) -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
+                        <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                                    <i class="ri-file-list-3-line text-sm"></i>
+                                    Informasi & Spesifikasi Pengaduan
+                                </span>
+                                <h2 class="text-lg font-bold text-slate-900 mt-1">
+                                    {{ $ticket->subject }}
+                                </h2>
+                            </div>
+                            <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                                <x-ticket-category-badge :ticket="$ticket" :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                            <x-ticket-category-badge :ticket="$ticket" :category="$ticket->category" :full="true" class="text-xs px-3 py-1" />
-                        </div>
+
+                        <!-- Intelligent Structured Description Rendering -->
+                        <x-ticket-description :description="$ticket->description" />
+
+                        <!-- Attachment Section (Multiple Documents / Legacy) -->
+                        <x-ticket-attachments-list :ticket="$ticket" />
                     </div>
-
-                    <!-- Intelligent Structured Description Rendering -->
-                    <x-ticket-description :description="$ticket->description" />
-
-                    <!-- Attachment Section (Multiple Documents / Legacy) -->
-                    <x-ticket-attachments-list :ticket="$ticket" />
-                </div>
+                @endif
 
                 <!-- Card 2: Percakapan WhatsApp Style -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-7 print:hidden">
