@@ -207,4 +207,28 @@ class Ticket extends Model
 
         return null;
     }
+
+    public function getServiceIconAttribute(): string
+    {
+        $key = $this->service_key_resolved;
+        if ($key) {
+            $services = config('services_gateway.services', []);
+            if (isset($services[$key]['icon'])) {
+                return $services[$key]['icon'];
+            }
+        }
+        return 'ri-file-list-3-line';
+    }
+
+    public function getServiceBadgeAttribute(): ?string
+    {
+        $key = $this->service_key_resolved;
+        if ($key) {
+            $services = config('services_gateway.services', []);
+            if (isset($services[$key]['badge'])) {
+                return $services[$key]['badge'];
+            }
+        }
+        return 'Katalog Layanan TIK';
+    }
 }

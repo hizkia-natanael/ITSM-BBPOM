@@ -322,7 +322,7 @@ class HelpdeskTest extends TestCase
         $response = $this->actingAs($user)->get(route('tickets.show', $ticket));
 
         $response->assertSuccessful();
-        $response->assertSee('Formulir Khusus Layanan');
+        $response->assertSee('Keamanan & TTE');
         $response->assertSee('Sertifikat BSrE / TTE');
         $response->assertSee('Reset Password BSRE');
         $response->assertSee('198501012010121001');

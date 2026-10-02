@@ -78,7 +78,7 @@ return [
         // 4. Sertifikat BSrE
         'sertifikat_bse' => [
             'id' => 'sertifikat_bse',
-            'name' => 'Sertifikat BSRE',
+            'name' => 'Sertifikat BSrE / TTE',
             'long_name' => 'Balai Sertifikasi Elektronik / TTE (BSrE)',
             'group' => 'akun',
             'badge' => 'Keamanan & TTE',
@@ -219,7 +219,7 @@ return [
         // 12. Lainnya
         'lainnya' => [
             'id' => 'lainnya',
-            'name' => 'Lainnya',
+            'name' => 'Layanan TIK Umum / Lainnya',
             'long_name' => 'Kendala Hardware, Printer & Bantuan Khusus TI',
             'group' => 'infrastruktur',
             'badge' => 'Dukungan Umum',
