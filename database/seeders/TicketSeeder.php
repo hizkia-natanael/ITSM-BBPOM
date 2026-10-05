@@ -19,8 +19,9 @@ class TicketSeeder extends Seeder
     {
         $categories = Category::all()->keyBy('slug');
 
-        $admin1 = User::firstWhere('email', 'admin1@bbpom.go.id') ?? User::firstWhere('role', 'admin');
-        $admin2 = User::firstWhere('email', 'admin2@bbpom.go.id') ?? User::firstWhere('role', 'admin');
+        $admin1 = User::firstWhere('email', 'tri.p@bbpom.go.id') ?? User::firstWhere('email', 'admin1@bbpom.go.id') ?? User::firstWhere('role', 'admin');
+        $admin2 = User::firstWhere('email', 'windi.p@bbpom.go.id') ?? User::firstWhere('email', 'admin2@bbpom.go.id') ?? User::firstWhere('role', 'admin');
+        $admin3 = User::firstWhere('email', 'rizky.a@bbpom.go.id') ?? User::firstWhere('role', 'admin');
         $user1  = User::firstWhere('email', 'user@bbpom.go.id') ?? User::firstWhere('role', 'user');
         $user2  = User::firstWhere('email', 'siti@bbpom.go.id') ?? User::firstWhere('role', 'user');
         $user3  = User::firstWhere('email', 'budi@bbpom.go.id') ?? User::firstWhere('role', 'user');
@@ -360,7 +361,7 @@ class TicketSeeder extends Seeder
             [
                 'ticket_number' => 'TIK-BBPOM-018',
                 'user_id' => $user5->id, // Rizky Pratama
-                'handled_by_id' => $admin2->id,
+                'handled_by_id' => $admin3->id,
                 'category_id' => $categories['perangkat-keras-hardware']->id,
                 'service_key' => 'windows',
                 'subcategory' => 'permintaan_install_windows',
@@ -371,7 +372,7 @@ class TicketSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(17),
                 'responses' => [
                     [
-                        'user_id' => $admin2->id,
+                        'user_id' => $admin3->id,
                         'response_text' => 'PC telah di-install ulang Windows 11 Pro 64-bit lengkap dengan driver resmi pabrikan dan antivirus dinas. Pengujian kestabilan berjalan 100% normal.',
                         'created_at' => Carbon::now()->subDays(17),
                     ],

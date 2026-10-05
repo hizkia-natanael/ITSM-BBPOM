@@ -248,8 +248,8 @@ class UserSeeder extends Seeder
                 'nip' => '199609192025211013',
                 'name' => 'Rizky Ary Wardhana, S.Kom',
                 'email' => 'rizky.a@bbpom.go.id',
-                'role' => 'user',
-                'password' => $hashedUserPassword,
+                'role' => 'admin',
+                'password' => $hashedAdminPassword,
             ],
             [
                 'nip' => '198012232006042003',
@@ -1011,8 +1011,8 @@ class UserSeeder extends Seeder
                 'nip' => '199712142022032004',
                 'name' => 'Windi Putri Nur Aini, S.T.',
                 'email' => 'windi.p@bbpom.go.id',
-                'role' => 'user',
-                'password' => $hashedUserPassword,
+                'role' => 'admin',
+                'password' => $hashedAdminPassword,
             ],
             [
                 'nip' => '198406012009122002',
@@ -1060,8 +1060,8 @@ class UserSeeder extends Seeder
                 'nip' => '197012262000032001',
                 'name' => 'Tri Pujiati, S.Kom',
                 'email' => 'tri.p@bbpom.go.id',
-                'role' => 'user',
-                'password' => $hashedUserPassword,
+                'role' => 'admin',
+                'password' => $hashedAdminPassword,
             ],
             [
                 'nip' => '198107172005012001',
@@ -1281,25 +1281,7 @@ class UserSeeder extends Seeder
                 'password' => $hashedUserPassword,
             ],
 
-            // Akun Admin Pendukung & Akun Demo ITSM
-            [
-                'nip' => '198503122010121001',
-                'name' => 'Admin 1 - Layanan TIK',
-                'email' => 'admin1@bbpom.go.id',
-                'nik' => '3374011203850002',
-                'phone_number' => '081234567802',
-                'role' => 'admin',
-                'password' => $hashedDemoPassword,
-            ],
-            [
-                'nip' => '198907152014031002',
-                'name' => 'Admin 2 - Layanan TIK',
-                'email' => 'admin2@bbpom.go.id',
-                'nik' => '3374011507890003',
-                'phone_number' => '081234567803',
-                'role' => 'admin',
-                'password' => $hashedDemoPassword,
-            ],
+            // Akun Demo ITSM (Pegawai Demo)
             [
                 'nip' => '199104152015031002',
                 'name' => 'Ahmad Fauzi (Tata Usaha)',

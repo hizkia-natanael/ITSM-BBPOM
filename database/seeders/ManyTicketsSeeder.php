@@ -18,8 +18,9 @@ class ManyTicketsSeeder extends Seeder
             $users = User::all();
         }
 
-        $admin1 = User::where('email', 'admin1@bbpom.go.id')->first() ?? User::where('role', 'admin')->first();
-        $admin2 = User::where('email', 'admin2@bbpom.go.id')->first() ?? $admin1;
+        $admin1 = User::where('email', 'tri.p@bbpom.go.id')->first() ?? User::where('email', 'admin1@bbpom.go.id')->first() ?? User::where('role', 'admin')->first();
+        $admin2 = User::where('email', 'windi.p@bbpom.go.id')->first() ?? User::where('email', 'admin2@bbpom.go.id')->first() ?? $admin1;
+        $admin3 = User::where('email', 'rizky.a@bbpom.go.id')->first() ?? $admin1;
 
         $categories = Category::all();
         if ($categories->isEmpty()) {
@@ -156,7 +157,7 @@ class ManyTicketsSeeder extends Seeder
         foreach ($sampleTickets as $idx => $t) {
             $cat = Category::where('slug', $t['cat'])->first() ?? $categories->first();
             $assignedUser = $users[$idx % $users->count()];
-            $handlingAdmin = ($t['status'] === 'pending') ? null : (($idx % 2 === 0) ? $admin1 : $admin2);
+            $handlingAdmin = ($t['status'] === 'pending') ? null : (($idx % 3 === 0) ? $admin1 : (($idx % 3 === 1) ? $admin2 : $admin3));
 
             $createdAt = Carbon::now()->subDays($t['days_ago'])->subHours($idx * 2 + 1);
 

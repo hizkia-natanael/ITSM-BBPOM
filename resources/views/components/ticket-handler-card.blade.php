@@ -65,7 +65,7 @@
             </div>
             <h5 class="text-xs font-bold text-slate-800">Menunggu Penugasan Petugas IT</h5>
             <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                Pengaduan Anda sedang dalam antrian. Tim Helpdesk TIK (Admin 1 / Admin 2) akan segera meninjau dan ditugaskan menangani kendala ini.
+                Pengaduan Anda sedang dalam antrian. Tim Helpdesk TIK akan segera meninjau dan ditugaskan menangani kendala ini.
             </p>
         </div>
     @endif

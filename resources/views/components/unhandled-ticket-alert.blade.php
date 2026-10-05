@@ -89,7 +89,7 @@
                     Antrean Aduan Terkendali
                 </h4>
                 <p style="margin: 0; font-size: 0.7125rem; color: #64748b; max-width: 14rem; line-height: 1.4;">
-                    Tidak ada aduan yang menunggu penanganan Admin 1 atau Admin 2 saat ini.
+                    Tidak ada aduan yang menunggu penanganan Admin TIK saat ini.
                 </p>
             </div>
         @endif
