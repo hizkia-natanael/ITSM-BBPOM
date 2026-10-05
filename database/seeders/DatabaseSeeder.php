@@ -18,20 +18,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // =========================================================================
-        // 1. Seed Users (Admins & Pegawai BBPOM Semarang)
+        // 0. Seed Seluruh Pegawai Resmi & Admin BBPOM dari Berita Acara (179 Akun)
         // =========================================================================
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@bbpom.go.id'],
-            [
-                'name' => 'Administrator IT BBPOM',
-                'nip' => '198503122010121001',
-                'nik' => '3374011203850001',
-                'phone_number' => '081234567801',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'email_verified_at' => now(),
-            ]
-        );
+        $this->call(UserSeeder::class);
+
+        // =========================================================================
+        // 1. Seed Akun Admin Pendukung & Akun Demo ITSM
+        // =========================================================================
+        $admin = User::where('email', 'admin@bbpom.go.id')->first() ?? User::create([
+            'name' => 'Administrator Utama',
+            'nip' => 'admin',
+            'email' => 'admin@bbpom.go.id',
+            'password' => Hash::make('tikAdmiNbpomsmg'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
 
         $admin1 = User::updateOrCreate(
             ['email' => 'admin1@bbpom.go.id'],
