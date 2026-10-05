@@ -153,4 +153,29 @@ class PushNotificationController extends Controller
             ]),
         ]);
     }
+
+    /**
+     * Claim an unhandled ticket directly from topbar notification popover.
+     */
+    public function claimTicket(Request $request, Ticket $ticket): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($ticket->handled_by_id !== null || $ticket->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aduan ini sudah ditangani oleh admin lain.',
+            ], 400);
+        }
+
+        $ticket->handled_by_id = $user->id;
+        $ticket->status = 'diproses';
+        $ticket->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Aduan {$ticket->ticket_number} berhasil diambil alih dan berstatus Diproses.",
+            'edit_url' => url('/admin/tickets/' . $ticket->id . '/edit'),
+        ]);
+    }
 }

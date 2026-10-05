@@ -24,19 +24,42 @@ class WebPushService
 
         if (! empty($publicKey) && ! empty($privateKey)) {
             try {
-                $this->webPush = new WebPush([
-                    'VAPID' => [
-                        'subject' => $subject,
-                        'publicKey' => $publicKey,
-                        'privateKey' => $privateKey,
+                $client = $this->createHttpClient();
+
+                $this->webPush = new WebPush(
+                    [
+                        'VAPID' => [
+                            'subject' => $subject,
+                            'publicKey' => $publicKey,
+                            'privateKey' => $privateKey,
+                        ],
                     ],
-                ]);
+                    [],
+                    $client
+                );
                 $this->webPush->setReuseVAPIDHeaders(true);
             } catch (\Throwable $e) {
                 Log::warning('WebPush initialization warning: ' . $e->getMessage());
                 $this->webPush = null;
             }
         }
+    }
+
+    protected function createHttpClient(): \GuzzleHttp\Client
+    {
+        $options = [
+            'timeout' => 15,
+            'connect_timeout' => 10,
+        ];
+
+        $caBundle = config('webpush.ca_bundle');
+        if ($caBundle && file_exists($caBundle)) {
+            $options['verify'] = $caBundle;
+        } elseif (file_exists(storage_path('cacert.pem'))) {
+            $options['verify'] = storage_path('cacert.pem');
+        }
+
+        return new \GuzzleHttp\Client($options);
     }
 
     protected function ensureOpenSslConfig(): void

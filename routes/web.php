@@ -48,6 +48,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->pref
     Route::post('/push/unsubscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unsubscribe'])->name('push.unsubscribe');
     Route::post('/push/test', [\App\Http\Controllers\Admin\PushNotificationController::class, 'test'])->name('push.test');
     Route::get('/tickets/unhandled/status', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unhandledStatus'])->name('tickets.unhandled.status');
+    Route::post('/tickets/{ticket}/claim', [\App\Http\Controllers\Admin\PushNotificationController::class, 'claimTicket'])->name('tickets.claim');
 });
 
 require __DIR__.'/auth.php';

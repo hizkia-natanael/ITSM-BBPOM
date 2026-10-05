@@ -170,4 +170,48 @@ class AdminNotificationAndChartTest extends TestCase
             'handled_by_id' => null,
         ]);
     }
+
+    public function test_admin_can_claim_unhandled_ticket_via_api(): void
+    {
+        $this->actingAs($this->admin);
+
+        $ticket = Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'category_id' => $this->category->id,
+            'subject' => 'Kendala PC Kantor',
+            'description' => 'PC tidak mau menyala',
+            'status' => 'pending',
+            'handled_by_id' => null,
+        ]);
+
+        $response = $this->postJson(route('admin.tickets.claim', $ticket->id));
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('tickets', [
+            'id' => $ticket->id,
+            'status' => 'diproses',
+            'handled_by_id' => $this->admin->id,
+        ]);
+    }
+
+    public function test_cannot_claim_already_handled_ticket(): void
+    {
+        $this->actingAs($this->admin);
+
+        $otherAdmin = User::factory()->create(['role' => 'admin']);
+
+        $ticket = Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'category_id' => $this->category->id,
+            'subject' => 'Kendala PC Kantor 2',
+            'description' => 'PC tidak mau menyala lagi',
+            'status' => 'diproses',
+            'handled_by_id' => $otherAdmin->id,
+        ]);
+
+        $response = $this->postJson(route('admin.tickets.claim', $ticket->id));
+        $response->assertStatus(400)
+            ->assertJsonPath('success', false);
+    }
 }
