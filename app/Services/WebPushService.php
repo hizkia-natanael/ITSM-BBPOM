@@ -87,7 +87,7 @@ class WebPushService
     {
         $title = 'Aduan Masuk Belum Ditangani!';
         $pelapor = $ticket->user?->name ?? 'Pegawai BBPOM';
-        $body = "[{$ticket->ticket_number}] {$pelapor}: {$ticket->subject} (Menunggu tanggapan Admin 1 / Admin 2)";
+        $body = "[{$ticket->ticket_number}] {$pelapor}: {$ticket->subject} (Menunggu tanggapan tim IT)";
         $url = url('/admin/tickets/' . $ticket->id . '/edit');
 
         return $this->sendToAdmins($title, $body, $url, [

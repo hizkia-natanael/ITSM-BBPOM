@@ -11,7 +11,7 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('push', function (event) {
     let payload = {
         title: 'Aduan Masuk Belum Ditangani!',
-        body: 'Terdapat aduan TI baru yang belum ditangani oleh Admin 1 atau Admin 2.',
+        body: 'Terdapat aduan TI baru yang menunggu tanggapan tim IT.',
         icon: '/images/logo-bpom.png',
         badge: '/images/logo-bpom.png',
         tag: 'bbpom-unhandled-ticket',
