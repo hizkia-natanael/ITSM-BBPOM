@@ -10,7 +10,7 @@
             </label>
             <div class="flex items-center gap-2 text-xs font-bold text-slate-900 mt-0.5">
                 <span>{{ $todayFormatted }}</span>
-                <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                <span class="shrink-0 whitespace-nowrap text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
                     Otomatis
                 </span>
             </div>
@@ -18,17 +18,17 @@
         </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 min-w-0">
         <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-700 shrink-0">
             <i class="ri-user-line text-lg"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Nama Pemohon
             </label>
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-900 mt-0.5">
-                <span class="truncate max-w-[180px] sm:max-w-xs" title="{{ $user->name }}">{{ $user->name }}</span>
-                <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-900 mt-0.5 min-w-0">
+                <span class="truncate min-w-0" title="{{ $user->name }}">{{ $user->name }}</span>
+                <span class="shrink-0 whitespace-nowrap text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
                     Akun Login
                 </span>
             </div>
