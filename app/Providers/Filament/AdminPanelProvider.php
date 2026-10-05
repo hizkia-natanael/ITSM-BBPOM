@@ -873,6 +873,162 @@ class AdminPanelProvider extends PanelProvider
                             flex-direction: column !important;
                             justify-content: space-between !important;
                         }
+
+                        /* BBPOM Export Modal: Format Buttons (Side-by-side & Distinct Colors) */
+                        .bbpom-export-formats-container {
+                            display: grid !important;
+                            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                            gap: 0.75rem !important;
+                            width: 100% !important;
+                        }
+                        @media (max-width: 640px) {
+                            .bbpom-export-formats-container {
+                                grid-template-columns: 1fr !important;
+                            }
+                        }
+                        .bbpom-format-btn {
+                            position: relative !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            gap: 0.85rem !important;
+                            padding: 0.75rem 1rem !important;
+                            border-radius: 0.75rem !important;
+                            border-width: 2px !important;
+                            border-style: solid !important;
+                            text-align: left !important;
+                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                            cursor: pointer !important;
+                            background-color: #ffffff !important;
+                            user-select: none !important;
+                            outline: none !important;
+                            width: 100% !important;
+                            box-sizing: border-box !important;
+                        }
+                        .bbpom-format-btn .text-content {
+                            min-width: 0 !important;
+                            flex: 1 1 0% !important;
+                        }
+                        .bbpom-format-title {
+                            font-size: 0.875rem !important;
+                            font-weight: 700 !important;
+                            line-height: 1.25 !important;
+                        }
+                        .bbpom-format-desc {
+                            font-size: 0.72rem !important;
+                            color: #64748b !important;
+                            margin-top: 0.18rem !important;
+                            line-height: 1.25 !important;
+                        }
+                        /* PDF Format (Merah / Rose) */
+                        .bbpom-format-btn.btn-pdf {
+                            border-color: #fecdd3 !important;
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-format-btn.btn-pdf .bbpom-format-title {
+                            color: #9f1239 !important;
+                        }
+                        .bbpom-format-btn.btn-pdf .icon-box {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: 2.5rem !important;
+                            height: 2.5rem !important;
+                            border-radius: 0.5rem !important;
+                            background-color: #ffe4e6 !important;
+                            color: #e11d48 !important;
+                            font-size: 1.4rem !important;
+                            flex-shrink: 0 !important;
+                            transition: all 0.2s ease !important;
+                        }
+                        .bbpom-format-btn.btn-pdf:hover {
+                            border-color: #f43f5e !important;
+                            background-color: #fff1f2 !important;
+                            transform: translateY(-1px) !important;
+                            box-shadow: 0 4px 14px -2px rgba(225, 29, 72, 0.18) !important;
+                        }
+                        .bbpom-format-btn.btn-pdf:hover .icon-box {
+                            background-color: #f43f5e !important;
+                            color: #ffffff !important;
+                        }
+                        .bbpom-format-btn.btn-pdf.is-active {
+                            border-color: #e11d48 !important;
+                            background-color: #fff1f2 !important;
+                            box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.22), 0 4px 12px -2px rgba(225, 29, 72, 0.18) !important;
+                        }
+                        .bbpom-format-btn.btn-pdf.is-active .icon-box {
+                            background-color: #e11d48 !important;
+                            color: #ffffff !important;
+                            box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.35) !important;
+                        }
+                        .bbpom-format-btn.btn-pdf.is-active .bbpom-radio-indicator {
+                            border-color: #e11d48 !important;
+                            background-color: #e11d48 !important;
+                        }
+                        /* Excel Format (Hijau / Emerald) */
+                        .bbpom-format-btn.btn-excel {
+                            border-color: #a7f3d0 !important;
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-format-btn.btn-excel .bbpom-format-title {
+                            color: #064e3b !important;
+                        }
+                        .bbpom-format-btn.btn-excel .icon-box {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: 2.5rem !important;
+                            height: 2.5rem !important;
+                            border-radius: 0.5rem !important;
+                            background-color: #d1fae5 !important;
+                            color: #059669 !important;
+                            font-size: 1.4rem !important;
+                            flex-shrink: 0 !important;
+                            transition: all 0.2s ease !important;
+                        }
+                        .bbpom-format-btn.btn-excel:hover {
+                            border-color: #10b981 !important;
+                            background-color: #ecfdf5 !important;
+                            transform: translateY(-1px) !important;
+                            box-shadow: 0 4px 14px -2px rgba(5, 150, 105, 0.18) !important;
+                        }
+                        .bbpom-format-btn.btn-excel:hover .icon-box {
+                            background-color: #10b981 !important;
+                            color: #ffffff !important;
+                        }
+                        .bbpom-format-btn.btn-excel.is-active {
+                            border-color: #059669 !important;
+                            background-color: #ecfdf5 !important;
+                            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.22), 0 4px 12px -2px rgba(5, 150, 105, 0.18) !important;
+                        }
+                        .bbpom-format-btn.btn-excel.is-active .icon-box {
+                            background-color: #059669 !important;
+                            color: #ffffff !important;
+                            box-shadow: 0 2px 6px -1px rgba(5, 150, 105, 0.35) !important;
+                        }
+                        .bbpom-format-btn.btn-excel.is-active .bbpom-radio-indicator {
+                            border-color: #059669 !important;
+                            background-color: #059669 !important;
+                        }
+                        .bbpom-radio-indicator {
+                            width: 1.25rem !important;
+                            height: 1.25rem !important;
+                            border-radius: 9999px !important;
+                            border: 2px solid #cbd5e1 !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            margin-left: auto !important;
+                            flex-shrink: 0 !important;
+                            transition: all 0.2s ease !important;
+                            background-color: #ffffff !important;
+                        }
+                        .bbpom-radio-dot {
+                            width: 0.45rem !important;
+                            height: 0.45rem !important;
+                            border-radius: 9999px !important;
+                            background-color: #ffffff !important;
+                            display: inline-block !important;
+                        }
                     </style>
                 ')
             )

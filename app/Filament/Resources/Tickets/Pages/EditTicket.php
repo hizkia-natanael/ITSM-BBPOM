@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tickets\Pages;
 
 use App\Filament\Resources\Tickets\TicketResource;
+use App\Services\Export\TicketQueryBuilder;
 use Filament\Resources\Pages\EditRecord;
 
 class EditTicket extends EditRecord
@@ -17,6 +18,18 @@ class EditTicket extends EditRecord
     protected function getFormActions(): array
     {
         return [];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        if (isset($data['description'])) {
+            $data['description'] = TicketQueryBuilder::stripMarkdown($data['description']);
+        }
+        if (isset($data['subject'])) {
+            $data['subject'] = TicketQueryBuilder::stripMarkdown($data['subject']);
+        }
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
