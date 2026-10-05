@@ -34,7 +34,10 @@ class WebPushService
                             'privateKey' => $privateKey,
                         ],
                     ],
-                    [],
+                    [
+                        'urgency' => 'high',
+                        'TTL' => 86400,
+                    ],
                     $client
                 );
                 $this->webPush->setReuseVAPIDHeaders(true);
@@ -159,7 +162,10 @@ class WebPushService
                     'contentEncoding' => $sub->content_encoding ?: 'aes128gcm',
                 ]);
 
-                $this->webPush->queueNotification($subscription, $payload);
+                $this->webPush->queueNotification($subscription, $payload, [
+                    'urgency' => 'high',
+                    'TTL' => 86400,
+                ]);
             } catch (\Throwable $e) {
                 Log::warning("Failed to queue push notification for sub #{$sub->id}: " . $e->getMessage());
             }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tickets\Schemas;
 
 use App\Filament\Resources\Tickets\TicketResource;
+use App\Services\Export\TicketQueryBuilder;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -112,6 +113,7 @@ class TicketForm
                             ->label('Subjek / Judul Kendala')
                             ->disabled()
                             ->dehydrated(false)
+                            ->formatStateUsing(fn ($state) => TicketQueryBuilder::stripMarkdown($state ?? ''))
                             ->columnSpanFull(),
 
                         // ==========================================
@@ -156,7 +158,7 @@ class TicketForm
                             Textarea::make('bsre_deskripsi')
                                 ->label('Deskripsi Kendala (Lainnya)')
                                 ->visible(fn ($record) => !empty($record?->bsreDetail?->deskripsi))
-                                ->formatStateUsing(fn ($record) => $record?->bsreDetail?->deskripsi ?? '')
+                                ->formatStateUsing(fn ($record) => TicketQueryBuilder::stripMarkdown($record?->bsreDetail?->deskripsi ?? ''))
                                 ->rows(3)
                                 ->disabled()
                                 ->dehydrated(false)
@@ -205,7 +207,7 @@ class TicketForm
                             Textarea::make('zoom_deskripsi')
                                 ->label('Deskripsi Kebutuhan / Kendala')
                                 ->visible(fn ($record) => !empty($record?->zoomDetail?->deskripsi))
-                                ->formatStateUsing(fn ($record) => $record?->zoomDetail?->deskripsi ?? '')
+                                ->formatStateUsing(fn ($record) => TicketQueryBuilder::stripMarkdown($record?->zoomDetail?->deskripsi ?? ''))
                                 ->rows(3)
                                 ->disabled()
                                 ->dehydrated(false)
@@ -307,7 +309,7 @@ class TicketForm
                             Textarea::make('kegiatan_deskripsi')
                                 ->label('Deskripsi Kebutuhan')
                                 ->visible(fn ($record) => !empty($record?->kegiatanDetail?->deskripsi))
-                                ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->deskripsi ?? '')
+                                ->formatStateUsing(fn ($record) => TicketQueryBuilder::stripMarkdown($record?->kegiatanDetail?->deskripsi ?? ''))
                                 ->rows(3)
                                 ->disabled()
                                 ->dehydrated(false)
@@ -363,7 +365,7 @@ class TicketForm
                             Textarea::make('windows_deskripsi')
                                 ->label('Deskripsi Alasan / Kendala')
                                 ->visible(fn ($record) => !empty($record?->windowsDetail?->deskripsi))
-                                ->formatStateUsing(fn ($record) => $record?->windowsDetail?->deskripsi ?? '')
+                                ->formatStateUsing(fn ($record) => TicketQueryBuilder::stripMarkdown($record?->windowsDetail?->deskripsi ?? ''))
                                 ->rows(3)
                                 ->disabled()
                                 ->dehydrated(false)
@@ -419,7 +421,7 @@ class TicketForm
                             Textarea::make('office_deskripsi')
                                 ->label('Deskripsi Kendala Lisensi')
                                 ->visible(fn ($record) => !empty($record?->officeDetail?->deskripsi))
-                                ->formatStateUsing(fn ($record) => $record?->officeDetail?->deskripsi ?? '')
+                                ->formatStateUsing(fn ($record) => TicketQueryBuilder::stripMarkdown($record?->officeDetail?->deskripsi ?? ''))
                                 ->rows(3)
                                 ->disabled()
                                 ->dehydrated(false)
@@ -444,7 +446,7 @@ class TicketForm
                         Group::make([
                             Textarea::make('lainnya_deskripsi')
                                 ->label('Deskripsi Permintaan / Kendala')
-                                ->formatStateUsing(fn ($record) => $record?->lainnyaDetail?->deskripsi ?? '')
+                                ->formatStateUsing(fn ($record) => TicketQueryBuilder::stripMarkdown($record?->lainnyaDetail?->deskripsi ?? ''))
                                 ->rows(4)
                                 ->disabled()
                                 ->dehydrated(false)
@@ -490,7 +492,8 @@ class TicketForm
                                 ->label('Deskripsi Kendala Lengkap')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->rows(4)
+                                ->formatStateUsing(fn ($state) => TicketQueryBuilder::stripMarkdown($state ?? ''))
+                                ->rows(6)
                                 ->columnSpanFull(),
                         ])
                         ->visible(fn ($record) => $record && (
