@@ -293,7 +293,7 @@
                             action="{{ route('tickets.store') }}" 
                             enctype="multipart/form-data" 
                             class="space-y-6"
-                            @submit="isSubmitting = true"
+                            @submit="startSubmission()"
                             @input="userHasTyped = true"
                             @change="userHasTyped = true"
                         >
@@ -387,10 +387,12 @@
                                     </a>
                                     <button 
                                         type="submit" 
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition"
+                                        :disabled="isSubmitting"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-700/20 transition disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
-                                        <i class="ri-send-plane-fill"></i>
-                                        <span>Kirim Pengaduan Tiket</span>
+                                        <i class="ri-send-plane-fill" x-show="!isSubmitting"></i>
+                                        <i class="ri-loader-4-line animate-spin" x-show="isSubmitting" x-cloak></i>
+                                        <span x-text="isSubmitting ? 'Memproses Tiket...' : 'Kirim Pengaduan Tiket'">Kirim Pengaduan Tiket</span>
                                     </button>
                                 </div>
                             </div>
@@ -427,6 +429,9 @@
         <!-- Modal Konfirmasi Meninggalkan Halaman (Atomic Component) -->
         <x-leave-form-confirmation-modal />
 
+        <!-- Modal Loading Screen Pengiriman Tiket (Atomic Component) -->
+        <x-ticket-submission-loading-screen />
+
     </div>
 
     <!-- Script to handle file input display & Alpine Gateway state -->
@@ -441,9 +446,20 @@
                 services: @json($services),
                 groups: @json($groups),
                 isSubmitting: false,
+                submissionStepIndex: 0,
+                submissionSteps: [
+                    'Memvalidasi data dan menyiapkan berkas lampiran...',
+                    'Mengenkripsi dan mengunggah berkas ke server...',
+                    'Mendaftarkan nomor tiket ke antrean Helpdesk TIK...'
+                ],
+                submissionTimer: null,
                 userHasTyped: false,
                 showLeaveConfirm: false,
                 pendingLeaveTarget: null,
+
+                get currentSubmissionStepText() {
+                    return this.submissionSteps[this.submissionStepIndex] || this.submissionSteps[0];
+                },
 
                 get currentService() {
                     return this.services[this.selectedServiceKey] || null;
@@ -586,6 +602,19 @@
                     } else {
                         this.clearService();
                     }
+                },
+
+                startSubmission() {
+                    this.isSubmitting = true;
+                    this.submissionStepIndex = 0;
+                    if (this.submissionTimer) {
+                        clearInterval(this.submissionTimer);
+                    }
+                    this.submissionTimer = setInterval(() => {
+                        if (this.submissionStepIndex < 2) {
+                            this.submissionStepIndex++;
+                        }
+                    }, 2200);
                 },
 
                 init() {
