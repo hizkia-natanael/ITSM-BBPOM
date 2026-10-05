@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
         // Pre-hash password satu kali untuk performa seeding cepat (< 1 detik)
         $hashedAdminPassword = Hash::make('tikAdmiNbpomsmg');
         $hashedUserPassword = Hash::make('tikbpomsmg');
+        $hashedDemoPassword = Hash::make('password');
 
         $users = [
             [
@@ -1272,6 +1273,98 @@ class UserSeeder extends Seeder
                 'role' => 'user',
                 'password' => $hashedUserPassword,
             ],
+
+            // Akun Admin Pendukung & Akun Demo ITSM
+            [
+                'nip' => '198503122010121001',
+                'name' => 'Admin 1 - Layanan TIK',
+                'email' => 'admin1@bbpom.go.id',
+                'nik' => '3374011203850002',
+                'phone_number' => '081234567802',
+                'role' => 'admin',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '198907152014031002',
+                'name' => 'Admin 2 - Layanan TIK',
+                'email' => 'admin2@bbpom.go.id',
+                'nik' => '3374011507890003',
+                'phone_number' => '081234567803',
+                'role' => 'admin',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '199104152015031002',
+                'name' => 'Ahmad Fauzi (Tata Usaha)',
+                'email' => 'user@bbpom.go.id',
+                'nik' => '3374021504910001',
+                'phone_number' => '081234567810',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '199204152018012002',
+                'name' => 'Siti Rahmawati, S.Si. (Lab Pengujian Kimia)',
+                'email' => 'siti@bbpom.go.id',
+                'nik' => '3374031504920002',
+                'phone_number' => '081234567811',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '198705112014031003',
+                'name' => 'Budi Santoso, S.Kom. (Tata Usaha & Kearsipan)',
+                'email' => 'budi@bbpom.go.id',
+                'nik' => '3374041105870003',
+                'phone_number' => '081234567812',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '199308222019022005',
+                'name' => 'Dian Kusuma, S.Farm., Apt. (Fungsi Pemeriksaan)',
+                'email' => 'dian@bbpom.go.id',
+                'nik' => '3374052208930004',
+                'phone_number' => '081234567813',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '199411032020121004',
+                'name' => 'Rizky Pratama, S.Si. (Lab Mikrobiologi)',
+                'email' => 'rizky@bbpom.go.id',
+                'nik' => '3374060311940005',
+                'phone_number' => '081234567814',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '199002142015032001',
+                'name' => 'Maya Anggraini, S.Kom. (Fungsi Infokom & PTSP)',
+                'email' => 'maya@bbpom.go.id',
+                'nik' => '3374071402900006',
+                'phone_number' => '081234567815',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '198806172012121002',
+                'name' => 'Hendra Wijaya, S.H. (Fungsi Penindakan & PPNS)',
+                'email' => 'hendra@bbpom.go.id',
+                'nik' => '3374081706880007',
+                'phone_number' => '081234567816',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
+            [
+                'nip' => '198909182014032004',
+                'name' => 'Ani Lestari, S.E. (Keuangan & BMN)',
+                'email' => 'ani@bbpom.go.id',
+                'nik' => '3374091809890008',
+                'phone_number' => '081234567817',
+                'role' => 'user',
+                'password' => $hashedDemoPassword,
+            ],
         ];
 
         foreach ($users as $userData) {
@@ -1279,24 +1372,26 @@ class UserSeeder extends Seeder
                 ->orWhere('email', $userData['email'])
                 ->first();
 
+            $attributes = [
+                'name' => $userData['name'],
+                'nip' => $userData['nip'],
+                'email' => $userData['email'],
+                'role' => $userData['role'],
+                'password' => $userData['password'],
+                'email_verified_at' => $user?->email_verified_at ?? now(),
+            ];
+
+            if (isset($userData['nik'])) {
+                $attributes['nik'] = $userData['nik'];
+            }
+            if (isset($userData['phone_number'])) {
+                $attributes['phone_number'] = $userData['phone_number'];
+            }
+
             if ($user) {
-                $user->update([
-                    'name' => $userData['name'],
-                    'nip' => $userData['nip'],
-                    'email' => $userData['email'],
-                    'role' => $userData['role'],
-                    'password' => $userData['password'],
-                    'email_verified_at' => $user->email_verified_at ?? now(),
-                ]);
+                $user->update($attributes);
             } else {
-                User::create([
-                    'name' => $userData['name'],
-                    'nip' => $userData['nip'],
-                    'email' => $userData['email'],
-                    'role' => $userData['role'],
-                    'password' => $userData['password'],
-                    'email_verified_at' => now(),
-                ]);
+                User::create($attributes);
             }
         }
     }
