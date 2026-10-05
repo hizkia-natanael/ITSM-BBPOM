@@ -1273,6 +1273,13 @@ class UserSeeder extends Seeder
                 'role' => 'user',
                 'password' => $hashedUserPassword,
             ],
+            [
+                'nip' => '198608232015022002',
+                'name' => 'Dewi Isnabarika Agrigriana, S.Farm, Apt',
+                'email' => 'dewi.i@bbpom.go.id',
+                'role' => 'user',
+                'password' => $hashedUserPassword,
+            ],
 
             // Akun Admin Pendukung & Akun Demo ITSM
             [
