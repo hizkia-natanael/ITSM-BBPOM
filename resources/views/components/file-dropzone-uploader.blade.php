@@ -32,7 +32,8 @@
     </div>
 
     <!-- Dropzone Interactive Box -->
-    <div 
+    <label 
+        for="{{ $id }}"
         @dragover.prevent="onDragOver()"
         @dragleave.prevent="onDragLeave()"
         @drop.prevent="onDrop($event)"
@@ -40,8 +41,7 @@
             'border-emerald-600 bg-emerald-50/40 ring-4 ring-emerald-500/10': isDragging,
             'border-slate-300 hover:border-emerald-500/70 bg-slate-50/60 hover:bg-slate-50': !isDragging
         }"
-        class="relative rounded-2xl border-2 border-dashed p-6 transition-all duration-200 cursor-pointer text-center group"
-        @click="triggerBrowse()"
+        class="relative block rounded-2xl border-2 border-dashed p-6 transition-all duration-200 cursor-pointer text-center group"
     >
         <!-- Hidden Native File Input -->
         <input 
@@ -52,6 +52,7 @@
             accept="{{ $acceptedTypes }}"
             class="sr-only"
             x-ref="fileInput"
+            @click.stop
             @change="handleFileSelect($event)"
         >
 
@@ -66,7 +67,7 @@
                 {{ $helperText }}
             </p>
         </div>
-    </div>
+    </label>
 
     <!-- Error Alert Box -->
     <div 
@@ -127,156 +128,162 @@
     </div>
 </div>
 
-@once
+@pushOnce('scripts')
 <script>
-function fileDropzoneUploader(config) {
-    return {
-        inputId: config.inputId,
-        fieldName: config.fieldName,
-        maxFiles: config.maxFiles || 5,
-        maxSizeBytes: (config.maxSizeMb || 5) * 1024 * 1024,
-        isDragging: false,
-        fileList: [],
-        errorMessage: '',
+if (typeof window.fileDropzoneUploader !== 'function') {
+    window.fileDropzoneUploader = function(config) {
+        return {
+            inputId: config.inputId,
+            fieldName: config.fieldName,
+            maxFiles: config.maxFiles || 5,
+            maxSizeBytes: (config.maxSizeMb || 5) * 1024 * 1024,
+            isDragging: false,
+            fileList: [],
+            errorMessage: '',
 
-        get hasFiles() {
-            return this.fileList.length !== 0;
-        },
+            get hasFiles() {
+                return this.fileList.length !== 0;
+            },
 
-        get fileCountText() {
-            if (this.fileList.length === 0) {
-                return 'Belum ada berkas';
-            }
-            return this.fileList.length + ' dari ' + this.maxFiles + ' berkas terpilih';
-        },
+            get fileCountText() {
+                if (this.fileList.length === 0) {
+                    return 'Belum ada berkas';
+                }
+                return this.fileList.length + ' dari ' + this.maxFiles + ' berkas terpilih';
+            },
 
-        triggerBrowse() {
-            this.$refs.fileInput.click();
-        },
+            triggerBrowse() {
+                if (this.$refs && this.$refs.fileInput) {
+                    this.$refs.fileInput.click();
+                }
+            },
 
-        onDragOver() {
-            this.isDragging = true;
-        },
+            onDragOver() {
+                this.isDragging = true;
+            },
 
-        onDragLeave() {
-            this.isDragging = false;
-        },
+            onDragLeave() {
+                this.isDragging = false;
+            },
 
-        onDrop(e) {
-            this.isDragging = false;
-            if (e.dataTransfer && e.dataTransfer.files) {
-                this.addFiles(Array.from(e.dataTransfer.files));
-            }
-        },
+            onDrop(e) {
+                this.isDragging = false;
+                if (e.dataTransfer && e.dataTransfer.files) {
+                    this.addFiles(Array.from(e.dataTransfer.files));
+                }
+            },
 
-        handleFileSelect(e) {
-            if (e.target && e.target.files) {
-                this.addFiles(Array.from(e.target.files));
-            }
-        },
+            handleFileSelect(e) {
+                if (e.target && e.target.files) {
+                    this.addFiles(Array.from(e.target.files));
+                }
+            },
 
-        addFiles(newFiles) {
-            this.errorMessage = '';
-            var totalFilesCount = this.fileList.length + newFiles.length;
+            addFiles(newFiles) {
+                this.errorMessage = '';
+                var totalFilesCount = this.fileList.length + newFiles.length;
 
-            if (totalFilesCount > this.maxFiles) {
-                this.errorMessage = 'Maksimal jumlah berkas yang dapat diunggah adalah ' + this.maxFiles + ' file.';
-                return;
-            }
-
-            for (var i = 0; i < newFiles.length; i++) {
-                var file = newFiles[i];
-
-                if (file.size > this.maxSizeBytes) {
-                    this.errorMessage = 'Ukuran berkas "' + file.name + '" melebihi batas maksimal (' + (this.maxSizeBytes / (1024 * 1024)) + 'MB).';
+                if (totalFilesCount > this.maxFiles) {
+                    this.errorMessage = 'Maksimal jumlah berkas yang dapat diunggah adalah ' + this.maxFiles + ' file.';
                     return;
                 }
 
-                // Cek duplikasi nama dan ukuran
-                var isDuplicate = false;
-                for (var j = 0; j < this.fileList.length; j++) {
-                    if (this.fileList[j].name === file.name && this.fileList[j].raw.size === file.size) {
-                        isDuplicate = true;
-                        break;
+                for (var i = 0; i < newFiles.length; i++) {
+                    var file = newFiles[i];
+
+                    if (file.size > this.maxSizeBytes) {
+                        this.errorMessage = 'Ukuran berkas "' + file.name + '" melebihi batas maksimal (' + (this.maxSizeBytes / (1024 * 1024)) + 'MB).';
+                        return;
+                    }
+
+                    // Cek duplikasi nama dan ukuran
+                    var isDuplicate = false;
+                    for (var j = 0; j < this.fileList.length; j++) {
+                        if (this.fileList[j].name === file.name && this.fileList[j].raw.size === file.size) {
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+
+                    if (!isDuplicate) {
+                        var meta = this.getFileMeta(file);
+                        this.fileList.push({
+                            id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                            name: file.name,
+                            size: this.formatBytes(file.size),
+                            iconClass: meta.iconClass,
+                            iconBg: meta.iconBg,
+                            raw: file
+                        });
                     }
                 }
 
-                if (!isDuplicate) {
-                    var meta = this.getFileMeta(file);
-                    this.fileList.push({
-                        id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                        name: file.name,
-                        size: this.formatBytes(file.size),
-                        iconClass: meta.iconClass,
-                        iconBg: meta.iconBg,
-                        raw: file
-                    });
+                this.syncToNativeInput();
+            },
+
+            removeFile(index) {
+                this.errorMessage = '';
+                this.fileList.splice(index, 1);
+                this.syncToNativeInput();
+            },
+
+            clearAllFiles() {
+                this.fileList = [];
+                this.errorMessage = '';
+                this.syncToNativeInput();
+            },
+
+            syncToNativeInput() {
+                var dataTransfer = new DataTransfer();
+                for (var i = 0; i < this.fileList.length; i++) {
+                    dataTransfer.items.add(this.fileList[i].raw);
                 }
-            }
+                if (this.$refs && this.$refs.fileInput) {
+                    this.$refs.fileInput.files = dataTransfer.files;
+                }
+            },
 
-            this.syncToNativeInput();
-        },
+            formatBytes(bytes) {
+                if (bytes === 0) return '0 B';
+                var k = 1024;
+                var sizes = ['B', 'KB', 'MB', 'GB'];
+                var i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            },
 
-        removeFile(index) {
-            this.errorMessage = '';
-            this.fileList.splice(index, 1);
-            this.syncToNativeInput();
-        },
-
-        clearAllFiles() {
-            this.fileList = [];
-            this.errorMessage = '';
-            this.syncToNativeInput();
-        },
-
-        syncToNativeInput() {
-            var dataTransfer = new DataTransfer();
-            for (var i = 0; i < this.fileList.length; i++) {
-                dataTransfer.items.add(this.fileList[i].raw);
-            }
-            this.$refs.fileInput.files = dataTransfer.files;
-        },
-
-        formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            var k = 1024;
-            var sizes = ['B', 'KB', 'MB', 'GB'];
-            var i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        },
-
-        getFileMeta(file) {
-            var ext = file.name.split('.').pop().toLowerCase();
-            if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
+            getFileMeta(file) {
+                var ext = file.name.split('.').pop().toLowerCase();
+                if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
+                    return {
+                        iconClass: 'ri-image-2-line text-emerald-700',
+                        iconBg: 'bg-emerald-50'
+                    };
+                }
+                if (ext === 'pdf') {
+                    return {
+                        iconClass: 'ri-file-pdf-2-line text-rose-700',
+                        iconBg: 'bg-rose-50'
+                    };
+                }
+                if (['doc', 'docx'].includes(ext)) {
+                    return {
+                        iconClass: 'ri-file-word-2-line text-blue-700',
+                        iconBg: 'bg-blue-50'
+                    };
+                }
+                if (['zip', 'rar', '7z'].includes(ext)) {
+                    return {
+                        iconClass: 'ri-file-zip-line text-amber-700',
+                        iconBg: 'bg-amber-50'
+                    };
+                }
                 return {
-                    iconClass: 'ri-image-2-line text-emerald-700',
-                    iconBg: 'bg-emerald-50'
+                    iconClass: 'ri-file-text-line text-slate-700',
+                    iconBg: 'bg-slate-100'
                 };
             }
-            if (ext === 'pdf') {
-                return {
-                    iconClass: 'ri-file-pdf-2-line text-rose-700',
-                    iconBg: 'bg-rose-50'
-                };
-            }
-            if (['doc', 'docx'].includes(ext)) {
-                return {
-                    iconClass: 'ri-file-word-2-line text-blue-700',
-                    iconBg: 'bg-blue-50'
-                };
-            }
-            if (['zip', 'rar', '7z'].includes(ext)) {
-                return {
-                    iconClass: 'ri-file-zip-line text-amber-700',
-                    iconBg: 'bg-amber-50'
-                };
-            }
-            return {
-                iconClass: 'ri-file-text-line text-slate-700',
-                iconBg: 'bg-slate-100'
-            };
-        }
+        };
     };
 }
 </script>
-@endonce
+@endPushOnce

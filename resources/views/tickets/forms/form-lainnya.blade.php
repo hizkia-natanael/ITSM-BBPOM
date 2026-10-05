@@ -1,5 +1,5 @@
 <!-- 12. LAYANAN LAINNYA (UMUM) -->
-<div class="space-y-6" x-data="{ lainnyaFileName: '' }">
+<div class="space-y-6">
     <div class="space-y-4">
         <div>
             <x-input-label for="lainnya_deskripsi" :value="__('Deskripsi Permintaan / Kendala TIK')" class="font-semibold text-xs text-slate-700" />
