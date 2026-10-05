@@ -19,6 +19,13 @@ class ResponsesRelationManager extends RelationManager
 
     protected static ?string $title = 'Riwayat Tanggapan & Diskusi Pengaduan';
 
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view('filament.resources.tickets.relation-managers.responses-stream', [
+            'ticket' => $this->getOwnerRecord(),
+        ]);
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema

@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Models\PushSubscription;
 use App\Models\Ticket;
+use App\Models\TicketEvent;
+use App\Models\TicketResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
@@ -95,6 +98,85 @@ class WebPushService
             'ticket_number' => $ticket->ticket_number,
             'tag' => 'unhandled-ticket-' . $ticket->id,
         ]);
+    }
+
+    /**
+     * Send Web Push notification to the ticket owner when status moves to diproses/selesai/ditolak.
+     */
+    public function sendStatusNotification(Ticket $ticket, TicketEvent $event): int
+    {
+        [$title, $message] = match ($event->status) {
+            'diproses' => ['Tiket Sedang Diproses', 'Tim IT mulai menangani pengaduan Anda.'],
+            'selesai' => ['Tiket Selesai', 'Pengaduan Anda telah diselesaikan oleh tim IT.'],
+            'ditolak' => ['Tiket Ditolak', 'Pengaduan Anda tidak dapat ditindaklanjuti. Buka tiket untuk melihat alasannya.'],
+            default => ['Status Tiket Diperbarui', 'Status pengaduan Anda berubah.'],
+        };
+
+        $body = "[{$ticket->ticket_number}] {$ticket->subject} - {$message}";
+
+        return $this->sendToUsers([$ticket->user_id], $title, $body, route('tickets.show', $ticket), [
+            'ticket_id' => $ticket->id,
+            'ticket_number' => $ticket->ticket_number,
+            'tag' => 'ticket-status-' . $ticket->id,
+        ]);
+    }
+
+    /**
+     * Send Web Push notification for a new chat reply on a ticket.
+     * Admin reply -> ticket owner. Employee reply -> handling admin (or all admins if unclaimed).
+     */
+    public function sendReplyNotification(TicketResponse $response): int
+    {
+        $response->loadMissing(['ticket.user', 'user']);
+
+        $ticket = $response->ticket;
+        $sender = $response->user;
+
+        if (! $ticket || ! $sender) {
+            return 0;
+        }
+
+        $snippet = Str::limit(trim((string) preg_replace('/\s+/', ' ', $response->response_text)), 100);
+
+        if ($sender->isAdmin()) {
+            $recipientIds = [$ticket->user_id];
+            $title = 'Balasan Baru dari Tim IT';
+            $body = "[{$ticket->ticket_number}] {$sender->name}: {$snippet}";
+            $url = route('tickets.show', $ticket);
+        } else {
+            $recipientIds = $ticket->handled_by_id
+                ? [$ticket->handled_by_id]
+                : User::where('role', 'admin')->pluck('id')->all();
+            $title = 'Pesan Baru dari Pelapor';
+            $body = "[{$ticket->ticket_number}] {$sender->name}: {$snippet}";
+            $url = url('/admin/tickets/' . $ticket->id . '/edit');
+        }
+
+        $recipientIds = array_values(array_diff($recipientIds, [$sender->id]));
+
+        return $this->sendToUsers($recipientIds, $title, $body, $url, [
+            'ticket_id' => $ticket->id,
+            'ticket_number' => $ticket->ticket_number,
+            'tag' => 'ticket-reply-' . $ticket->id,
+        ]);
+    }
+
+    /**
+     * Send notification to specific users.
+     */
+    public function sendToUsers(array $userIds, string $title, string $body, ?string $url = null, array $extra = []): int
+    {
+        if (empty($userIds)) {
+            return 0;
+        }
+
+        $subscriptions = PushSubscription::whereIn('user_id', $userIds)->get();
+
+        if ($subscriptions->isEmpty()) {
+            return 0;
+        }
+
+        return $this->dispatchNotifications($subscriptions, $title, $body, $url, $extra);
     }
 
     /**

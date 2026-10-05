@@ -52,6 +52,35 @@ class Ticket extends Model
                 }
             }
         });
+
+        static::updated(function ($ticket) {
+            if (! $ticket->wasChanged('status') || ! in_array($ticket->status, TicketEvent::NOTIFIABLE_STATUSES, true)) {
+                return;
+            }
+
+            $actorId = auth()->id();
+
+            if ($actorId !== null && $actorId === $ticket->user_id) {
+                return;
+            }
+
+            $event = $ticket->events()->create([
+                'actor_id' => $actorId,
+                'type' => 'status',
+                'status' => $ticket->status,
+            ]);
+
+            try {
+                app(\App\Services\WebPushService::class)->sendStatusNotification($ticket, $event);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Error sending web push on ticket status change: ' . $e->getMessage());
+            }
+        });
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(TicketEvent::class);
     }
 
     public function user(): BelongsTo

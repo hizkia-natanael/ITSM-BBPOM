@@ -35,6 +35,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:30,1')
         ->name('tickets.reply');
 
+    // User Notification Bell (balasan tim IT & status) & Web Push opt-in
+    Route::get('/notifications/replies', [\App\Http\Controllers\UserNotificationController::class, 'replies'])->name('notifications.replies');
+    Route::post('/notifications/replies/read', [\App\Http\Controllers\UserNotificationController::class, 'markAllRead'])->name('notifications.replies.read');
+    Route::post('/notifications/read-item', [\App\Http\Controllers\UserNotificationController::class, 'markItemRead'])->name('notifications.read-item');
+    Route::get('/push/config', [\App\Http\Controllers\Admin\PushNotificationController::class, 'config'])->name('user.push.config');
+    Route::post('/push/subscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'subscribe'])->name('user.push.subscribe');
+    Route::post('/push/unsubscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unsubscribe'])->name('user.push.unsubscribe');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -48,6 +56,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->pref
     Route::post('/push/unsubscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unsubscribe'])->name('push.unsubscribe');
     Route::post('/push/test', [\App\Http\Controllers\Admin\PushNotificationController::class, 'test'])->name('push.test');
     Route::get('/tickets/unhandled/status', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unhandledStatus'])->name('tickets.unhandled.status');
+    Route::post('/notifications/read-item', [\App\Http\Controllers\Admin\PushNotificationController::class, 'markItemRead'])->name('notifications.read-item');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Admin\PushNotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/tickets/{ticket}/claim', [\App\Http\Controllers\Admin\PushNotificationController::class, 'claimTicket'])->name('tickets.claim');
     Route::get('/tickets/export', [\App\Http\Controllers\Admin\TicketExportController::class, 'export'])->name('tickets.export');
 });

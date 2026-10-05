@@ -1118,6 +1118,11 @@ class TicketController extends Controller
             $ticket->save();
         }
 
+        if ($request->user()->isAdmin() && (str_contains(url()->previous(), '/admin') || ($request->header('referer') && str_contains($request->header('referer'), '/admin')))) {
+            return redirect()->back()
+                ->with('success', 'Tanggapan Anda telah berhasil dikirim ke pelapor.');
+        }
+
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Tanggapan Anda telah berhasil dikirim ke tim IT BBPOM.');
     }
