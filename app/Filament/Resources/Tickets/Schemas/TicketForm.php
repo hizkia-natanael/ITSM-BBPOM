@@ -21,74 +21,110 @@ class TicketForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(['default' => 1, 'lg' => 2])
+            ->columns(1)
             ->components([
-                // ==========================================
-                // SECTION KIRI: Status Penanganan & Rincian Layanan
-                // ==========================================
-                Group::make([
-                    Section::make('Status Penanganan Layanan')
-                        ->description('Kelola progres penanganan tiket ITSM oleh tim teknisi IT BBPOM Semarang.')
-                        ->schema([
-                            Grid::make(2)
-                                ->schema([
-                                    Select::make('status')
-                                        ->label('Status Pengaduan')
-                                        ->options([
-                                            'pending' => 'Pending (Menunggu Antrian IT)',
-                                            'diproses' => 'Diproses (Sedang Ditangani Teknisi)',
-                                            'selesai' => 'Selesai (Kendala Tuntas Diperbaiki)',
-                                            'ditolak' => 'Ditolak (Dibatalkan / Di Luar Wewenang)',
-                                        ])
-                                        ->required()
-                                        ->native(false)
-                                        ->position('bottom')
-                                        ->selectablePlaceholder(false)
-                                        ->helperText('Perbarui status tiket ini agar pelapor dapat melihat progres langsung di dashboard.'),
+                Section::make('Status Penanganan Layanan')
+                    ->description('Kelola progres penanganan tiket ITSM oleh tim teknisi IT BBPOM Semarang.')
+                    ->extraAttributes(['class' => 'ticket-master-card'])
+                    ->schema([
+                        // ==========================================
+                        // 1. ZONA PENANGANAN & STATUS (ADMIN ACTION)
+                        // ==========================================
+                        Grid::make(['default' => 1, 'md' => 2])
+                            ->schema([
+                                Select::make('status')
+                                    ->label('Status Pengaduan')
+                                    ->options([
+                                        'pending' => 'Pending (Menunggu Antrian IT)',
+                                        'diproses' => 'Diproses (Sedang Ditangani Teknisi)',
+                                        'selesai' => 'Selesai (Kendala Tuntas Diperbaiki)',
+                                        'ditolak' => 'Ditolak (Dibatalkan / Di Luar Wewenang)',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->position('bottom')
+                                    ->selectablePlaceholder(false)
+                                    ->helperText('Perbarui status tiket ini agar pelapor dapat melihat progres langsung di dashboard.'),
 
-                                    TextInput::make('handled_by_display')
-                                        ->label('Penanggung Jawab (Teknisi IT)')
-                                        ->disabled()
-                                        ->dehydrated(false)
-                                        ->formatStateUsing(function ($record) {
-                                            if ($record && $record->handledBy) {
-                                                return $record->handledBy->name;
-                                            }
-                                            return (auth()->user()?->name ?? 'Admin') . ' (Otomatis akun login)';
-                                        })
-                                        ->helperText(function ($record) {
-                                            $currentUser = auth()->user()?->name ?? 'Admin';
-                                            if ($record && $record->handledBy && $record->handledBy->id !== auth()->id()) {
-                                                return "Saat ini: {$record->handledBy->name}. Akan otomatis berganti ke {$currentUser} jika Anda memperbarui status.";
-                                            }
-                                            return "Otomatis terisi akun login Anda ({$currentUser}) saat mengubah status tiket.";
-                                        }),
-                                ]),
-                        ]),
+                                TextInput::make('handled_by_display')
+                                    ->label('Penanggung Jawab (Teknisi IT)')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(function ($record) {
+                                        if ($record && $record->handledBy) {
+                                            return $record->handledBy->name;
+                                        }
+                                        return (auth()->user()?->name ?? 'Admin') . ' (Otomatis akun login)';
+                                    })
+                                    ->helperText(function ($record) {
+                                        $currentUser = auth()->user()?->name ?? 'Admin';
+                                        if ($record && $record->handledBy && $record->handledBy->id !== auth()->id()) {
+                                            return "Saat ini: {$record->handledBy->name}. Akan otomatis berganti ke {$currentUser} jika Anda memperbarui status.";
+                                        }
+                                        return "Otomatis terisi akun login Anda ({$currentUser}) saat mengubah status tiket.";
+                                    }),
+                            ])
+                            ->columnSpanFull(),
 
-                    // Card Rincian Layanan Spesifik (Hanya satu yang aktif sesuai kategori/layanan)
-                    Section::make('Rincian Layanan Khusus Sertifikat BSrE / TTE')
-                        ->description('Data formulir pengajuan khusus Sertifikat BSrE.')
-                        ->visible(fn ($record) => $record && $record->bsreDetail !== null)
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
+                        // ==========================================
+                        // 2. IDENTITAS POKOK PENGADUAN
+                        // ==========================================
+                        Grid::make(['default' => 1, 'sm' => 2, 'lg' => 4])
+                            ->schema([
+                                TextInput::make('ticket_number')
+                                    ->label('Nomor Tiket')
+                                    ->disabled()
+                                    ->dehydrated(false),
+
+                                TextInput::make('created_at')
+                                    ->label('Waktu Pengajuan')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->translatedFormat('d F Y, H:i') . ' WIB' : '-'),
+
+                                TextInput::make('user.name')
+                                    ->label('Nama Pemohon (Pelapor)')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(fn ($record) => $record?->user?->name ?? '-'),
+
+                                TextInput::make('category.name')
+                                    ->label('Kategori Layanan')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(function ($record) {
+                                        if (!$record) return '-';
+                                        if ($record->service_key) {
+                                            $services = config('services_gateway.services', []);
+                                            if (isset($services[$record->service_key]['name'])) {
+                                                return $services[$record->service_key]['name'];
+                                            }
+                                        }
+                                        return $record->category?->name ?? 'Layanan TIK';
+                                    }),
+                            ])
+                            ->columnSpanFull(),
+
+                        // ==========================================
+                        // 3. SUBJEK ADUAN
+                        // ==========================================
+                        TextInput::make('subject')
+                            ->label('Subjek / Judul Kendala')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->columnSpanFull(),
+
+                        // ==========================================
+                        // 4. SPESIFIKASI LAYANAN SPESIFIK (NON-DUPLICATE)
+                        // ==========================================
+
+                        // --- 4.A Layanan BSrE / TTE ---
+                        Group::make([
+                            Grid::make(['default' => 1, 'md' => 2])
                                 ->schema([
                                     TextInput::make('bsre_subcategory')
                                         ->label('Sub Kategori BSrE')
                                         ->formatStateUsing(fn ($record) => $record?->bsreDetail?->sub_category_label ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('bsre_tanggal')
-                                        ->label('Tanggal Pengajuan')
-                                        ->formatStateUsing(fn ($record) => $record?->bsreDetail?->tanggal_pengajuan ? $record->bsreDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('bsre_nama')
-                                        ->label('Nama Pemohon')
-                                        ->formatStateUsing(fn ($record) => $record?->bsreDetail?->nama ?? '-')
                                         ->disabled()
                                         ->dehydrated(false),
 
@@ -135,31 +171,19 @@ class TicketForm
                                     }
                                     $url = asset('storage/' . $record->bsreDetail->file_lampiran);
                                     return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran BSrE</a>');
-                                }),
-                        ]),
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && $record->bsreDetail !== null)
+                        ->columnSpanFull(),
 
-                    Section::make('Rincian Layanan Zoom Meeting / Webinar')
-                        ->description('Data formulir pengajuan peminjaman link Zoom atau kebutuhan rapat virtual.')
-                        ->visible(fn ($record) => $record && $record->zoomDetail !== null)
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
+                        // --- 4.B Layanan Zoom Meeting / Webinar ---
+                        Group::make([
+                            Grid::make(['default' => 1, 'md' => 2])
                                 ->schema([
                                     TextInput::make('zoom_subcategory')
                                         ->label('Sub Kategori Zoom')
                                         ->formatStateUsing(fn ($record) => $record?->zoomDetail?->sub_category_label ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('zoom_tanggal')
-                                        ->label('Tanggal Pengajuan')
-                                        ->formatStateUsing(fn ($record) => $record?->zoomDetail?->tanggal_pengajuan ? $record->zoomDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('zoom_nama')
-                                        ->label('Nama Pemohon')
-                                        ->formatStateUsing(fn ($record) => $record?->zoomDetail?->nama ?? '-')
                                         ->disabled()
                                         ->dehydrated(false),
 
@@ -196,31 +220,19 @@ class TicketForm
                                     }
                                     $url = asset('storage/' . $record->zoomDetail->file_lampiran);
                                     return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran Zoom</a>');
-                                }),
-                        ]),
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && $record->zoomDetail !== null)
+                        ->columnSpanFull(),
 
-                    Section::make('Rincian Layanan Formulir & Fasilitas Kegiatan')
-                        ->description('Data presensi daftar hadir, QR Code, kuesioner survei, atau evaluasi pretest/posttest.')
-                        ->visible(fn ($record) => $record && $record->kegiatanDetail !== null)
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
+                        // --- 4.C Layanan Presensi, Kuesioner & Evaluasi Kegiatan ---
+                        Group::make([
+                            Grid::make(['default' => 1, 'md' => 2])
                                 ->schema([
                                     TextInput::make('kegiatan_subcategory')
                                         ->label('Sub Kategori Kegiatan')
                                         ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->sub_category_label ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('kegiatan_tanggal')
-                                        ->label('Tanggal Pengajuan')
-                                        ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->tanggal_pengajuan ? $record->kegiatanDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('kegiatan_nama')
-                                        ->label('Nama Pemohon')
-                                        ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->nama ?? '-')
                                         ->disabled()
                                         ->dehydrated(false),
 
@@ -235,6 +247,13 @@ class TicketForm
                                         ->label('Jam / Waktu Pelaksanaan')
                                         ->visible(fn ($record) => !empty($record?->kegiatanDetail?->jam))
                                         ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->jam ?? '-')
+                                        ->disabled()
+                                        ->dehydrated(false),
+
+                                    TextInput::make('kegiatan_jenis_test')
+                                        ->label('Jenis Evaluasi')
+                                        ->visible(fn ($record) => !empty($record?->kegiatanDetail?->jenis_test))
+                                        ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->jenis_test_label ?? '-')
                                         ->disabled()
                                         ->dehydrated(false),
 
@@ -261,13 +280,6 @@ class TicketForm
                                         ->disabled()
                                         ->dehydrated(false)
                                         ->columnSpanFull(),
-
-                                    TextInput::make('kegiatan_jenis_test')
-                                        ->label('Jenis Evaluasi')
-                                        ->visible(fn ($record) => !empty($record?->kegiatanDetail?->jenis_test))
-                                        ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->jenis_test_label ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
                                 ]),
 
                             Placeholder::make('kegiatan_pertanyaan')
@@ -310,31 +322,19 @@ class TicketForm
                                     }
                                     $url = asset('storage/' . $record->kegiatanDetail->file_lampiran);
                                     return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Dokumen Kegiatan</a>');
-                                }),
-                        ]),
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && $record->kegiatanDetail !== null)
+                        ->columnSpanFull(),
 
-                    Section::make('Rincian Layanan Install Ulang Windows')
-                        ->description('Data perangkat dinas dan alasan install ulang OS.')
-                        ->visible(fn ($record) => $record && $record->windowsDetail !== null)
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
+                        // --- 4.D Layanan Install Ulang Windows ---
+                        Group::make([
+                            Grid::make(['default' => 1, 'md' => 2])
                                 ->schema([
                                     TextInput::make('windows_subcategory')
                                         ->label('Sub Kategori Windows')
                                         ->formatStateUsing(fn ($record) => $record?->windowsDetail?->sub_category_label ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('windows_tanggal')
-                                        ->label('Tanggal Pengajuan')
-                                        ->formatStateUsing(fn ($record) => $record?->windowsDetail?->tanggal_pengajuan ? $record->windowsDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('windows_nama')
-                                        ->label('Nama Pemohon')
-                                        ->formatStateUsing(fn ($record) => $record?->windowsDetail?->nama ?? '-')
                                         ->disabled()
                                         ->dehydrated(false),
 
@@ -378,31 +378,19 @@ class TicketForm
                                     }
                                     $url = asset('storage/' . $record->windowsDetail->file_lampiran);
                                     return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran Windows</a>');
-                                }),
-                        ]),
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && $record->windowsDetail !== null)
+                        ->columnSpanFull(),
 
-                    Section::make('Rincian Layanan Lisensi Microsoft Office')
-                        ->description('Data perangkat dinas dan kebutuhan lisensi Microsoft Office.')
-                        ->visible(fn ($record) => $record && $record->officeDetail !== null)
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
+                        // --- 4.E Layanan Lisensi Microsoft Office ---
+                        Group::make([
+                            Grid::make(['default' => 1, 'md' => 2])
                                 ->schema([
                                     TextInput::make('office_subcategory')
                                         ->label('Sub Kategori Lisensi')
                                         ->formatStateUsing(fn ($record) => $record?->officeDetail?->sub_category_label ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('office_tanggal')
-                                        ->label('Tanggal Pengajuan')
-                                        ->formatStateUsing(fn ($record) => $record?->officeDetail?->tanggal_pengajuan ? $record->officeDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('office_nama')
-                                        ->label('Nama Pemohon')
-                                        ->formatStateUsing(fn ($record) => $record?->officeDetail?->nama ?? '-')
                                         ->disabled()
                                         ->dehydrated(false),
 
@@ -446,29 +434,14 @@ class TicketForm
                                     }
                                     $url = asset('storage/' . $record->officeDetail->file_lampiran);
                                     return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran Office</a>');
-                                }),
-                        ]),
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && $record->officeDetail !== null)
+                        ->columnSpanFull(),
 
-                    Section::make('Rincian Layanan TIK Umum / Lainnya')
-                        ->description('Data permohonan dukungan umum TIK BBPOM.')
-                        ->visible(fn ($record) => $record && $record->lainnyaDetail !== null)
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
-                                ->schema([
-                                    TextInput::make('lainnya_tanggal')
-                                        ->label('Tanggal Pengajuan')
-                                        ->formatStateUsing(fn ($record) => $record?->lainnyaDetail?->tanggal_pengajuan ? $record->lainnyaDetail->tanggal_pengajuan->translatedFormat('d F Y') : '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('lainnya_nama')
-                                        ->label('Nama Pemohon')
-                                        ->formatStateUsing(fn ($record) => $record?->lainnyaDetail?->nama ?? '-')
-                                        ->disabled()
-                                        ->dehydrated(false),
-                                ]),
-
+                        // --- 4.F Layanan TIK Umum / Lainnya ---
+                        Group::make([
                             Textarea::make('lainnya_deskripsi')
                                 ->label('Deskripsi Permintaan / Kendala')
                                 ->formatStateUsing(fn ($record) => $record?->lainnyaDetail?->deskripsi ?? '')
@@ -486,34 +459,16 @@ class TicketForm
                                     }
                                     $url = asset('storage/' . $record->lainnyaDetail->file_lampiran);
                                     return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran</a>');
-                                }),
-                        ]),
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && $record->lainnyaDetail !== null)
+                        ->columnSpanFull(),
 
-                    Section::make('Rincian Layanan Tambahan')
-                        ->description('Informasi kelengkapan formulir dan klasifikasi layanan teknis.')
-                        ->visible(fn ($record) => $record && (
-                            $record->bsreDetail === null &&
-                            $record->zoomDetail === null &&
-                            $record->kegiatanDetail === null &&
-                            $record->windowsDetail === null &&
-                            $record->officeDetail === null &&
-                            $record->lainnyaDetail === null
-                        ))
-                        ->extraAttributes(['class' => 'flex-1'])
-                        ->schema([
-                            Grid::make(2)
+                        // --- 4.G Layanan Katalog Reguler (Tanpa Form Sub-Detail Khusus) ---
+                        Group::make([
+                            Grid::make(['default' => 1, 'md' => 2])
                                 ->schema([
-                                    TextInput::make('standard_service_catalog')
-                                        ->label('Katalog Layanan TIK')
-                                        ->formatStateUsing(function ($record) {
-                                            if (!$record) return '-';
-                                            $serviceKey = $record->service_key;
-                                            $gateway = config("services_gateway.services.{$serviceKey}");
-                                            return $gateway['name'] ?? ($record->category?->name ?? 'Layanan TIK');
-                                        })
-                                        ->disabled()
-                                        ->dehydrated(false),
-
                                     TextInput::make('standard_subcategory')
                                         ->label('Klasifikasi Kendala / Sub-Layanan')
                                         ->formatStateUsing(function ($record) {
@@ -527,95 +482,79 @@ class TicketForm
                                             return $sub ? str_replace('_', ' ', ucwords($sub, '_')) : 'Kendala Umum';
                                         })
                                         ->disabled()
-                                        ->dehydrated(false),
-                                ]),
-                        ]),
-                    Actions::make([
-                        Action::make('save')
-                            ->label('Simpan Perubahan')
-                            ->submit('save')
-                            ->color('primary')
-                            ->keyBindings(['mod+s']),
-                        Action::make('cancel')
-                            ->label('Batal')
-                            ->color('gray')
-                            ->url(fn () => TicketResource::getUrl('index')),
-                    ])
-                    ->alignment(Alignment::Start)
-                    ->extraAttributes(['class' => 'ticket-left-actions pt-2']),
-                ])
-                ->extraAttributes(['class' => 'ticket-form-column ticket-left-column flex flex-col justify-between h-full']),
-
-                // ==========================================
-                // SECTION KANAN: Rincian Laporan Pegawai (Read-only)
-                // ==========================================
-                Group::make([
-                    Section::make('Rincian Laporan Pegawai (Read-only)')
-                        ->description('Data asli yang dikirimkan oleh pemohon layanan.')
-                        ->extraAttributes(['class' => 'ticket-form-card-full h-full flex flex-col justify-between'])
-                        ->schema([
-                            Grid::make(2)
-                                ->schema([
-                                    TextInput::make('ticket_number')
-                                        ->label('Nomor Tiket')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('created_at')
-                                        ->label('Waktu Pengajuan')
-                                        ->disabled()
                                         ->dehydrated(false)
-                                        ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->translatedFormat('d F Y, H:i') . ' WIB' : '-'),
-
-                                    TextInput::make('user.name')
-                                        ->label('Nama Pegawai (Pelapor)')
-                                        ->disabled()
-                                        ->dehydrated(false),
-
-                                    TextInput::make('category.name')
-                                        ->label('Kategori Kendala')
-                                        ->disabled()
-                                        ->dehydrated(false),
+                                        ->columnSpanFull(),
                                 ]),
-
-                            TextInput::make('subject')
-                                ->label('Subjek / Judul Kendala')
-                                ->disabled()
-                                ->dehydrated(false)
-                                ->columnSpanFull(),
 
                             Textarea::make('description')
                                 ->label('Deskripsi Kendala Lengkap')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->rows(5)
+                                ->rows(4)
                                 ->columnSpanFull(),
+                        ])
+                        ->visible(fn ($record) => $record && (
+                            $record->bsreDetail === null &&
+                            $record->zoomDetail === null &&
+                            $record->kegiatanDetail === null &&
+                            $record->windowsDetail === null &&
+                            $record->officeDetail === null &&
+                            $record->lainnyaDetail === null
+                        ))
+                        ->columnSpanFull(),
 
-                            Placeholder::make('attachment')
-                                ->label('Berkas Lampiran Pendukung')
-                                ->content(function ($record) {
-                                    if (!$record) {
-                                        return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
-                                    }
-                                    $attachments = $record->attachments;
-                                    if ($attachments && $attachments->isNotEmpty()) {
-                                        $html = '<div class="space-y-1.5 text-xs">';
-                                        foreach ($attachments as $att) {
-                                            $url = route('tickets.attachments.item', ['ticket' => $record, 'attachment' => $att]);
-                                            $html .= '<div class="flex items-center gap-2"><a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i> ' . e($att->file_name) . ' (' . e($att->formatted_size) . ')</a></div>';
-                                        }
-                                        $html .= '</div>';
-                                        return new HtmlString($html);
-                                    }
-                                    if ($record->attachment) {
-                                        $url = route('tickets.attachment', ['ticket' => $record]);
-                                        return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i> Lihat / Unduh Lampiran Berkas</a>');
-                                    }
+                        // ==========================================
+                        // 5. BERKAS LAMPIRAN PENDUKUNG TIKET
+                        // ==========================================
+                        Placeholder::make('attachment')
+                            ->label('Berkas Lampiran Pendukung Tiket')
+                            ->visible(function ($record) {
+                                if (!$record) return false;
+                                return ($record->attachments && $record->attachments->isNotEmpty()) || !empty($record->attachment);
+                            })
+                            ->content(function ($record) {
+                                if (!$record) {
                                     return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
-                                }),
+                                }
+                                $attachments = $record->attachments;
+                                if ($attachments && $attachments->isNotEmpty()) {
+                                    $html = '<div class="space-y-1.5 text-xs">';
+                                    foreach ($attachments as $att) {
+                                        $url = route('tickets.attachments.item', ['ticket' => $record, 'attachment' => $att]);
+                                        $html .= '<div class="flex items-center gap-2"><a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i> ' . e($att->file_name) . ' (' . e($att->formatted_size) . ')</a></div>';
+                                    }
+                                    $html .= '</div>';
+                                    return new HtmlString($html);
+                                }
+                                if ($record->attachment) {
+                                    $url = route('tickets.attachment', ['ticket' => $record]);
+                                    return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i> Lihat / Unduh Lampiran Berkas</a>');
+                                }
+                                return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
+                            })
+                            ->columnSpanFull(),
+
+                        // ==========================================
+                        // 6. BOTTOM ACTIONS: RATA KIRI DI DALAM KARTU
+                        // ==========================================
+                        Actions::make([
+                            Action::make('save')
+                                ->label('Simpan Perubahan')
+                                ->submit('save')
+                                ->color('primary')
+                                ->keyBindings(['mod+s']),
+                            Action::make('cancel')
+                                ->label('Batal')
+                                ->color('gray')
+                                ->url(fn () => TicketResource::getUrl('index')),
+                        ])
+                        ->columnSpanFull()
+                        ->alignment(Alignment::Start)
+                        ->extraAttributes([
+                            'class' => 'ticket-form-bottom-actions',
+                            'style' => 'width: 100% !important; display: flex !important; justify-content: flex-start !important; align-items: center !important; margin-left: 0 !important; margin-right: auto !important; border-top: 1px solid #e2e8f0 !important; padding-top: 1.25rem !important; margin-top: 0.75rem !important;',
                         ]),
-                ])
-                ->extraAttributes(['class' => 'ticket-form-column ticket-right-column flex flex-col justify-between h-full']),
+                    ]),
             ]);
     }
 }

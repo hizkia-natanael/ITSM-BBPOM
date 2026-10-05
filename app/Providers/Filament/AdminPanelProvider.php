@@ -719,7 +719,7 @@ class AdminPanelProvider extends PanelProvider
                             stroke: #ffffff !important;
                         }
 
-                        /* Edit Ticket: Unified Teal Gradient Theming & 1rem Rounded Cards */
+                        /* Edit Ticket: Unified Master Dossier Card & Hero Gradient Theming */
                         .ticket-left-column {
                             display: flex !important;
                             flex-direction: column !important;
@@ -733,7 +733,9 @@ class AdminPanelProvider extends PanelProvider
                         }
                         .ticket-left-column .fi-section,
                         .ticket-right-column .fi-section,
-                        .ticket-form-card-full {
+                        .ticket-form-card-full,
+                        .ticket-master-card,
+                        .ticket-master-card .fi-section {
                             border-color: rgba(51, 65, 85, 0.25) !important;
                             box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04) !important;
                             background-color: #ffffff !important;
@@ -742,7 +744,8 @@ class AdminPanelProvider extends PanelProvider
                         }
                         /* Unified Slate-to-Emerald Hero Gradient Header (Matching Homepage Welcome Banner) */
                         .ticket-left-column .fi-section-header,
-                        .ticket-right-column .fi-section-header {
+                        .ticket-right-column .fi-section-header,
+                        .ticket-master-card .fi-section-header {
                             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #022c22 100%) !important;
                             border-bottom: 1px solid rgba(51, 65, 85, 0.6) !important;
                             border-top-left-radius: 1rem !important;
@@ -752,7 +755,9 @@ class AdminPanelProvider extends PanelProvider
                         .ticket-left-column .fi-section-header-heading,
                         .ticket-left-column .fi-section-header-heading *,
                         .ticket-right-column .fi-section-header-heading,
-                        .ticket-right-column .fi-section-header-heading * {
+                        .ticket-right-column .fi-section-header-heading *,
+                        .ticket-master-card .fi-section-header-heading,
+                        .ticket-master-card .fi-section-header-heading * {
                             color: #ffffff !important;
                             font-weight: 700 !important;
                             font-size: 0.95rem !important;
@@ -761,7 +766,9 @@ class AdminPanelProvider extends PanelProvider
                         .ticket-left-column .fi-section-header-description,
                         .ticket-left-column .fi-section-header-description *,
                         .ticket-right-column .fi-section-header-description,
-                        .ticket-right-column .fi-section-header-description * {
+                        .ticket-right-column .fi-section-header-description *,
+                        .ticket-master-card .fi-section-header-description,
+                        .ticket-master-card .fi-section-header-description * {
                             color: #a7f3d0 !important;
                             font-size: 0.8125rem !important;
                         }
@@ -802,13 +809,52 @@ class AdminPanelProvider extends PanelProvider
                             font-weight: 600 !important;
                         }
 
-                        /* Actions container in left column */
+                        /* Actions container strictly left-aligned at bottom of form */
+                        .ticket-form-bottom-actions,
+                        .ticket-master-card .ticket-form-bottom-actions,
+                        .ticket-master-card .fi-sc-actions,
                         .ticket-left-actions {
-                            margin-top: auto !important;
-                            padding-top: 0.5rem !important;
+                            width: 100% !important;
+                            max-width: 100% !important;
                             display: flex !important;
+                            justify-content: flex-start !important;
                             align-items: center !important;
+                            text-align: left !important;
+                            margin-left: 0 !important;
+                            margin-right: auto !important;
+                            margin-inline: 0 auto !important;
                             gap: 0.75rem !important;
+                            padding-top: 1.25rem !important;
+                            padding-bottom: 0.5rem !important;
+                            border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+                        }
+                        .ticket-form-bottom-actions .fi-ac,
+                        .ticket-master-card .fi-sc-actions .fi-ac,
+                        .ticket-left-actions .fi-ac {
+                            display: flex !important;
+                            justify-content: flex-start !important;
+                            align-items: center !important;
+                            margin-left: 0 !important;
+                            margin-right: auto !important;
+                            margin-inline: 0 auto !important;
+                            gap: 0.75rem !important;
+                            width: auto !important;
+                        }
+                        .ticket-form-bottom-actions .fi-ac > *,
+                        .ticket-master-card .fi-sc-actions .fi-ac > * {
+                            margin-left: 0 !important;
+                            margin-right: 0 !important;
+                        }
+                        .ticket-master-card .fi-grid-col:has(.ticket-form-bottom-actions),
+                        .ticket-master-card .fi-grid-col:has(.fi-sc-actions) {
+                            width: 100% !important;
+                            justify-items: start !important;
+                        }
+                        .ticket-master-card .fi-grid-col:has(.ticket-form-bottom-actions) > .fi-sc-component,
+                        .ticket-master-card .fi-grid-col:has(.fi-sc-actions) > .fi-sc-component {
+                            width: 100% !important;
+                            display: flex !important;
+                            justify-content: flex-start !important;
                         }
 
                         .ticket-right-column > .fi-section {
