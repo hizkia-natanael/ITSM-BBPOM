@@ -114,11 +114,88 @@
                     .bbpom-send-btn:active:not(:disabled) {
                         transform: scale(0.95) !important;
                     }
+                    /* Compression Mode Switcher Pill & Preview Elements */
+                    .bbpom-file-preview-card {
+                        display: flex !important;
+                        flex-direction: row !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        gap: 0.75rem !important;
+                        flex-wrap: wrap !important;
+                        box-sizing: border-box !important;
+                        width: 100% !important;
+                        border-radius: 1rem !important;
+                        padding: 0.75rem 1rem !important;
+                        margin-bottom: 0.75rem !important;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+                        transition: all 0.2s ease !important;
+                    }
+                    .bbpom-file-preview-info {
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 0.625rem !important;
+                        min-width: 0 !important;
+                        flex: 1 1 auto !important;
+                    }
+                    .bbpom-file-preview-actions {
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 0.5rem !important;
+                        flex-shrink: 0 !important;
+                        margin-left: auto !important;
+                    }
+                    .bbpom-segmented-switcher {
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        padding: 3px !important;
+                        border-radius: 0.625rem !important;
+                        background-color: rgba(255, 255, 255, 0.95) !important;
+                        border: 1px solid #cbd5e1 !important;
+                        font-size: 11px !important;
+                        font-weight: 600 !important;
+                        gap: 2px !important;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                    }
                     .bbpom-mode-pill {
-                        transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease !important;
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        gap: 0.35rem !important;
+                        padding: 0.25rem 0.625rem !important;
+                        border-radius: 0.5rem !important;
+                        font-size: 11px !important;
+                        font-weight: 600 !important;
+                        border: none !important;
+                        cursor: pointer !important;
+                        line-height: 1.25 !important;
+                        white-space: nowrap !important;
+                        transition: all 0.15s ease !important;
+                        font-family: inherit !important;
                     }
                     .bbpom-mode-pill:hover {
                         filter: brightness(0.96) !important;
+                    }
+                    .bbpom-clear-file-btn {
+                        width: 1.75rem !important;
+                        height: 1.75rem !important;
+                        border-radius: 9999px !important;
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        cursor: pointer !important;
+                        background-color: rgba(255, 255, 255, 0.95) !important;
+                        border: 1px solid #cbd5e1 !important;
+                        color: #64748b !important;
+                        padding: 0 !important;
+                        flex-shrink: 0 !important;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                        transition: all 0.15s ease !important;
+                    }
+                    .bbpom-clear-file-btn:hover {
+                        background-color: #fee2e2 !important;
+                        border-color: #fca5a5 !important;
+                        color: #b91c1c !important;
+                        transform: scale(1.08) !important;
                     }
                     .bbpom-action-circle-btn {
                         transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease !important;

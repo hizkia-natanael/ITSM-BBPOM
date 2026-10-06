@@ -524,15 +524,89 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
     transform: scale(0.95) !important;
 }
 
-/* Compression Mode Switcher Pill */
+/* Compression Mode Switcher Pill & Preview Elements */
+.bbpom-file-preview-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    border-radius: 1rem !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 0.75rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s ease !important;
+}
+.bbpom-file-preview-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.625rem !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+}
+.bbpom-file-preview-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+}
+.bbpom-segmented-switcher {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 3px !important;
+    border-radius: 0.625rem !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    gap: 2px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
 .bbpom-mode-pill {
-    transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    padding: 0.25rem 0.625rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    cursor: pointer !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
+    transition: all 0.15s ease !important;
+    font-family: inherit !important;
 }
 .bbpom-mode-pill:hover {
     filter: brightness(0.96) !important;
 }
-
-/* Close & Cancel Buttons */
+.bbpom-clear-file-btn {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #64748b !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.15s ease !important;
+}
+.bbpom-clear-file-btn:hover {
+    background-color: #fee2e2 !important;
+    border-color: #fca5a5 !important;
+    color: #b91c1c !important;
+    transform: scale(1.08) !important;
+}
 .bbpom-action-circle-btn {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
 }
@@ -1215,48 +1289,50 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
         <!-- Floating Attachment Pill Preview -->
         <div 
             x-show="hasFileSelected()" 
-            class="mb-3 p-3 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all"
-            :style="'background-color: ' + fileColorBgHex() + ' !important; border: 1px solid ' + fileColorBorderHex() + ' !important; border-radius: 1rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);'"
+            class="bbpom-file-preview-card mb-3 p-3 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all"
+            :style="'background-color: ' + fileColorBgHex() + ' !important; border: 1px solid ' + fileColorBorderHex() + ' !important; border-radius: 1rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 0.75rem !important; flex-wrap: wrap !important; box-sizing: border-box !important; width: 100% !important;'"
         >
-            <div class="flex items-center gap-2.5 min-w-0" style="display: flex; align-items: center; gap: 0.625rem;">
+            <div class="bbpom-file-preview-info flex items-center gap-2.5 min-w-0" style="display: flex !important; align-items: center !important; gap: 0.625rem !important; min-width: 0 !important; flex: 1 1 auto !important;">
                 <div 
                     class="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" 
-                    :style="'width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background-color: ' + fileColorHex() + ' !important; color: #ffffff !important; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'"
+                    :style="'width: 2.5rem !important; height: 2.5rem !important; border-radius: 0.75rem !important; background-color: ' + fileColorHex() + ' !important; color: #ffffff !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;'"
                 >
-                    <i :class="fileIconClass()" style="font-size: 1rem; color: #ffffff !important; line-height: 1;"></i>
-                    <span style="font-size: 8.5px; font-weight: 800; color: #ffffff !important; text-transform: uppercase; margin-top: 2px; line-height: 1;" x-text="fileExtensionUpper()"></span>
+                    <i :class="fileIconClass()" style="font-size: 1rem !important; color: #ffffff !important; line-height: 1 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"></i>
+                    <span style="font-size: 8.5px !important; font-weight: 800 !important; color: #ffffff !important; text-transform: uppercase !important; margin-top: 2px !important; line-height: 1 !important;" x-text="fileExtensionUpper()"></span>
                 </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-xs sm:text-[13px] font-bold text-slate-800 truncate" style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.25;" x-text="fileName"></p>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex; align-items: center; gap: 0.375rem; font-size: 10.5px; color: #64748b; margin-top: 0.25rem;">
+                <div class="min-w-0 flex-1" style="min-width: 0 !important; flex: 1 1 auto !important; overflow: hidden !important;">
+                    <p class="text-xs sm:text-[13px] font-bold text-slate-800 truncate" style="font-size: 0.8125rem !important; font-weight: 700 !important; color: #1e293b !important; margin: 0 !important; line-height: 1.3 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;" x-text="fileName"></p>
+                    <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex !important; align-items: center !important; gap: 0.375rem !important; font-size: 10.5px !important; color: #64748b !important; margin-top: 0.25rem !important; line-height: 1 !important;">
                         <span x-text="fileSizeFormatted"></span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="text-transform: uppercase; font-weight: 600; color: #475569;" x-text="fileExtensionUpper()"></span>
+                        <span style="color: #cbd5e1; margin: 0 2px !important;">•</span>
+                        <span style="text-transform: uppercase !important; font-weight: 600 !important; color: #475569;" x-text="fileExtensionUpper()"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Segmented Mode Switcher Pill -->
-            <div class="flex items-center gap-2 self-end sm:self-auto shrink-0" style="display: flex; align-items: center; gap: 0.5rem;">
-                <div class="inline-flex p-0.5 rounded-xl bg-white/90 border border-slate-200 text-[11px] font-semibold shadow-2xs" style="display: inline-flex; padding: 2px; border-radius: 0.75rem; background-color: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600;">
+            <!-- Segmented Mode Switcher Pill & Cancel Button -->
+            <div class="bbpom-file-preview-actions flex items-center gap-2 shrink-0" style="display: flex !important; align-items: center !important; gap: 0.5rem !important; flex-shrink: 0 !important; margin-left: auto !important;">
+                <div class="bbpom-segmented-switcher inline-flex p-0.5 rounded-xl bg-white/90 border border-slate-200 text-[11px] font-semibold shadow-2xs" style="display: inline-flex !important; align-items: center !important; padding: 3px !important; border-radius: 0.625rem !important; background-color: rgba(255, 255, 255, 0.95) !important; border: 1px solid #cbd5e1 !important; font-size: 11px !important; font-weight: 600 !important; gap: 2px !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;">
                     <button 
                         type="button" 
                         @click="setMode('compressed')" 
-                        :style="isCompressedMode() ? 'background-color: #059669 !important; color: #ffffff !important;' : 'background-color: transparent !important; color: #475569 !important;'"
-                        class="bbpom-mode-pill px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer border-0"
+                        :style="isCompressedMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
+                        class="bbpom-mode-pill"
+                        style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.35rem !important; padding: 0.25rem 0.625rem !important; border-radius: 0.5rem !important; font-size: 11px !important; font-weight: 600 !important; border: none !important; cursor: pointer !important; line-height: 1.25 !important; white-space: nowrap !important; transition: all 0.15s ease !important; font-family: inherit !important;"
                         title="Kompresi cerdas hemat kapasitas penyimpanan database & server"
                     >
-                        <i class="ri-sparkling-fill text-xs" style="font-size: 0.75rem;"></i>
+                        <i class="ri-sparkling-fill" style="font-size: 0.8rem !important; line-height: 1 !important; display: inline-flex !important; align-items: center !important;"></i>
                         <span>Kompres Cerdas</span>
                     </button>
                     <button 
                         type="button" 
                         @click="setMode('original')" 
-                        :style="isOriginalMode() ? 'background-color: #059669 !important; color: #ffffff !important;' : 'background-color: transparent !important; color: #475569 !important;'"
-                        class="bbpom-mode-pill px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer border-0"
+                        :style="isOriginalMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
+                        class="bbpom-mode-pill"
+                        style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.35rem !important; padding: 0.25rem 0.625rem !important; border-radius: 0.5rem !important; font-size: 11px !important; font-weight: 600 !important; border: none !important; cursor: pointer !important; line-height: 1.25 !important; white-space: nowrap !important; transition: all 0.15s ease !important; font-family: inherit !important;"
                         title="Kirim ukuran & resolusi asli tanpa kompresi"
                     >
-                        <i class="ri-hd-line text-xs" style="font-size: 0.75rem;"></i>
+                        <i class="ri-hd-line" style="font-size: 0.8rem !important; line-height: 1 !important; display: inline-flex !important; align-items: center !important;"></i>
                         <span>Ukuran Asli</span>
                     </button>
                 </div>
@@ -1264,11 +1340,11 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 <button 
                     type="button" 
                     @click="clearFile()" 
-                    class="bbpom-action-circle-btn bbpom-clear-file-btn w-7 h-7 rounded-full bg-white/80 text-slate-500 flex items-center justify-center cursor-pointer border border-slate-200/80"
-                    style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                    class="bbpom-action-circle-btn bbpom-clear-file-btn"
+                    style="width: 1.75rem !important; height: 1.75rem !important; border-radius: 9999px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; background-color: rgba(255, 255, 255, 0.95) !important; border: 1px solid #cbd5e1 !important; color: #64748b !important; padding: 0 !important; flex-shrink: 0 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; transition: all 0.15s ease !important;"
                     title="Batalkan lampiran berkas"
                 >
-                    <i class="ri-close-line text-base" style="font-size: 1rem;"></i>
+                    <i class="ri-close-line" style="font-size: 1.1rem !important; line-height: 1 !important; color: #64748b !important;"></i>
                 </button>
             </div>
         </div>
