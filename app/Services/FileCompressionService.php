@@ -124,6 +124,11 @@ class FileCompressionService
             return null;
         }
 
+        // Dynamically ensure sufficient memory limit for GD raster transformations
+        if (ini_get('memory_limit') !== '-1') {
+            @ini_set('memory_limit', '256M');
+        }
+
         [$origWidth, $origHeight] = $imageInfo;
         if ($origWidth <= 0 || $origHeight <= 0) {
             return null;
