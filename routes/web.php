@@ -31,6 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('tickets.attachment');
     Route::get('/tickets/{ticket}/attachments/{attachment}', [TicketController::class, 'downloadAttachmentItem'])
         ->name('tickets.attachments.item');
+    Route::get('/tickets/{ticket}/response-attachments/{attachment}', [TicketController::class, 'downloadResponseAttachment'])
+        ->name('tickets.response-attachments.download');
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])
         ->middleware('throttle:30,1')
         ->name('tickets.reply');

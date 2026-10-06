@@ -60,68 +60,6 @@ class AdminPanelProvider extends PanelProvider
                         window.addEventListener("DOMContentLoaded", function () {
                             document.title = "Admin Layanan TIK BBPOM Di Semarang";
                         });
-
-                        window.bbpomTicketConversation = function bbpomTicketConversation() {
-                            return {
-                                isSubmitting: false,
-                                init() {
-                                    this.$nextTick(() => {
-                                        this.scrollToBottom();
-                                        this.adjustTextareaHeight();
-                                    });
-                                },
-                                scrollToBottom() {
-                                    if (this.$refs.streamContainer) {
-                                        this.$refs.streamContainer.scrollTop = this.$refs.streamContainer.scrollHeight;
-                                    }
-                                },
-                                adjustTextareaHeight() {
-                                    const el = this.$refs.replyTextarea;
-                                    if (!el) return;
-                                    el.style.height = "auto";
-                                    if (el.scrollHeight > 128) {
-                                        el.style.height = "128px";
-                                        el.style.overflowY = "auto";
-                                    } else {
-                                        el.style.height = el.scrollHeight + "px";
-                                        el.style.overflowY = "hidden";
-                                    }
-                                },
-                                onFormSubmit(e) {
-                                    const el = this.$refs.replyTextarea;
-                                    if (!el || el.value.trim().length === 0) {
-                                        if (e) e.preventDefault();
-                                        return false;
-                                    }
-                                    if (this.isSubmitting) {
-                                        if (e) e.preventDefault();
-                                        return false;
-                                    }
-                                    this.isSubmitting = true;
-                                    return true;
-                                },
-                                handleEnterSend(e) {
-                                    if (e && e.shiftKey) {
-                                        return;
-                                    }
-                                    if (e) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                    }
-                                    const el = this.$refs.replyTextarea;
-                                    const form = this.$refs.replyForm;
-                                    if (!el || !form) return;
-
-                                    const text = el.value.trim();
-                                    if (text.length === 0) return;
-
-                                    if (this.isSubmitting) return;
-                                    this.isSubmitting = true;
-
-                                    form.submit();
-                                }
-                            };
-                        };
                     </script>
                     <script>
                         window.filamentChartJsGlobalPlugins = window.filamentChartJsGlobalPlugins || [];

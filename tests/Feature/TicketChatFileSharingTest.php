@@ -1,0 +1,256 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Category;
+use App\Models\Ticket;
+use App\Models\TicketResponse;
+use App\Models\TicketResponseAttachment;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
+
+class TicketChatFileSharingTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $user;
+    protected User $admin;
+    protected Ticket $ticket;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Storage::fake(config('filesystems.attachment_disk', 'local'));
+
+        $this->user = User::factory()->create(['role' => 'user']);
+        $this->admin = User::factory()->create(['role' => 'admin']);
+
+        $category = Category::firstOrCreate(['slug' => 'general'], ['name' => 'General']);
+
+        $this->ticket = Ticket::create([
+            'ticket_number' => 'TICK-TEST-001',
+            'user_id' => $this->user->id,
+            'category_id' => $category->id,
+            'subject' => 'Permintaan Infografis Kampanye Obat',
+            'description' => 'Mohon dibuatkan file infografis',
+            'status' => 'pending',
+            'priority' => 'medium',
+        ]);
+    }
+
+    public function test_user_can_send_text_reply_without_attachment(): void
+    {
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Terima kasih, mohon segera diproses.',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+        $this->assertDatabaseHas('ticket_responses', [
+            'ticket_id' => $this->ticket->id,
+            'user_id' => $this->user->id,
+            'response_text' => 'Terima kasih, mohon segera diproses.',
+        ]);
+        $this->assertDatabaseCount('ticket_response_attachments', 0);
+    }
+
+    public function test_user_can_send_reply_with_original_size_file(): void
+    {
+        $file = UploadedFile::fake()->create('desain_asli.png', 500, 'image/png');
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Ini file master infografis ukuran penuh.',
+            'attachment' => $file,
+            'compression_mode' => 'original',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+        $this->assertEquals('Ini file master infografis ukuran penuh.', $ticketResponse->response_text);
+
+        $attachment = $ticketResponse->attachments()->first();
+        $this->assertNotNull($attachment);
+        $this->assertEquals('desain_asli.png', $attachment->file_name);
+        $this->assertEquals('original', $attachment->compression_mode);
+        $this->assertFalse($attachment->is_compressed);
+        $this->assertEquals(0, $attachment->saved_bytes);
+
+        // Verify storage file exists on private disk
+        $disk = config('filesystems.attachment_disk', 'local');
+        $this->assertTrue(Storage::disk($disk)->exists($attachment->file_path));
+    }
+
+    public function test_user_can_send_reply_with_compressed_image_file(): void
+    {
+        // Create a large fake image (e.g. 2500x2500 px)
+        $file = UploadedFile::fake()->image('infografis_resolusi_tinggi.jpg', 2500, 2500);
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Ini draf infografis terkompresi.',
+            'attachment' => $file,
+            'compression_mode' => 'compressed',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+
+        $attachment = $ticketResponse->attachments()->first();
+        $this->assertNotNull($attachment);
+        $this->assertEquals('infografis_resolusi_tinggi.jpg', $attachment->file_name);
+        $this->assertEquals('compressed', $attachment->compression_mode);
+
+        $disk = config('filesystems.attachment_disk', 'local');
+        $this->assertTrue(Storage::disk($disk)->exists($attachment->file_path));
+    }
+
+    public function test_user_can_send_file_only_without_typing_text(): void
+    {
+        $file = UploadedFile::fake()->create('panduan_sop.pdf', 300, 'application/pdf');
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => '',
+            'attachment' => $file,
+            'compression_mode' => 'original',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+        $this->assertStringContainsString('panduan_sop.pdf', $ticketResponse->response_text);
+
+        $this->assertDatabaseHas('ticket_response_attachments', [
+            'ticket_response_id' => $ticketResponse->id,
+            'file_name' => 'panduan_sop.pdf',
+        ]);
+    }
+
+    public function test_admin_can_reply_with_attachment_and_auto_assigns_status(): void
+    {
+        $file = UploadedFile::fake()->create('revisi_infografis_final.zip', 800, 'application/zip');
+
+        $response = $this->actingAs($this->admin)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Berikut revisi berkas infografis dari tim IT.',
+            'attachment' => $file,
+            'compression_mode' => 'original',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $this->ticket->refresh();
+        $this->assertEquals('diproses', $this->ticket->status);
+        $this->assertEquals($this->admin->id, $this->ticket->handled_by_id);
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+        $this->assertEquals($this->admin->id, $ticketResponse->user_id);
+        $this->assertCount(1, $ticketResponse->attachments);
+    }
+
+    public function test_ticket_owner_and_admin_can_download_response_attachment(): void
+    {
+        $file = UploadedFile::fake()->create('laporan.pdf', 100, 'application/pdf');
+
+        $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Lampiran laporan',
+            'attachment' => $file,
+            'compression_mode' => 'original',
+        ]);
+
+        $attachment = TicketResponseAttachment::latest('id')->first();
+        $this->assertNotNull($attachment);
+
+        // Ticket owner can download
+        $downloadUrl = route('tickets.response-attachments.download', [
+            'ticket' => $this->ticket->id,
+            'attachment' => $attachment->id,
+        ]);
+
+        $ownerResponse = $this->actingAs($this->user)->get($downloadUrl);
+        $ownerResponse->assertOk();
+
+        // Admin can download
+        $adminResponse = $this->actingAs($this->admin)->get($downloadUrl);
+        $adminResponse->assertOk();
+
+        // Inline preview works
+        $previewResponse = $this->actingAs($this->user)->get($downloadUrl . '?inline=1');
+        $previewResponse->assertOk();
+    }
+
+    public function test_unauthorized_user_cannot_download_response_attachment(): void
+    {
+        $otherUser = User::factory()->create(['role' => 'user']);
+        $file = UploadedFile::fake()->create('rahasia.pdf', 100, 'application/pdf');
+
+        $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'File rahasia',
+            'attachment' => $file,
+            'compression_mode' => 'original',
+        ]);
+
+        $attachment = TicketResponseAttachment::latest('id')->first();
+
+        $downloadUrl = route('tickets.response-attachments.download', [
+            'ticket' => $this->ticket->id,
+            'attachment' => $attachment->id,
+        ]);
+
+        // Other regular user is rejected with 403
+        $forbiddenResponse = $this->actingAs($otherUser)->get($downloadUrl);
+        $forbiddenResponse->assertForbidden();
+
+        // Guest is redirected to login
+        auth()->logout();
+        $guestResponse = $this->get($downloadUrl);
+        $guestResponse->assertRedirect(route('login'));
+    }
+
+    public function test_response_attachment_view_renders_in_ticket_show(): void
+    {
+        $file = UploadedFile::fake()->image('infografis_sample.png', 400, 300);
+
+        $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Silakan tinjau desain ini.',
+            'attachment' => $file,
+            'compression_mode' => 'compressed',
+        ]);
+
+        $showResponse = $this->actingAs($this->user)->get(route('tickets.show', $this->ticket));
+        $showResponse->assertOk();
+        $showResponse->assertSee('infografis_sample.png');
+        $showResponse->assertSee('Silakan tinjau desain ini.');
+    }
+
+    public function test_ajax_reply_with_attachment_returns_json_and_stores_file(): void
+    {
+        $file = UploadedFile::fake()->create('dokumen_teknis.pdf', 250, 'application/pdf');
+
+        $response = $this->actingAs($this->user)->postJson(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Pesan via AJAX fetch',
+            'attachment' => $file,
+            'compression_mode' => 'original',
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => true,
+        ]);
+
+        $this->assertDatabaseHas('ticket_responses', [
+            'ticket_id' => $this->ticket->id,
+            'response_text' => 'Pesan via AJAX fetch',
+        ]);
+
+        $this->assertDatabaseHas('ticket_response_attachments', [
+            'file_name' => 'dokumen_teknis.pdf',
+        ]);
+    }
+}

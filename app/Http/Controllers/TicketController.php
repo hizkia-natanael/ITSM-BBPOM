@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
+use App\Models\TicketResponseAttachment;
+use App\Services\FileCompressionService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -1081,7 +1083,7 @@ class TicketController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk melihat tiket ini.');
         }
 
-        $ticket->load(['category', 'user', 'handledBy', 'responses.user', 'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail']);
+        $ticket->load(['category', 'user', 'handledBy', 'responses.user', 'responses.attachments', 'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail']);
 
         return view('tickets.show', [
             'ticket' => $ticket,
@@ -1089,24 +1091,57 @@ class TicketController extends Controller
     }
 
     /**
-     * Tambahkan tanggapan/balasan dari user ke pengaduan.
+     * Tambahkan tanggapan/balasan dari user ke pengaduan dengan dukungan berbagi berkas aman.
      */
-    public function reply(Request $request, Ticket $ticket): RedirectResponse
+    public function reply(Request $request, Ticket $ticket): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         if ($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Akses ditolak.');
         }
 
         $validated = $request->validate([
-            'response_text' => ['required', 'string', 'min:2'],
+            'response_text' => [$request->hasFile('attachment') ? 'nullable' : 'required', 'string'],
+            'attachment' => ['nullable', 'file', 'max:51200'],
+            'compression_mode' => ['nullable', 'string', 'in:compressed,original'],
         ], [
-            'response_text.required' => 'Pesan tanggapan tidak boleh kosong.',
+            'response_text.required' => 'Pesan tanggapan tidak boleh kosong jika tidak melampirkan berkas.',
+            'attachment.max' => 'Ukuran berkas lampiran tidak boleh melebihi 50 MB.',
         ]);
 
-        $ticket->responses()->create([
+        $responseText = trim((string) ($validated['response_text'] ?? ''));
+        if ($responseText === '' && $request->hasFile('attachment')) {
+            $responseText = 'Melampirkan berkas: ' . $request->file('attachment')->getClientOriginalName();
+        }
+
+        $response = $ticket->responses()->create([
             'user_id' => $request->user()->id,
-            'response_text' => trim($validated['response_text']),
+            'response_text' => $responseText,
         ]);
+
+        if ($request->hasFile('attachment')) {
+            $compressionMode = $request->input('compression_mode', 'compressed');
+            if (!in_array($compressionMode, ['compressed', 'original'])) {
+                $compressionMode = 'compressed';
+            }
+
+            $fileService = app(FileCompressionService::class);
+            $uploadData = $fileService->processUpload(
+                $request->file('attachment'),
+                $ticket->id,
+                $compressionMode
+            );
+
+            $response->attachments()->create([
+                'file_path' => $uploadData['file_path'],
+                'file_name' => $uploadData['file_name'],
+                'file_size' => $uploadData['file_size'],
+                'original_size' => $uploadData['original_size'],
+                'mime_type' => $uploadData['mime_type'],
+                'compression_mode' => $uploadData['compression_mode'],
+                'is_compressed' => $uploadData['is_compressed'],
+                'saved_bytes' => $uploadData['saved_bytes'],
+            ]);
+        }
 
         if ($request->user()->isAdmin()) {
             if (empty($ticket->handled_by_id)) {
@@ -1118,13 +1153,57 @@ class TicketController extends Controller
             $ticket->save();
         }
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $request->user()->isAdmin()
+                    ? 'Tanggapan dan berkas Anda telah berhasil dikirim ke pelapor.'
+                    : 'Tanggapan dan berkas Anda telah berhasil dikirim ke tim IT BBPOM.',
+            ]);
+        }
+
         if ($request->user()->isAdmin() && (str_contains(url()->previous(), '/admin') || ($request->header('referer') && str_contains($request->header('referer'), '/admin')))) {
             return redirect()->back()
-                ->with('success', 'Tanggapan Anda telah berhasil dikirim ke pelapor.');
+                ->with('success', 'Tanggapan dan berkas Anda telah berhasil dikirim ke pelapor.');
         }
 
         return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Tanggapan Anda telah berhasil dikirim ke tim IT BBPOM.');
+            ->with('success', 'Tanggapan dan berkas Anda telah berhasil dikirim ke tim IT BBPOM.');
+    }
+
+    /**
+     * Unduh atau pratinjau lampiran berkas dari tanggapan obrolan tiket secara aman.
+     */
+    public function downloadResponseAttachment(Request $request, Ticket $ticket, TicketResponseAttachment $attachment)
+    {
+        if ($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunduh berkas tanggapan tiket ini.');
+        }
+
+        if ((int) $attachment->ticketResponse?->ticket_id !== (int) $ticket->id) {
+            abort(404, 'Berkas lampiran tidak cocok dengan nomor tiket.');
+        }
+
+        $path = $attachment->file_path;
+        $disk = config('filesystems.attachment_disk', 'local');
+
+        if (!Storage::disk($disk)->exists($path)) {
+            if (Storage::disk('local')->exists($path)) {
+                $disk = 'local';
+            } elseif (Storage::disk('public')->exists($path)) {
+                $disk = 'public';
+            } else {
+                abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
+            }
+        }
+
+        if ($request->boolean('inline')) {
+            return Storage::disk($disk)->response($path, $attachment->file_name, [
+                'Content-Type' => $attachment->mime_type ?: Storage::disk($disk)->mimeType($path),
+            ]);
+        }
+
+        return Storage::disk($disk)->download($path, $attachment->file_name);
     }
 
     /**
