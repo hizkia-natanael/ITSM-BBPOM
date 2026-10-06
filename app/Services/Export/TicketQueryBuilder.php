@@ -206,17 +206,10 @@ class TicketQueryBuilder
         ];
         $statusLabel = $statusLabels[$status] ?? 'Semua Status';
 
-        $currentUser = auth()->user();
-        if (!$currentUser && !empty($filters['current_user_id'])) {
-            $currentUser = User::find($filters['current_user_id']);
-        }
-
-        $signatoryAdmin = $currentUser;
-        if (!empty($handledBy) && is_numeric($handledBy)) {
-            $selectedAdmin = User::find($handledBy);
-            if ($selectedAdmin) {
-                $signatoryAdmin = $selectedAdmin;
-            }
+        // Penandatangan dokumen SELALU admin yang sedang login / mengunduh berkas rekapitulasi
+        $signatoryAdmin = auth()->user();
+        if (!$signatoryAdmin && !empty($filters['current_user_id'])) {
+            $signatoryAdmin = User::find($filters['current_user_id']);
         }
 
         $summary = [

@@ -110,6 +110,12 @@ class TicketExportTest extends TestCase
         $this->assertSame($this->admin->name, $result['summary']['generated_by']);
         $this->assertSame('198501142025211020', $result['summary']['generated_by_nip']);
 
+        // Even when filtering by another admin's handled tickets, the signature must remain the downloading admin
+        $otherAdmin = User::factory()->create(['name' => 'Teknisi Lapangan', 'role' => 'admin']);
+        $resultFiltered = $queryBuilder->build(['category' => 'all', 'period_type' => 'all', 'handled_by' => (string) $otherAdmin->id]);
+        $this->assertSame($this->admin->name, $resultFiltered['summary']['generated_by']);
+        $this->assertSame('198501142025211020', $resultFiltered['summary']['generated_by_nip']);
+
         $view = view('exports.tickets-pdf', [
             'tickets' => $result['tickets'],
             'summary' => $result['summary'],
