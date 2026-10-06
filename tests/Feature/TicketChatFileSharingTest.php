@@ -268,7 +268,7 @@ class TicketChatFileSharingTest extends TestCase
 
     public function test_admin_can_send_ajax_reply_with_attachment(): void
     {
-        $file = UploadedFile::fake()->create('panduan_sistem.pdf', 300, 'application/pdf');
+        $file = UploadedFile::fake()->image('panduan_sistem.jpg', 2500, 2500);
 
         $response = $this->actingAs($this->admin)->postJson(route('tickets.reply', $this->ticket), [
             'response_text' => 'Berikut panduan dari tim teknis.',
@@ -421,6 +421,92 @@ class TicketChatFileSharingTest extends TestCase
         ]));
 
         $response->assertForbidden();
+    }
+
+    public function test_single_file_above_one_mb_is_compressed_into_zip(): void
+    {
+        // 1.5 MB text file (highly compressible)
+        $content = str_repeat('BBPOM Semarang Layanan TIK Helpdesk Sistem ', 38000); // ~1.6MB
+        $file = UploadedFile::fake()->createWithContent('laporan_tahunan.txt', $content);
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'File laporan berukuran di atas 1MB.',
+            'attachment' => $file,
+            'compression_mode' => 'compressed',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+
+        $attachment = $ticketResponse->attachments()->first();
+        $this->assertNotNull($attachment);
+        $this->assertEquals('laporan_tahunan.txt.zip', $attachment->file_name);
+        $this->assertEquals('application/zip', $attachment->mime_type);
+        $this->assertTrue($attachment->is_compressed);
+        $this->assertGreaterThan(0, $attachment->saved_bytes);
+    }
+
+    public function test_single_file_below_or_equal_to_one_mb_is_not_zipped(): void
+    {
+        // 500 KB document (below 1 MB threshold)
+        $file = UploadedFile::fake()->create('formulir_singkat.txt', 500, 'text/plain');
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'File dokumen di bawah 1MB.',
+            'attachment' => $file,
+            'compression_mode' => 'compressed',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+
+        $attachment = $ticketResponse->attachments()->first();
+        $this->assertNotNull($attachment);
+        $this->assertEquals('formulir_singkat.txt', $attachment->file_name);
+        $this->assertFalse($attachment->is_compressed);
+    }
+
+    public function test_multiple_files_are_automatically_bundled_into_single_zip(): void
+    {
+        $file1 = UploadedFile::fake()->create('dokumen1.pdf', 300, 'application/pdf');
+        $file2 = UploadedFile::fake()->create('dokumen2.docx', 400, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $file3 = UploadedFile::fake()->image('gambar3.jpg', 600, 400);
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Melampirkan beberapa berkas.',
+            'attachments' => [$file1, $file2, $file3],
+            'compression_mode' => 'compressed',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+
+        $this->assertCount(1, $ticketResponse->attachments);
+        $attachment = $ticketResponse->attachments()->first();
+        $this->assertNotNull($attachment);
+
+        $this->assertStringStartsWith('arsip_lampiran_3_berkas_', $attachment->file_name);
+        $this->assertStringEndsWith('.zip', $attachment->file_name);
+        $this->assertEquals('application/zip', $attachment->mime_type);
+
+        $disk = config('filesystems.attachment_disk', 'local');
+        $this->assertTrue(Storage::disk($disk)->exists($attachment->file_path));
+    }
+
+    public function test_conversation_stream_component_contains_file_chip_size_styling(): void
+    {
+        $response = $this->actingAs($this->admin)->get("/admin/tickets/{$this->ticket->id}/edit");
+        $response->assertOk();
+        $content = $response->getContent();
+        $this->assertStringContainsString('bbpom-file-chip', $content);
+        $this->assertStringContainsString('bbpom-file-chip-size', $content);
+        $this->assertStringContainsString('white-space: nowrap', $content);
     }
 }
 

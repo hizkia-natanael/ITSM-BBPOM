@@ -154,19 +154,39 @@ class TicketController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
+        $hasAnyFile = $request->hasFile('attachment') || $request->hasFile('attachments');
+
         $validated = $request->validate([
-            'response_text' => [$request->hasFile('attachment') ? 'nullable' : 'required', 'string'],
+            'response_text' => [$hasAnyFile ? 'nullable' : 'required', 'string'],
             'reply_to_id' => ['nullable', 'integer', 'exists:ticket_responses,id'],
             'attachment' => ['nullable', 'file', 'max:51200'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'max:51200'],
             'compression_mode' => ['nullable', 'string', 'in:compressed,original'],
         ], [
             'response_text.required' => 'Pesan tanggapan tidak boleh kosong jika tidak melampirkan berkas.',
             'attachment.max' => 'Ukuran berkas lampiran tidak boleh melebihi 50 MB.',
+            'attachments.*.max' => 'Ukuran berkas lampiran tidak boleh melebihi 50 MB.',
         ]);
 
+        // Collect uploaded files from both 'attachment' and 'attachments'
+        $uploadedFiles = [];
+        if ($request->hasFile('attachments')) {
+            $filesInput = $request->file('attachments');
+            if (is_array($filesInput)) {
+                $uploadedFiles = array_values(array_filter($filesInput));
+            }
+        } elseif ($request->hasFile('attachment')) {
+            $uploadedFiles = [$request->file('attachment')];
+        }
+
         $responseText = trim((string) ($validated['response_text'] ?? ''));
-        if ($responseText === '' && $request->hasFile('attachment')) {
-            $responseText = 'Melampirkan berkas: ' . $request->file('attachment')->getClientOriginalName();
+        if ($responseText === '' && !empty($uploadedFiles)) {
+            if (count($uploadedFiles) > 1) {
+                $responseText = 'Melampirkan ' . count($uploadedFiles) . ' berkas (Arsip ZIP).';
+            } else {
+                $responseText = 'Melampirkan berkas: ' . $uploadedFiles[0]->getClientOriginalName();
+            }
         }
 
         $replyToId = null;
@@ -183,15 +203,15 @@ class TicketController extends Controller
             'response_text' => $responseText,
         ]);
 
-        if ($request->hasFile('attachment')) {
+        if (!empty($uploadedFiles)) {
             $compressionMode = $request->input('compression_mode', 'compressed');
             if (!in_array($compressionMode, ['compressed', 'original'])) {
                 $compressionMode = 'compressed';
             }
 
             $fileService = app(FileCompressionService::class);
-            $uploadData = $fileService->processUpload(
-                $request->file('attachment'),
+            $uploadData = $fileService->processMultipleUploads(
+                $uploadedFiles,
                 $ticket->id,
                 $compressionMode
             );

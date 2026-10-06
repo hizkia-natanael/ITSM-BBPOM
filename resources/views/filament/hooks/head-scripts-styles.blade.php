@@ -114,88 +114,142 @@
                     .bbpom-send-btn:active:not(:disabled) {
                         transform: scale(0.95) !important;
                     }
+                    [x-cloak] {
+                        display: none !important;
+                    }
                     /* Compression Mode Switcher Pill & Preview Elements */
                     .bbpom-file-preview-card {
-                        display: flex !important;
-                        flex-direction: row !important;
-                        align-items: center !important;
-                        justify-content: space-between !important;
-                        gap: 0.75rem !important;
-                        flex-wrap: wrap !important;
-                        box-sizing: border-box !important;
-                        width: 100% !important;
-                        border-radius: 1rem !important;
-                        padding: 0.75rem 1rem !important;
-                        margin-bottom: 0.75rem !important;
-                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-                        transition: all 0.2s ease !important;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.75rem;
+                        box-sizing: border-box;
+                        width: 100%;
+                        border-radius: 1rem;
+                        padding: 0.75rem 1rem;
+                        margin-bottom: 0.75rem;
+                        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                        transition: all 0.2s ease;
+                    }
+                    .bbpom-file-preview-top-row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 0.75rem;
+                        width: 100%;
                     }
                     .bbpom-file-preview-info {
-                        display: flex !important;
-                        align-items: center !important;
-                        gap: 0.625rem !important;
-                        min-width: 0 !important;
-                        flex: 1 1 auto !important;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        min-width: 0;
+                        flex: 1 1 auto;
                     }
                     .bbpom-file-preview-actions {
-                        display: flex !important;
-                        align-items: center !important;
-                        gap: 0.5rem !important;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        flex-shrink: 0;
+                        margin-left: auto;
+                    }
+                    .bbpom-file-chips-container {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.375rem;
+                        flex-wrap: wrap;
+                        width: 100%;
+                        padding-top: 0.35rem;
+                        border-top: 1px dashed rgba(203, 213, 225, 0.7);
+                    }
+                    .bbpom-file-chip {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.35rem;
+                        padding: 0.2rem 0.5rem;
+                        border-radius: 0.375rem;
+                        background-color: #ffffff;
+                        border: 1px solid #e2e8f0;
+                        font-size: 11px;
+                        font-weight: 500;
+                        color: #334155;
+                        max-width: 220px;
+                        min-width: 0;
+                        line-height: 1.25;
+                        white-space: nowrap;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+                    }
+                    .bbpom-file-chip-name {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        min-width: 0;
+                        flex: 1 1 auto;
+                    }
+                    .bbpom-file-chip-size {
+                        color: #64748b;
+                        font-size: 9.5px;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+                        white-space: nowrap !important;
                         flex-shrink: 0 !important;
-                        margin-left: auto !important;
+                        display: inline-block;
+                        line-height: 1;
+                        margin-left: 0.25rem;
+                        background-color: #f1f5f9;
+                        padding: 0.125rem 0.35rem;
+                        border-radius: 0.25rem;
+                        border: 1px solid #e2e8f0;
                     }
                     .bbpom-segmented-switcher {
-                        display: inline-flex !important;
-                        align-items: center !important;
-                        padding: 3px !important;
-                        border-radius: 0.625rem !important;
-                        background-color: rgba(255, 255, 255, 0.95) !important;
-                        border: 1px solid #cbd5e1 !important;
-                        font-size: 11px !important;
-                        font-weight: 600 !important;
-                        gap: 2px !important;
-                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                        display: inline-flex;
+                        align-items: center;
+                        padding: 3px;
+                        border-radius: 9999px;
+                        background-color: #ffffff;
+                        border: 1px solid #e2e8f0;
+                        font-size: 11px;
+                        font-weight: 600;
+                        gap: 2px;
+                        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
                     }
                     .bbpom-mode-pill {
-                        display: inline-flex !important;
-                        align-items: center !important;
-                        justify-content: center !important;
-                        gap: 0.35rem !important;
-                        padding: 0.25rem 0.625rem !important;
-                        border-radius: 0.5rem !important;
-                        font-size: 11px !important;
-                        font-weight: 600 !important;
-                        border: none !important;
-                        cursor: pointer !important;
-                        line-height: 1.25 !important;
-                        white-space: nowrap !important;
-                        transition: all 0.15s ease !important;
-                        font-family: inherit !important;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.375rem;
+                        padding: 0.35rem 0.75rem;
+                        border-radius: 9999px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        border: none;
+                        cursor: pointer;
+                        line-height: 1.25;
+                        white-space: nowrap;
+                        transition: all 0.15s ease;
+                        font-family: inherit;
                     }
                     .bbpom-mode-pill:hover {
-                        filter: brightness(0.96) !important;
+                        filter: brightness(0.96);
                     }
                     .bbpom-clear-file-btn {
-                        width: 1.75rem !important;
-                        height: 1.75rem !important;
-                        border-radius: 9999px !important;
-                        display: inline-flex !important;
-                        align-items: center !important;
-                        justify-content: center !important;
-                        cursor: pointer !important;
-                        background-color: rgba(255, 255, 255, 0.95) !important;
-                        border: 1px solid #cbd5e1 !important;
-                        color: #64748b !important;
-                        padding: 0 !important;
-                        flex-shrink: 0 !important;
-                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-                        transition: all 0.15s ease !important;
+                        width: 1.875rem;
+                        height: 1.875rem;
+                        border-radius: 9999px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        background-color: #ffffff;
+                        border: 1px solid #e2e8f0;
+                        color: #64748b;
+                        padding: 0;
+                        flex-shrink: 0;
+                        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                        transition: all 0.15s ease;
                     }
                     .bbpom-clear-file-btn:hover {
-                        background-color: #fee2e2 !important;
-                        border-color: #fca5a5 !important;
-                        color: #b91c1c !important;
-                        transform: scale(1.08) !important;
+                        background-color: #fee2e2;
+                        border-color: #fca5a5;
+                        color: #b91c1c;
+                        transform: scale(1.08);
                     }
                     .bbpom-action-circle-btn {
                         transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
@@ -234,6 +288,9 @@
                                 fileName: "",
                                 fileSizeFormatted: "",
                                 fileExtension: "",
+                                selectedFiles: [],
+                                fileCount: 0,
+                                totalBytes: 0,
                                 compressionMode: "compressed",
                                 errorMessage: "",
                                 replyingTo: null,
@@ -358,7 +415,13 @@
                                     }
                                 },
                                 hasFileSelected() {
-                                    return Boolean(this.hasFile);
+                                    return Boolean(this.hasFile && this.fileCount > 0);
+                                },
+                                isMultipleFiles() {
+                                    return this.fileCount > 1;
+                                },
+                                isAboveOneMb() {
+                                    return this.totalBytes > 1048576;
                                 },
                                 isCompressedMode() {
                                     return this.compressionMode === "compressed";
@@ -388,23 +451,49 @@
                                         this.clearFile();
                                         return;
                                     }
-                                    const file = files[0];
-                                    if (file.size > 52428800) {
-                                        this.errorMessage = "Ukuran berkas melebihi batas maksimal 50 MB.";
-                                        this.clearFile();
-                                        return;
+
+                                    let total = 0;
+                                    const fileList = [];
+                                    for (let i = 0; i < files.length; i++) {
+                                        const f = files[i];
+                                        if (f.size > 52428800) {
+                                            this.errorMessage = "Ukuran berkas \"" + f.name + "\" melebihi batas maksimal 50 MB.";
+                                            this.clearFile();
+                                            return;
+                                        }
+                                        total += f.size;
+                                        fileList.push({
+                                            name: f.name,
+                                            sizeFormatted: this.formatBytes(f.size),
+                                            size: f.size,
+                                        });
                                     }
+
+                                    this.selectedFiles = fileList;
+                                    this.fileCount = files.length;
+                                    this.totalBytes = total;
                                     this.hasFile = true;
-                                    this.fileName = file.name;
-                                    const parts = file.name.split(".");
-                                    this.fileExtension = parts.length > 1 ? parts.pop().toLowerCase() : "";
-                                    this.fileSizeFormatted = this.formatBytes(file.size);
+
+                                    if (this.fileCount === 1) {
+                                        const single = files[0];
+                                        this.fileName = single.name;
+                                        const parts = single.name.split(".");
+                                        this.fileExtension = parts.length > 1 ? parts.pop().toLowerCase() : "";
+                                        this.fileSizeFormatted = this.formatBytes(single.size);
+                                    } else {
+                                        this.fileName = "Arsip " + this.fileCount + " Berkas Lampiran";
+                                        this.fileExtension = "zip";
+                                        this.fileSizeFormatted = this.formatBytes(total);
+                                    }
                                 },
                                 clearFile() {
                                     this.hasFile = false;
                                     this.fileName = "";
                                     this.fileExtension = "";
                                     this.fileSizeFormatted = "";
+                                    this.selectedFiles = [];
+                                    this.fileCount = 0;
+                                    this.totalBytes = 0;
                                     this.compressionMode = "compressed";
                                     const input = this.getFileInput();
                                     if (input) {
@@ -418,6 +507,7 @@
                                     return document.getElementById("ticket_conversation_file_input_" + this.ticketId);
                                 },
                                 fileIconClass() {
+                                    if (this.isMultipleFiles()) return "ri-folder-zip-line";
                                     const ext = this.fileExtension;
                                     if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "ri-image-2-line";
                                     if (ext === "pdf") return "ri-file-pdf-2-line";
@@ -429,6 +519,7 @@
                                     return "ri-file-text-line";
                                 },
                                 fileColorHex() {
+                                    if (this.isMultipleFiles()) return "#d97706";
                                     const ext = this.fileExtension;
                                     if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "#059669";
                                     if (ext === "pdf") return "#e11d48";
@@ -440,6 +531,7 @@
                                     return "#475569";
                                 },
                                 fileColorBgHex() {
+                                    if (this.isMultipleFiles()) return "#fffbeb";
                                     const ext = this.fileExtension;
                                     if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "#f0fdf4";
                                     if (ext === "pdf") return "#fff1f2";
@@ -451,6 +543,7 @@
                                     return "#f8fafc";
                                 },
                                 fileColorBorderHex() {
+                                    if (this.isMultipleFiles()) return "#fde68a";
                                     const ext = this.fileExtension;
                                     if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "#bbf7d0";
                                     if (ext === "pdf") return "#fecdd3";
@@ -462,6 +555,7 @@
                                     return "#e2e8f0";
                                 },
                                 fileExtensionUpper() {
+                                    if (this.isMultipleFiles()) return this.fileCount + " BERKAS";
                                     return (this.fileExtension || "FILE").toUpperCase();
                                 },
                                 formatBytes(bytes) {
@@ -540,8 +634,14 @@
                                     if (this.hasReplyTarget()) {
                                         formData.append("reply_to_id", this.replyingTo.id);
                                     }
-                                    if (hasSelectedFile && fileInput.files[0]) {
-                                        formData.append("attachment", fileInput.files[0]);
+                                    if (hasSelectedFile && fileInput.files && fileInput.files.length > 0) {
+                                        if (fileInput.files.length === 1) {
+                                            formData.append("attachment", fileInput.files[0]);
+                                        } else {
+                                            for (let i = 0; i < fileInput.files.length; i++) {
+                                                formData.append("attachments[]", fileInput.files[i]);
+                                            }
+                                        }
                                     }
 
                                     try {

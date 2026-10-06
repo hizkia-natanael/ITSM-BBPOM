@@ -29,6 +29,9 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
         fileName: '',
         fileSizeFormatted: '',
         fileExtension: '',
+        selectedFiles: [],
+        fileCount: 0,
+        totalBytes: 0,
         compressionMode: 'compressed',
         errorMessage: '',
         replyingTo: null,
@@ -153,7 +156,13 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             }
         },
         hasFileSelected() {
-            return Boolean(this.hasFile);
+            return Boolean(this.hasFile && this.fileCount > 0);
+        },
+        isMultipleFiles() {
+            return this.fileCount > 1;
+        },
+        isAboveOneMb() {
+            return this.totalBytes > 1048576;
         },
         isCompressedMode() {
             return this.compressionMode === 'compressed';
@@ -183,23 +192,49 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 this.clearFile();
                 return;
             }
-            const file = files[0];
-            if (file.size > 52428800) {
-                this.errorMessage = 'Ukuran berkas melebihi batas maksimal 50 MB.';
-                this.clearFile();
-                return;
+
+            let total = 0;
+            const fileList = [];
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                if (f.size > 52428800) {
+                    this.errorMessage = 'Ukuran berkas "' + f.name + '" melebihi batas maksimal 50 MB.';
+                    this.clearFile();
+                    return;
+                }
+                total += f.size;
+                fileList.push({
+                    name: f.name,
+                    sizeFormatted: this.formatBytes(f.size),
+                    size: f.size,
+                });
             }
+
+            this.selectedFiles = fileList;
+            this.fileCount = files.length;
+            this.totalBytes = total;
             this.hasFile = true;
-            this.fileName = file.name;
-            const parts = file.name.split('.');
-            this.fileExtension = parts.length > 1 ? parts.pop().toLowerCase() : '';
-            this.fileSizeFormatted = this.formatBytes(file.size);
+
+            if (this.fileCount === 1) {
+                const single = files[0];
+                this.fileName = single.name;
+                const parts = single.name.split('.');
+                this.fileExtension = parts.length > 1 ? parts.pop().toLowerCase() : '';
+                this.fileSizeFormatted = this.formatBytes(single.size);
+            } else {
+                this.fileName = 'Arsip ' + this.fileCount + ' Berkas Lampiran';
+                this.fileExtension = 'zip';
+                this.fileSizeFormatted = this.formatBytes(total);
+            }
         },
         clearFile() {
             this.hasFile = false;
             this.fileName = '';
             this.fileExtension = '';
             this.fileSizeFormatted = '';
+            this.selectedFiles = [];
+            this.fileCount = 0;
+            this.totalBytes = 0;
             this.compressionMode = 'compressed';
             const input = this.getFileInput();
             if (input) {
@@ -213,6 +248,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             return document.getElementById('ticket_conversation_file_input_' + this.ticketId);
         },
         fileIconClass() {
+            if (this.isMultipleFiles()) return 'ri-folder-zip-line';
             const ext = this.fileExtension;
             if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return 'ri-image-2-line';
             if (ext === 'pdf') return 'ri-file-pdf-2-line';
@@ -224,6 +260,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             return 'ri-file-text-line';
         },
         fileColorHex() {
+            if (this.isMultipleFiles()) return '#d97706';
             const ext = this.fileExtension;
             if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return '#059669';
             if (ext === 'pdf') return '#e11d48';
@@ -235,6 +272,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             return '#475569';
         },
         fileColorBgHex() {
+            if (this.isMultipleFiles()) return '#fffbeb';
             const ext = this.fileExtension;
             if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return '#f0fdf4';
             if (ext === 'pdf') return '#fff1f2';
@@ -246,6 +284,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             return '#f8fafc';
         },
         fileColorBorderHex() {
+            if (this.isMultipleFiles()) return '#fde68a';
             const ext = this.fileExtension;
             if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return '#bbf7d0';
             if (ext === 'pdf') return '#fecdd3';
@@ -257,6 +296,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             return '#e2e8f0';
         },
         fileExtensionUpper() {
+            if (this.isMultipleFiles()) return this.fileCount + ' BERKAS';
             return (this.fileExtension || 'FILE').toUpperCase();
         },
         formatBytes(bytes) {
@@ -335,8 +375,14 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             if (this.hasReplyTarget()) {
                 formData.append('reply_to_id', this.replyingTo.id);
             }
-            if (hasSelectedFile && fileInput.files[0]) {
-                formData.append('attachment', fileInput.files[0]);
+            if (hasSelectedFile && fileInput.files && fileInput.files.length > 0) {
+                if (fileInput.files.length === 1) {
+                    formData.append('attachment', fileInput.files[0]);
+                } else {
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        formData.append('attachments[]', fileInput.files[i]);
+                    }
+                }
             }
 
             try {
@@ -399,6 +445,10 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 </script>
 
 <style>
+[x-cloak] {
+    display: none !important;
+}
+
 @keyframes bbpomSpin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -526,86 +576,142 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 
 /* Compression Mode Switcher Pill & Preview Elements */
 .bbpom-file-preview-card {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 0.75rem !important;
-    flex-wrap: wrap !important;
-    box-sizing: border-box !important;
-    width: 100% !important;
-    border-radius: 1rem !important;
-    padding: 0.75rem 1rem !important;
-    margin-bottom: 0.75rem !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.2s ease !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+@media (min-width: 640px) {
+    .bbpom-file-preview-card {
+        flex-direction: column;
+    }
+}
+.bbpom-file-preview-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
 }
 .bbpom-file-preview-info {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.625rem !important;
-    min-width: 0 !important;
-    flex: 1 1 auto !important;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 .bbpom-file-preview-actions {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.bbpom-file-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    width: 100%;
+    padding-top: 0.35rem;
+    border-top: 1px dashed rgba(203, 213, 225, 0.7);
+}
+.bbpom-file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    font-size: 11px;
+    font-weight: 500;
+    color: #334155;
+    max-width: 220px;
+    min-width: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+.bbpom-file-chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.bbpom-file-chip-size {
+    color: #64748b;
+    font-size: 9.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    white-space: nowrap !important;
     flex-shrink: 0 !important;
-    margin-left: auto !important;
+    display: inline-block;
+    line-height: 1;
+    margin-left: 0.25rem;
+    background-color: #f1f5f9;
+    padding: 0.125rem 0.35rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e2e8f0;
 }
 .bbpom-segmented-switcher {
-    display: inline-flex !important;
-    align-items: center !important;
-    padding: 3px !important;
-    border-radius: 0.625rem !important;
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid #cbd5e1 !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    gap: 2px !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    font-size: 11px;
+    font-weight: 600;
+    gap: 2px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 .bbpom-mode-pill {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.35rem !important;
-    padding: 0.25rem 0.625rem !important;
-    border-radius: 0.5rem !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    cursor: pointer !important;
-    line-height: 1.25 !important;
-    white-space: nowrap !important;
-    transition: all 0.15s ease !important;
-    font-family: inherit !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    line-height: 1.25;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    font-family: inherit;
 }
 .bbpom-mode-pill:hover {
-    filter: brightness(0.96) !important;
+    filter: brightness(0.96);
 }
 .bbpom-clear-file-btn {
-    width: 1.75rem !important;
-    height: 1.75rem !important;
-    border-radius: 9999px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid #cbd5e1 !important;
-    color: #64748b !important;
-    padding: 0 !important;
-    flex-shrink: 0 !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.15s ease !important;
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 0;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease;
 }
 .bbpom-clear-file-btn:hover {
-    background-color: #fee2e2 !important;
-    border-color: #fca5a5 !important;
-    color: #b91c1c !important;
-    transform: scale(1.08) !important;
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+    transform: scale(1.08);
 }
 .bbpom-action-circle-btn {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
@@ -758,7 +864,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 
                             <!-- Bubble Pesan Kanan -->
                             <div class="bg-emerald-50/90 rounded-2xl rounded-br-xs px-3.5 py-2.5 border border-emerald-200/70 shadow-2xs text-left" style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 1rem 1rem 0.25rem 1rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
-                                <div class="flex items-center justify-end gap-1.5 mb-1" style="display: flex; align-items: center; justify-content: flex-end; gap: 0.375rem;">
+                                <div class="flex items-center gap-1.5 mb-1" style="display: flex; align-items: center; gap: 0.375rem;">
                                     <span class="text-[11px] font-bold text-slate-900 leading-tight" style="font-size: 11px; font-weight: 700; color: #0f172a;">
                                         {{ $response->user->name }}
                                     </span>
@@ -1021,7 +1127,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 
                         <!-- Bubble Pesan Kanan -->
                         <div class="bg-emerald-50/90 rounded-2xl rounded-br-xs px-3.5 py-2.5 border border-emerald-200/70 shadow-2xs text-left" style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 1rem 1rem 0.25rem 1rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
-                            <div class="flex items-center justify-end gap-1.5 mb-1" style="display: flex; align-items: center; justify-content: flex-end; gap: 0.375rem;">
+                            <div class="flex items-center gap-1.5 mb-1" style="display: flex; align-items: center; gap: 0.375rem;">
                                 <span class="text-[11px] font-bold text-slate-900 leading-tight" style="font-size: 11px; font-weight: 700; color: #0f172a;" x-text="msg.user_name"></span>
                                 <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold" 
                                       :class="msg.is_sender_admin ? 'bg-blue-100 text-blue-800 border border-blue-200/60' : 'bg-emerald-200/80 text-emerald-900 border border-emerald-300/60'"
@@ -1243,12 +1349,13 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
         class="mt-4 pt-3 border-t border-slate-100"
         style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;"
     >
-        <!-- Input File Asli & Tersembunyi -->
+        <!-- Input File Asli & Tersembunyi (Mendukung Multi-file) -->
         <input 
             type="file" 
             x-ref="fileInput" 
             id="ticket_conversation_file_input_{{ $ticket->id }}" 
-            name="attachment" 
+            name="attachments[]" 
+            multiple
             class="hidden" 
             style="display: none;"
             @change="handleFileChange($event)" 
@@ -1288,65 +1395,112 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 
         <!-- Floating Attachment Pill Preview -->
         <div 
+            x-cloak
             x-show="hasFileSelected()" 
-            class="bbpom-file-preview-card mb-3 p-3 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all"
-            :style="'background-color: ' + fileColorBgHex() + ' !important; border: 1px solid ' + fileColorBorderHex() + ' !important; border-radius: 1rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 0.75rem !important; flex-wrap: wrap !important; box-sizing: border-box !important; width: 100% !important;'"
+            class="bbpom-file-preview-card mb-3 p-3 rounded-2xl shadow-xs transition-all"
+            :style="hasFileSelected() ? ('background-color: ' + fileColorBgHex() + ' !important; border: 1px solid ' + fileColorBorderHex() + ' !important;') : ''"
         >
-            <div class="bbpom-file-preview-info flex items-center gap-2.5 min-w-0" style="display: flex !important; align-items: center !important; gap: 0.625rem !important; min-width: 0 !important; flex: 1 1 auto !important;">
-                <div 
-                    class="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" 
-                    :style="'width: 2.5rem !important; height: 2.5rem !important; border-radius: 0.75rem !important; background-color: ' + fileColorHex() + ' !important; color: #ffffff !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;'"
-                >
-                    <i :class="fileIconClass()" style="font-size: 1rem !important; color: #ffffff !important; line-height: 1 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"></i>
-                    <span style="font-size: 8.5px !important; font-weight: 800 !important; color: #ffffff !important; text-transform: uppercase !important; margin-top: 2px !important; line-height: 1 !important;" x-text="fileExtensionUpper()"></span>
-                </div>
-                <div class="min-w-0 flex-1" style="min-width: 0 !important; flex: 1 1 auto !important; overflow: hidden !important;">
-                    <p class="text-xs sm:text-[13px] font-bold text-slate-800 truncate" style="font-size: 0.8125rem !important; font-weight: 700 !important; color: #1e293b !important; margin: 0 !important; line-height: 1.3 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;" x-text="fileName"></p>
-                    <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex !important; align-items: center !important; gap: 0.375rem !important; font-size: 10.5px !important; color: #64748b !important; margin-top: 0.25rem !important; line-height: 1 !important;">
-                        <span x-text="fileSizeFormatted"></span>
-                        <span style="color: #cbd5e1; margin: 0 2px !important;">•</span>
-                        <span style="text-transform: uppercase !important; font-weight: 600 !important; color: #475569;" x-text="fileExtensionUpper()"></span>
+            <!-- Baris Utama (Info & Aksi Selalu Sejajar Rapi) -->
+            <div class="bbpom-file-preview-top-row">
+                <div class="bbpom-file-preview-info">
+                    <!-- Icon Box dengan Mini Counter Badge untuk Multi-file -->
+                    <div class="relative shrink-0" style="position: relative; flex-shrink: 0;">
+                        <div 
+                            class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" 
+                            :style="'width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background-color: ' + fileColorHex() + ' !important; color: #ffffff !important; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'"
+                        >
+                            <i :class="fileIconClass()" style="font-size: 1.25rem; color: #ffffff; line-height: 1; display: inline-flex; align-items: center; justify-content: center;"></i>
+                        </div>
+                        <template x-if="isMultipleFiles()">
+                            <span 
+                                class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-600 text-white text-[9px] font-black flex items-center justify-center shadow-xs border-2 border-white"
+                                style="position: absolute; top: -0.25rem; right: -0.25rem; width: 1.125rem; height: 1.125rem; border-radius: 9999px; background-color: #d97706; color: #ffffff; font-size: 9px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 1.5px solid #ffffff; line-height: 1;"
+                                x-text="fileCount"
+                            ></span>
+                        </template>
+                    </div>
+
+                    <div class="min-w-0 flex-1" style="min-width: 0; flex: 1 1 auto; overflow: hidden;">
+                        <div class="flex items-center gap-1.5 flex-wrap" style="display: flex; align-items: center; gap: 0.375rem;">
+                            <p class="text-xs sm:text-[13px] font-bold text-slate-800 truncate" style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" x-text="fileName"></p>
+                            <template x-if="isMultipleFiles()">
+                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300/70" style="font-size: 10px; font-weight: 700; background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; border-radius: 9999px; padding: 1px 6px; line-height: 1;">
+                                    <i class="ri-folder-zip-line text-[11px]" style="font-size: 11px;"></i>
+                                    <span>Otomatis ZIP</span>
+                                </span>
+                            </template>
+                            <template x-if="!isMultipleFiles() && isAboveOneMb()">
+                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300/70" style="font-size: 10px; font-weight: 700; background-color: #d1fae5; color: #065f46; border: 1px solid #86efac; border-radius: 9999px; padding: 1px 6px; line-height: 1;">
+                                    <i class="ri-flashlight-line text-[11px]" style="font-size: 11px;"></i>
+                                    <span>Auto-ZIP (>1MB)</span>
+                                </span>
+                            </template>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex; align-items: center; gap: 0.375rem; font-size: 10.5px; color: #64748b; margin-top: 0.25rem; line-height: 1;">
+                            <span x-text="fileSizeFormatted"></span>
+                            <span style="color: #cbd5e1; margin: 0 2px;">•</span>
+                            <span style="text-transform: uppercase; font-weight: 600; color: #475569;" x-text="isMultipleFiles() ? (fileCount + ' Berkas Siap Dikompres') : fileExtensionUpper()"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Segmented Mode Switcher Pill & Cancel Button -->
-            <div class="bbpom-file-preview-actions flex items-center gap-2 shrink-0" style="display: flex !important; align-items: center !important; gap: 0.5rem !important; flex-shrink: 0 !important; margin-left: auto !important;">
-                <div class="bbpom-segmented-switcher inline-flex p-0.5 rounded-xl bg-white/90 border border-slate-200 text-[11px] font-semibold shadow-2xs" style="display: inline-flex !important; align-items: center !important; padding: 3px !important; border-radius: 0.625rem !important; background-color: rgba(255, 255, 255, 0.95) !important; border: 1px solid #cbd5e1 !important; font-size: 11px !important; font-weight: 600 !important; gap: 2px !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;">
+                <!-- Segmented Mode Switcher Pill & Cancel Button -->
+                <div class="bbpom-file-preview-actions">
+                    <template x-if="!isMultipleFiles()">
+                        <div class="bbpom-segmented-switcher">
+                            <button 
+                                type="button" 
+                                @click="setMode('compressed')" 
+                                :style="isCompressedMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
+                                class="bbpom-mode-pill"
+                                title="Kompresi cerdas hemat kapasitas penyimpanan database & server"
+                            >
+                                <i class="ri-sparkling-fill" style="font-size: 0.8rem; line-height: 1; display: inline-flex; align-items: center;"></i>
+                                <span>Kompres Cerdas</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="setMode('original')" 
+                                :style="isOriginalMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
+                                class="bbpom-mode-pill"
+                                title="Kirim ukuran & resolusi asli tanpa kompresi"
+                            >
+                                <i class="ri-hd-line" style="font-size: 0.8rem; line-height: 1; display: inline-flex; align-items: center;"></i>
+                                <span>Ukuran Asli</span>
+                            </button>
+                        </div>
+                    </template>
+
+                    <template x-if="isMultipleFiles()">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-2xs" style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.35rem 0.75rem; border-radius: 9999px; background-color: #ffffff; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.04); white-space: nowrap;">
+                            <i class="ri-archive-line text-amber-600" style="color: #d97706;"></i>
+                            <span>Auto-ZIP Aktif</span>
+                        </div>
+                    </template>
+
                     <button 
                         type="button" 
-                        @click="setMode('compressed')" 
-                        :style="isCompressedMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
-                        class="bbpom-mode-pill"
-                        style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.35rem !important; padding: 0.25rem 0.625rem !important; border-radius: 0.5rem !important; font-size: 11px !important; font-weight: 600 !important; border: none !important; cursor: pointer !important; line-height: 1.25 !important; white-space: nowrap !important; transition: all 0.15s ease !important; font-family: inherit !important;"
-                        title="Kompresi cerdas hemat kapasitas penyimpanan database & server"
+                        @click="clearFile()" 
+                        class="bbpom-action-circle-btn bbpom-clear-file-btn"
+                        title="Batalkan lampiran berkas"
                     >
-                        <i class="ri-sparkling-fill" style="font-size: 0.8rem !important; line-height: 1 !important; display: inline-flex !important; align-items: center !important;"></i>
-                        <span>Kompres Cerdas</span>
-                    </button>
-                    <button 
-                        type="button" 
-                        @click="setMode('original')" 
-                        :style="isOriginalMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
-                        class="bbpom-mode-pill"
-                        style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.35rem !important; padding: 0.25rem 0.625rem !important; border-radius: 0.5rem !important; font-size: 11px !important; font-weight: 600 !important; border: none !important; cursor: pointer !important; line-height: 1.25 !important; white-space: nowrap !important; transition: all 0.15s ease !important; font-family: inherit !important;"
-                        title="Kirim ukuran & resolusi asli tanpa kompresi"
-                    >
-                        <i class="ri-hd-line" style="font-size: 0.8rem !important; line-height: 1 !important; display: inline-flex !important; align-items: center !important;"></i>
-                        <span>Ukuran Asli</span>
+                        <i class="ri-close-line" style="font-size: 1.15rem; line-height: 1; color: inherit;"></i>
                     </button>
                 </div>
-
-                <button 
-                    type="button" 
-                    @click="clearFile()" 
-                    class="bbpom-action-circle-btn bbpom-clear-file-btn"
-                    style="width: 1.75rem !important; height: 1.75rem !important; border-radius: 9999px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; background-color: rgba(255, 255, 255, 0.95) !important; border: 1px solid #cbd5e1 !important; color: #64748b !important; padding: 0 !important; flex-shrink: 0 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; transition: all 0.15s ease !important;"
-                    title="Batalkan lampiran berkas"
-                >
-                    <i class="ri-close-line" style="font-size: 1.1rem !important; line-height: 1 !important; color: #64748b !important;"></i>
-                </button>
             </div>
+
+            <!-- Baris 2: Mini File Stack Chips (Khusus Multi-file) -->
+            <template x-if="isMultipleFiles()">
+                <div class="bbpom-file-chips-container">
+                    <template x-for="(f, idx) in selectedFiles" :key="idx">
+                        <div class="bbpom-file-chip" :title="f.name + ' (' + f.sizeFormatted + ')'" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.5rem; border-radius: 0.375rem; background-color: #ffffff; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 500; color: #334155; max-width: 220px; min-width: 0; line-height: 1.25; white-space: nowrap; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);">
+                            <i class="ri-file-line text-slate-400 shrink-0" style="color: #94a3b8; font-size: 11px; flex-shrink: 0;"></i>
+                            <span class="bbpom-file-chip-name" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 auto;" x-text="f.name"></span>
+                            <span class="bbpom-file-chip-size" style="color: #64748b; font-size: 9.5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; white-space: nowrap !important; flex-shrink: 0 !important; display: inline-block; line-height: 1; margin-left: 0.25rem; background-color: #f1f5f9; padding: 0.125rem 0.35rem; border-radius: 0.25rem; border: 1px solid #e2e8f0;" x-text="f.sizeFormatted"></span>
+                        </div>
+                    </template>
+                </div>
+            </template>
         </div>
 
         <!-- Input Baris Chat & Tombol Lampiran -->

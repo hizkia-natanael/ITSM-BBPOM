@@ -10,6 +10,84 @@ use ZipArchive;
 class FileCompressionService
 {
     /**
+     * Process multiple uploaded files for a ticket response.
+     * Bundles all files into a single zip archive.
+     *
+     * @param array<UploadedFile> $files
+     * @param int|string $ticketId
+     * @param string $mode 'compressed' | 'original'
+     * @return array
+     */
+    public function processMultipleUploads(array $files, int|string $ticketId, string $mode = 'compressed'): array
+    {
+        $disk = config('filesystems.attachment_disk', 'local');
+        $subDirectory = "ticket-responses/{$ticketId}";
+        $totalOriginalSize = 0;
+
+        foreach ($files as $f) {
+            $totalOriginalSize += (int) $f->getSize();
+        }
+
+        if (count($files) === 1) {
+            return $this->processUpload($files[0], $ticketId, $mode);
+        }
+
+        // Multiple files: Always bundle into a zip archive
+        $count = count($files);
+        $timestamp = date('Ymd_His');
+        $zipFileName = "arsip_lampiran_{$count}_berkas_{$timestamp}.zip";
+        $tmpZipPath = tempnam(sys_get_temp_dir(), 'bbpom_multi_zip_') . '.zip';
+
+        $zip = new ZipArchive();
+        if ($zip->open($tmpZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            // Fallback: if zip failed to create, process the first file
+            return $this->processUpload($files[0], $ticketId, $mode);
+        }
+
+        // Add all files into the zip archive with deduplicated entry names
+        $usedNames = [];
+        foreach ($files as $f) {
+            $origName = $f->getClientOriginalName();
+            $entryName = $origName;
+            $counter = 1;
+
+            while (in_array($entryName, $usedNames, true)) {
+                $ext = pathinfo($origName, PATHINFO_EXTENSION);
+                $filename = pathinfo($origName, PATHINFO_FILENAME);
+                $entryName = $ext ? "{$filename}_{$counter}.{$ext}" : "{$origName}_{$counter}";
+                $counter++;
+            }
+
+            $usedNames[] = $entryName;
+            $zip->addFile($f->getRealPath(), $entryName);
+        }
+
+        $zip->close();
+        clearstatcache(true, $tmpZipPath);
+        $zipSize = file_exists($tmpZipPath) ? filesize($tmpZipPath) : 0;
+
+        $randomName = Str::random(40) . '.zip';
+        $finalPath = "{$subDirectory}/{$randomName}";
+
+        Storage::disk($disk)->put($finalPath, file_get_contents($tmpZipPath));
+        @unlink($tmpZipPath);
+
+        $savedBytes = max(0, $totalOriginalSize - $zipSize);
+        $isCompressed = $zipSize < $totalOriginalSize;
+
+        return [
+            'file_path' => $finalPath,
+            'file_name' => $zipFileName,
+            'file_size' => $zipSize,
+            'original_size' => $totalOriginalSize,
+            'mime_type' => 'application/zip',
+            'compression_mode' => $mode,
+            'is_compressed' => $isCompressed,
+            'saved_bytes' => $savedBytes,
+        ];
+    }
+
+    /**
      * Process an uploaded file for a ticket response.
      *
      * @param UploadedFile $file
@@ -60,12 +138,14 @@ class FileCompressionService
             }
         }
 
-        // 2. Non-image files: check if smart archiving/deflate yields meaningful space savings
+        // 2. Non-image files: check if smart archiving/deflate is warranted
+        // Rule: Files > 1 MB (1048576 bytes) are zipped
         $alreadyCompressedArchives = ['zip', 'rar', '7z', 'gz', 'tar', 'bz2'];
         $alreadyCompressedOffice = ['docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp'];
+        $oneMegabyte = 1048576; // 1 MB in bytes
 
-        // If it's already an archive, or office XML container, or small file (< 50KB), keep intact
-        if (in_array($ext, $alreadyCompressedArchives) || in_array($ext, $alreadyCompressedOffice) || $originalSize < 51200 || !extension_loaded('zip')) {
+        // If already archive or office XML container, or file is <= 1 MB, or zip extension not loaded: keep intact
+        if (in_array($ext, $alreadyCompressedArchives) || in_array($ext, $alreadyCompressedOffice) || $originalSize <= $oneMegabyte || !extension_loaded('zip')) {
             $path = $file->store($subDirectory, $disk);
 
             return [
@@ -80,7 +160,7 @@ class FileCompressionService
             ];
         }
 
-        // Try ZipArchive deflate for general documents / large text / data / design files
+        // File is > 1 MB and non-archive: compress into ZipArchive
         $zipResult = $this->compressGeneralFile($file, $originalName, $subDirectory, $disk);
         if ($zipResult !== null && $zipResult['is_compressed']) {
             return [
