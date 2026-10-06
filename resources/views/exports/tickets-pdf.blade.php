@@ -265,7 +265,7 @@
         .signature-role {
             font-weight: 700;
             color: #0f172a;
-            margin-bottom: 45px;
+            margin-bottom: 75px;
         }
         .signature-name {
             font-weight: 800;
