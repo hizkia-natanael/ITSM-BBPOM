@@ -36,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])
         ->middleware('throttle:30,1')
         ->name('tickets.reply');
+    Route::get('/tickets/{ticket}/chat-sync', [TicketController::class, 'chatSync'])
+        ->name('tickets.chat-sync');
 
     // User Notification Bell (balasan tim IT & status) & Web Push opt-in
     Route::get('/notifications/replies', [\App\Http\Controllers\UserNotificationController::class, 'replies'])->name('notifications.replies');

@@ -15,6 +15,7 @@ class TicketResponse extends Model
     protected $fillable = [
         'ticket_id',
         'user_id',
+        'reply_to_id',
         'response_text',
         'read_at',
     ];
@@ -55,5 +56,33 @@ class TicketResponse extends Model
     public function attachment(): HasOne
     {
         return $this->hasOne(TicketResponseAttachment::class)->latestOfMany();
+    }
+
+    public function replyTo(): BelongsTo
+    {
+        return $this->belongsTo(TicketResponse::class, 'reply_to_id');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(TicketResponse::class, 'reply_to_id');
+    }
+
+    public function getSnippetAttribute(): string
+    {
+        $text = trim((string) $this->response_text);
+        if ($text !== '') {
+            return \Illuminate\Support\Str::limit($text, 60);
+        }
+        $att = $this->attachment;
+        if ($att) {
+            return 'Berkas: ' . $att->file_name;
+        }
+        return 'Pesan';
+    }
+
+    public function getIsReadAttribute(): bool
+    {
+        return $this->read_at !== null;
     }
 }

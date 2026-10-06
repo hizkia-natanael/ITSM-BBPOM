@@ -50,10 +50,144 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
-                fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString(
-                    '<meta name="csrf-token" content="' . csrf_token() . '">' . PHP_EOL .
-                    app(\Illuminate\Foundation\Vite::class)(['resources/css/app.css'])->toHtml() . '
+                fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString('
                     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+                    <style>
+                    @keyframes bbpomHighlightPulse {
+                        0% {
+                            background-color: rgba(5, 150, 105, 0.24);
+                        }
+                        30% {
+                            background-color: rgba(5, 150, 105, 0.28);
+                        }
+                        100% {
+                            background-color: transparent;
+                        }
+                    }
+                    @keyframes bbpomSpin {
+                        from { transform: rotate(0deg); }
+                        to { transform: rotate(360deg); }
+                    }
+                    .bbpom-spinner-rotate {
+                        animation: bbpomSpin 0.85s linear infinite !important;
+                    }
+                    .bbpom-highlight-pulse {
+                        animation: bbpomHighlightPulse 1.0s ease-out forwards !important;
+                        border-radius: 1rem !important;
+                    }
+                    .bbpom-msg-row {
+                        position: relative;
+                        transition: background-color 0.15s ease;
+                    }
+                    .bbpom-reply-trigger {
+                        opacity: 0 !important;
+                        visibility: hidden !important;
+                        pointer-events: none !important;
+                        transform: scale(0.85) !important;
+                        transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, color 0.15s ease !important;
+                        border-radius: 9999px !important;
+                        width: 2rem !important;
+                        height: 2rem !important;
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        border: none !important;
+                        cursor: pointer !important;
+                        background: transparent !important;
+                        color: #94a3b8 !important;
+                        flex-shrink: 0 !important;
+                        align-self: center !important;
+                    }
+                    .bbpom-msg-row:hover .bbpom-reply-trigger,
+                    .bbpom-msg-row:focus-within .bbpom-reply-trigger {
+                        opacity: 1 !important;
+                        visibility: visible !important;
+                        pointer-events: auto !important;
+                        transform: scale(1) !important;
+                    }
+                    .bbpom-reply-trigger:hover {
+                        background-color: rgba(226, 232, 240, 0.85) !important;
+                        color: #047857 !important;
+                        transform: scale(1.12) !important;
+                    }
+                    .bbpom-reply-trigger:active {
+                        transform: scale(0.95) !important;
+                    }
+                    .bbpom-quote-card {
+                        transition: filter 0.15s ease, background-color 0.15s ease !important;
+                        cursor: pointer !important;
+                        user-select: none !important;
+                        border-left: 3px solid #059669 !important;
+                    }
+                    .bbpom-quote-card:hover {
+                        filter: brightness(0.94) !important;
+                    }
+                    .bbpom-doc-card {
+                        transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.18s ease !important;
+                        cursor: default !important;
+                    }
+                    .bbpom-doc-card:hover {
+                        transform: translateY(-1.5px) !important;
+                        box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08) !important;
+                    }
+                    .bbpom-doc-card:hover .bbpom-doc-name {
+                        color: #047857 !important;
+                    }
+                    .bbpom-chat-download-btn {
+                        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease !important;
+                    }
+                    .bbpom-chat-download-btn:hover {
+                        transform: scale(1.08) !important;
+                        background-color: #047857 !important;
+                        box-shadow: 0 4px 12px -1px rgba(5, 150, 105, 0.45) !important;
+                    }
+                    .bbpom-chat-download-btn:active {
+                        transform: scale(0.95) !important;
+                    }
+                    .bbpom-clip-btn {
+                        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+                    }
+                    .bbpom-clip-btn:hover {
+                        background-color: #f1f5f9 !important;
+                        border-color: #cbd5e1 !important;
+                        color: #047857 !important;
+                        transform: scale(1.05) !important;
+                    }
+                    .bbpom-clip-btn:active {
+                        transform: scale(0.95) !important;
+                    }
+                    .bbpom-send-btn {
+                        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, box-shadow 0.15s ease !important;
+                    }
+                    .bbpom-send-btn:hover:not(:disabled) {
+                        background-color: #047857 !important;
+                        transform: scale(1.06) !important;
+                        box-shadow: 0 4px 12px -1px rgba(5, 150, 105, 0.4) !important;
+                    }
+                    .bbpom-send-btn:active:not(:disabled) {
+                        transform: scale(0.95) !important;
+                    }
+                    .bbpom-mode-pill {
+                        transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease !important;
+                    }
+                    .bbpom-mode-pill:hover {
+                        filter: brightness(0.96) !important;
+                    }
+                    .bbpom-action-circle-btn {
+                        transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
+                    }
+                    .bbpom-action-circle-btn:hover {
+                        transform: scale(1.1) !important;
+                    }
+                    .bbpom-chat-textarea {
+                        transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+                    }
+                    .bbpom-chat-textarea:focus {
+                        border-color: #059669 !important;
+                        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15) !important;
+                        outline: none !important;
+                    }
+                    </style>
                     <script>
                         document.title = "Admin Layanan TIK BBPOM Di Semarang";
                         document.addEventListener("livewire:navigated", function () {
@@ -69,6 +203,7 @@ class AdminPanelProvider extends PanelProvider
                             return {
                                 ticketId: cfg.ticketId || null,
                                 replyUrl: cfg.replyUrl || "",
+                                syncUrl: cfg.syncUrl || "",
                                 csrfToken: cfg.csrfToken || "",
                                 isSubmitting: false,
                                 hasFile: false,
@@ -77,11 +212,120 @@ class AdminPanelProvider extends PanelProvider
                                 fileExtension: "",
                                 compressionMode: "compressed",
                                 errorMessage: "",
+                                replyingTo: null,
+                                lastMessageId: Number(cfg.lastMessageId) || 0,
+                                dynamicMessages: [],
+                                existingIds: null,
+                                pollTimer: null,
+                                isPolling: false,
+
                                 init() {
+                                    this.existingIds = new Set(cfg.initialIds || []);
                                     this.$nextTick(() => {
                                         this.scrollToBottom();
                                         this.adjustTextareaHeight();
                                     });
+                                    this.startPolling();
+                                    document.addEventListener("visibilitychange", () => {
+                                        if (document.hidden) {
+                                            this.stopPolling();
+                                        } else {
+                                            this.startPolling();
+                                            this.pollSync();
+                                        }
+                                    });
+                                },
+                                startPolling() {
+                                    if (this.pollTimer) clearInterval(this.pollTimer);
+                                    this.pollTimer = setInterval(() => {
+                                        this.pollSync();
+                                    }, 2500);
+                                },
+                                stopPolling() {
+                                    if (this.pollTimer) {
+                                        clearInterval(this.pollTimer);
+                                        this.pollTimer = null;
+                                    }
+                                },
+                                async pollSync() {
+                                    if (this.isPolling || this.isSubmitting || !this.syncUrl) return;
+                                    this.isPolling = true;
+                                    try {
+                                        const res = await fetch(`${this.syncUrl}?after_id=${this.lastMessageId}`, {
+                                            headers: {
+                                                "Accept": "application/json",
+                                                "X-Requested-With": "XMLHttpRequest",
+                                            }
+                                        });
+                                        if (!res.ok) {
+                                            this.isPolling = false;
+                                            return;
+                                        }
+                                        const data = await res.json();
+                                        if (data && data.responses && data.responses.length > 0) {
+                                            let hasNew = false;
+                                            for (const msg of data.responses) {
+                                                const id = Number(msg.id);
+                                                if (id > this.lastMessageId) {
+                                                    this.lastMessageId = id;
+                                                }
+                                                if (!this.existingIds.has(id)) {
+                                                    this.existingIds.add(id);
+                                                    this.dynamicMessages.push(msg);
+                                                    hasNew = true;
+                                                }
+                                            }
+                                            if (hasNew) {
+                                                this.$nextTick(() => {
+                                                    this.scrollToBottom();
+                                                });
+                                            }
+                                        }
+                                    } catch (err) {
+                                        // Ignore transient network errors
+                                    } finally {
+                                        this.isPolling = false;
+                                    }
+                                },
+                                hasReplyTarget() {
+                                    return Boolean(this.replyingTo && this.replyingTo.id);
+                                },
+                                setReply(msg) {
+                                    this.replyingTo = msg;
+                                    this.$nextTick(() => {
+                                        const el = this.$refs.replyTextarea || document.getElementById("ticket_conversation_response_text_" + this.ticketId);
+                                        if (el) {
+                                            el.focus();
+                                        }
+                                    });
+                                },
+                                cancelReply() {
+                                    this.replyingTo = null;
+                                },
+                                replyAuthorText() {
+                                    return "Membalas " + (this.replyingTo ? this.replyingTo.userName : "");
+                                },
+                                replySnippetText() {
+                                    return this.replyingTo ? this.replyingTo.text : "";
+                                },
+                                scrollToMessage(id) {
+                                    const el = document.getElementById("bbpom_msg_" + id);
+                                    if (!el) return;
+
+                                    const container = this.$refs && this.$refs.streamContainer ? this.$refs.streamContainer : document.querySelector(".bbpom-chat-stream");
+                                    if (container) {
+                                        const containerRect = container.getBoundingClientRect();
+                                        const elRect = el.getBoundingClientRect();
+                                        const targetScrollTop = container.scrollTop + (elRect.top - containerRect.top) - (container.clientHeight / 2) + (elRect.clientHeight / 2);
+                                        container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: "smooth" });
+                                    }
+
+                                    el.classList.remove("bbpom-highlight-pulse");
+                                    void el.offsetWidth;
+                                    el.classList.add("bbpom-highlight-pulse");
+                                    setTimeout(() => {
+                                        el.classList.remove("bbpom-highlight-pulse");
+                                    }, 1050);
                                 },
                                 triggerFilePicker() {
                                     const input = this.getFileInput();
@@ -100,6 +344,15 @@ class AdminPanelProvider extends PanelProvider
                                 },
                                 hasErrorMessage() {
                                     return this.errorMessage.length > 0;
+                                },
+                                hasText(msg) {
+                                    return Boolean(msg && msg.response_text && msg.response_text.trim().length > 0);
+                                },
+                                hasAttachments(msg) {
+                                    return Boolean(msg && msg.attachments && msg.attachments.length > 0);
+                                },
+                                hasReplyTo(msg) {
+                                    return Boolean(msg && msg.reply_to && msg.reply_to.id);
                                 },
                                 setMode(mode) {
                                     this.compressionMode = mode;
@@ -260,6 +513,9 @@ class AdminPanelProvider extends PanelProvider
                                     }
                                     formData.append("response_text", text);
                                     formData.append("compression_mode", this.compressionMode);
+                                    if (this.hasReplyTarget()) {
+                                        formData.append("reply_to_id", this.replyingTo.id);
+                                    }
                                     if (hasSelectedFile && fileInput.files[0]) {
                                         formData.append("attachment", fileInput.files[0]);
                                     }
@@ -280,7 +536,27 @@ class AdminPanelProvider extends PanelProvider
                                         });
 
                                         if (response.ok) {
-                                            window.location.reload();
+                                            const data = await response.json().catch(() => null);
+                                            if (data && data.response) {
+                                                const msg = data.response;
+                                                const id = Number(msg.id);
+                                                if (id > this.lastMessageId) {
+                                                    this.lastMessageId = id;
+                                                }
+                                                if (!this.existingIds.has(id)) {
+                                                    this.existingIds.add(id);
+                                                    this.dynamicMessages.push(msg);
+                                                }
+                                            }
+
+                                            if (el) el.value = "";
+                                            this.clearFile();
+                                            this.cancelReply();
+                                            this.adjustTextareaHeight();
+                                            this.$nextTick(() => {
+                                                this.scrollToBottom();
+                                            });
+                                            this.isSubmitting = false;
                                             return;
                                         }
 

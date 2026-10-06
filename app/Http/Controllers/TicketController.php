@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
+use App\Models\TicketResponse;
 use App\Models\TicketResponseAttachment;
 use App\Services\FileCompressionService;
 use Carbon\Carbon;
@@ -1101,6 +1102,7 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'response_text' => [$request->hasFile('attachment') ? 'nullable' : 'required', 'string'],
+            'reply_to_id' => ['nullable', 'integer', 'exists:ticket_responses,id'],
             'attachment' => ['nullable', 'file', 'max:51200'],
             'compression_mode' => ['nullable', 'string', 'in:compressed,original'],
         ], [
@@ -1113,8 +1115,17 @@ class TicketController extends Controller
             $responseText = 'Melampirkan berkas: ' . $request->file('attachment')->getClientOriginalName();
         }
 
+        $replyToId = null;
+        if (!empty($validated['reply_to_id'])) {
+            $parentResponse = $ticket->responses()->where('id', $validated['reply_to_id'])->first();
+            if ($parentResponse) {
+                $replyToId = $parentResponse->id;
+            }
+        }
+
         $response = $ticket->responses()->create([
             'user_id' => $request->user()->id,
+            'reply_to_id' => $replyToId,
             'response_text' => $responseText,
         ]);
 
@@ -1153,12 +1164,15 @@ class TicketController extends Controller
             $ticket->save();
         }
 
+        $response->loadMissing(['user', 'attachments', 'replyTo.user', 'replyTo.attachments']);
+
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => $request->user()->isAdmin()
                     ? 'Tanggapan dan berkas Anda telah berhasil dikirim ke pelapor.'
                     : 'Tanggapan dan berkas Anda telah berhasil dikirim ke tim IT BBPOM.',
+                'response' => $this->formatResponseForJson($response, (int) $request->user()->id),
             ]);
         }
 
@@ -1169,6 +1183,111 @@ class TicketController extends Controller
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Tanggapan dan berkas Anda telah berhasil dikirim ke tim IT BBPOM.');
+    }
+
+    /**
+     * Sinkronisasi pesan obrolan secara realtime (Smart Delta Polling).
+     */
+    public function chatSync(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
+    {
+        if ($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $afterId = (int) $request->query('after_id', 0);
+        $currentUserId = (int) auth()->id();
+
+        $query = $ticket->responses()
+            ->with(['user', 'attachments', 'replyTo.user', 'replyTo.attachments'])
+            ->orderBy('id', 'asc');
+
+        if ($afterId > 0) {
+            $query->where('id', '>', $afterId);
+        }
+
+        $responses = $query->get();
+
+        // Tandai pesan dari lawan bicara sebagai telah dibaca
+        if ($responses->isNotEmpty()) {
+            $ticket->responses()
+                ->where('user_id', '!=', $currentUserId)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+        }
+
+        $formatted = $responses->map(function (TicketResponse $res) use ($currentUserId) {
+            return $this->formatResponseForJson($res, $currentUserId);
+        });
+
+        return response()->json([
+            'success' => true,
+            'ticket_status' => $ticket->status,
+            'responses' => $formatted,
+            'latest_id' => $responses->isNotEmpty() ? $responses->last()->id : $afterId,
+        ]);
+    }
+
+    /**
+     * Serialisasi respons obrolan untuk JSON payload realtime.
+     */
+    protected function formatResponseForJson(TicketResponse $res, int $currentUserId): array
+    {
+        $sender = $res->user;
+        $isMe = ((int) $res->user_id === $currentUserId);
+        $isSenderAdmin = $sender ? $sender->isAdmin() : false;
+
+        $attachments = $res->attachments->map(function ($att) {
+            return [
+                'id' => $att->id,
+                'file_name' => $att->file_name,
+                'formatted_size' => $att->formatted_size,
+                'extension_upper' => $att->extension_upper,
+                'pure_icon_class' => $att->pure_icon_class,
+                'document_hex_color' => $att->document_hex_color,
+                'document_card_bg_hex' => $att->document_card_bg_hex,
+                'document_card_border_hex' => $att->document_card_border_hex,
+                'download_url' => $att->download_url,
+                'is_compressed' => (bool) $att->is_compressed,
+                'saving_percentage' => (int) $att->saving_percentage,
+                'formatted_original_size' => $att->formatted_original_size,
+            ];
+        })->values()->all();
+
+        $replyToData = null;
+        if ($res->replyTo) {
+            $parent = $res->replyTo;
+            $parentSender = $parent->user;
+            $parentIsAdmin = $parentSender ? $parentSender->isAdmin() : false;
+            $parentFirstAtt = $parent->attachments->first();
+
+            $replyToData = [
+                'id' => $parent->id,
+                'user_name' => $parentSender ? $parentSender->name : 'Pengguna',
+                'user_role' => $parentIsAdmin ? 'Petugas IT' : 'Pemohon',
+                'snippet' => $parent->snippet,
+                'has_attachment' => $parentFirstAtt !== null,
+                'attachment_name' => $parentFirstAtt?->file_name,
+                'attachment_icon' => $parentFirstAtt?->pure_icon_class,
+                'attachment_color' => $parentFirstAtt?->document_hex_color,
+            ];
+        }
+
+        return [
+            'id' => $res->id,
+            'user_id' => $res->user_id,
+            'user_name' => $sender ? $sender->name : 'Pengguna',
+            'user_initials' => $sender ? strtoupper(substr($sender->name, 0, 2)) : '??',
+            'is_me' => $isMe,
+            'is_sender_admin' => $isSenderAdmin,
+            'sender_badge' => $isMe
+                ? ($isSenderAdmin ? 'Petugas IT (Anda)' : 'Pemohon (Anda)')
+                : ($isSenderAdmin ? 'Petugas IT' : 'Pemohon'),
+            'response_text' => $res->response_text,
+            'time' => $res->created_at->format('H:i') . ' WIB',
+            'date_key' => $res->created_at->format('Y-m-d'),
+            'attachments' => $attachments,
+            'reply_to' => $replyToData,
+        ];
     }
 
     /**

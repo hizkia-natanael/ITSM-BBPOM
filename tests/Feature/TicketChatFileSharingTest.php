@@ -315,4 +315,112 @@ class TicketChatFileSharingTest extends TestCase
         $this->assertSame('#059669', $imgAtt->document_hex_color);
         $this->assertSame('ri-image-2-line', $imgAtt->pure_icon_class);
     }
+
+    public function test_user_can_reply_to_specific_message_quote(): void
+    {
+        // Admin sends first message
+        $adminResponse = TicketResponse::create([
+            'ticket_id' => $this->ticket->id,
+            'user_id' => $this->admin->id,
+            'response_text' => 'Mohon kirimkan format resolusi gambar yang diinginkan.',
+            'read_at' => null,
+        ]);
+
+        // User quotes admin response
+        $ajaxResponse = $this->actingAs($this->user)->postJson(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Kami memerlukan format PNG transparan 1080x1080.',
+            'reply_to_id' => $adminResponse->id,
+        ]);
+
+        $ajaxResponse->assertOk();
+        $ajaxResponse->assertJsonStructure([
+            'success',
+            'response' => [
+                'id',
+                'response_text',
+                'reply_to' => [
+                    'id',
+                    'user_name',
+                    'snippet',
+                ],
+            ],
+        ]);
+
+        $this->assertDatabaseHas('ticket_responses', [
+            'ticket_id' => $this->ticket->id,
+            'user_id' => $this->user->id,
+            'response_text' => 'Kami memerlukan format PNG transparan 1080x1080.',
+            'reply_to_id' => $adminResponse->id,
+        ]);
+
+        $userResponse = TicketResponse::where('ticket_id', $this->ticket->id)
+            ->where('user_id', $this->user->id)
+            ->first();
+
+        $this->assertNotNull($userResponse->replyTo);
+        $this->assertSame($adminResponse->id, $userResponse->replyTo->id);
+        $this->assertTrue($adminResponse->replies->contains($userResponse));
+    }
+
+    public function test_chat_sync_returns_delta_messages_and_marks_counterpart_as_read(): void
+    {
+        // User creates message 1
+        $userMsg = TicketResponse::create([
+            'ticket_id' => $this->ticket->id,
+            'user_id' => $this->user->id,
+            'response_text' => 'Pesan pertama dari pemohon.',
+            'read_at' => null,
+        ]);
+
+        // Admin syncs all messages after_id=0
+        $syncAsAdmin = $this->actingAs($this->admin)->getJson(route('tickets.chat-sync', [
+            'ticket' => $this->ticket,
+            'after_id' => 0,
+        ]));
+
+        $syncAsAdmin->assertOk();
+        $syncAsAdmin->assertJsonCount(1, 'responses');
+        $syncAsAdmin->assertJsonPath('responses.0.id', $userMsg->id);
+        $syncAsAdmin->assertJsonPath('responses.0.is_me', false);
+
+        // Counterpart message is marked as read
+        $this->assertNotNull($userMsg->fresh()->read_at);
+        $this->assertTrue($userMsg->fresh()->is_read);
+
+        // Admin replies with message 2
+        $adminMsg = TicketResponse::create([
+            'ticket_id' => $this->ticket->id,
+            'user_id' => $this->admin->id,
+            'response_text' => 'Tanggapan dari admin TIK.',
+            'read_at' => null,
+        ]);
+
+        // User syncs only messages after_id=userMsg->id
+        $syncAsUser = $this->actingAs($this->user)->getJson(route('tickets.chat-sync', [
+            'ticket' => $this->ticket,
+            'after_id' => $userMsg->id,
+        ]));
+
+        $syncAsUser->assertOk();
+        $syncAsUser->assertJsonCount(1, 'responses');
+        $syncAsUser->assertJsonPath('responses.0.id', $adminMsg->id);
+        $syncAsUser->assertJsonPath('responses.0.is_me', false);
+
+        // Admin message is marked as read by user
+        $this->assertNotNull($adminMsg->fresh()->read_at);
+        $this->assertTrue($adminMsg->fresh()->is_read);
+    }
+
+    public function test_unauthorized_user_cannot_sync_other_users_ticket_chat(): void
+    {
+        $otherUser = User::factory()->create(['role' => 'user']);
+
+        $response = $this->actingAs($otherUser)->getJson(route('tickets.chat-sync', [
+            'ticket' => $this->ticket,
+            'after_id' => 0,
+        ]));
+
+        $response->assertForbidden();
+    }
 }
+
