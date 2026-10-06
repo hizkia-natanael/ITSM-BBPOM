@@ -13,6 +13,7 @@ use App\Services\Tickets\TicketCreationService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class TicketController extends Controller
