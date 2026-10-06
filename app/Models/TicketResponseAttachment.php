@@ -91,6 +91,20 @@ class TicketResponseAttachment extends Model
         };
     }
 
+    public function getPureIconClassAttribute(): string
+    {
+        return match (true) {
+            $this->is_image => 'ri-image-2-line',
+            $this->is_pdf => 'ri-file-pdf-2-line',
+            in_array($this->file_extension, ['doc', 'docx']) => 'ri-file-word-2-line',
+            in_array($this->file_extension, ['xls', 'xlsx', 'csv']) => 'ri-file-excel-2-line',
+            in_array($this->file_extension, ['zip', 'rar', '7z', 'tar', 'gz']) => 'ri-file-zip-line',
+            in_array($this->file_extension, ['ppt', 'pptx']) => 'ri-file-ppt-2-line',
+            in_array($this->file_extension, ['ai', 'psd', 'cdr']) => 'ri-palette-line',
+            default => 'ri-file-text-line',
+        };
+    }
+
     public function getBadgeClassAttribute(): string
     {
         return match (true) {
@@ -118,6 +132,48 @@ class TicketResponseAttachment extends Model
             in_array($this->file_extension, ['ppt', 'pptx']) => 'bg-orange-600 text-white',
             in_array($this->file_extension, ['ai', 'psd', 'cdr']) => 'bg-purple-600 text-white',
             default => 'bg-slate-600 text-white',
+        };
+    }
+
+    public function getDocumentHexColorAttribute(): string
+    {
+        return match (true) {
+            $this->is_image => '#059669', // Emerald
+            $this->is_pdf => '#e11d48', // Rose / Red
+            in_array($this->file_extension, ['doc', 'docx']) => '#2563eb', // Royal Blue
+            in_array($this->file_extension, ['xls', 'xlsx', 'csv']) => '#0d9488', // Teal / Green
+            in_array($this->file_extension, ['zip', 'rar', '7z', 'tar', 'gz']) => '#d97706', // Amber
+            in_array($this->file_extension, ['ppt', 'pptx']) => '#ea580c', // Orange
+            in_array($this->file_extension, ['ai', 'psd', 'cdr']) => '#9333ea', // Purple
+            default => '#475569', // Slate
+        };
+    }
+
+    public function getDocumentCardBgHexAttribute(): string
+    {
+        return match (true) {
+            $this->is_image => '#f0fdf4',
+            $this->is_pdf => '#fff1f2',
+            in_array($this->file_extension, ['doc', 'docx']) => '#eff6ff',
+            in_array($this->file_extension, ['xls', 'xlsx', 'csv']) => '#f0fdfa',
+            in_array($this->file_extension, ['zip', 'rar', '7z', 'tar', 'gz']) => '#fffbeb',
+            in_array($this->file_extension, ['ppt', 'pptx']) => '#fff7ed',
+            in_array($this->file_extension, ['ai', 'psd', 'cdr']) => '#faf5ff',
+            default => '#f8fafc',
+        };
+    }
+
+    public function getDocumentCardBorderHexAttribute(): string
+    {
+        return match (true) {
+            $this->is_image => '#bbf7d0',
+            $this->is_pdf => '#fecdd3',
+            in_array($this->file_extension, ['doc', 'docx']) => '#bfdbfe',
+            in_array($this->file_extension, ['xls', 'xlsx', 'csv']) => '#99f6e4',
+            in_array($this->file_extension, ['zip', 'rar', '7z', 'tar', 'gz']) => '#fde68a',
+            in_array($this->file_extension, ['ppt', 'pptx']) => '#fed7aa',
+            in_array($this->file_extension, ['ai', 'psd', 'cdr']) => '#e9d5ff',
+            default => '#e2e8f0',
         };
     }
 

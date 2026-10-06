@@ -22,6 +22,12 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 this.adjustTextareaHeight();
             });
         },
+        triggerFilePicker() {
+            const input = this.getFileInput();
+            if (input) {
+                input.click();
+            }
+        },
         hasFileSelected() {
             return Boolean(this.hasFile);
         },
@@ -81,7 +87,44 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             if (['xls', 'xlsx', 'csv'].indexOf(ext) !== -1) return 'ri-file-excel-2-line';
             if (['zip', 'rar', '7z', 'tar', 'gz'].indexOf(ext) !== -1) return 'ri-file-zip-line';
             if (['ppt', 'pptx'].indexOf(ext) !== -1) return 'ri-file-ppt-2-line';
+            if (['psd', 'ai', 'fig', 'sketch'].indexOf(ext) !== -1) return 'ri-palette-line';
             return 'ri-file-text-line';
+        },
+        fileColorHex() {
+            const ext = this.fileExtension;
+            if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return '#059669';
+            if (ext === 'pdf') return '#e11d48';
+            if (['doc', 'docx'].indexOf(ext) !== -1) return '#2563eb';
+            if (['xls', 'xlsx', 'csv'].indexOf(ext) !== -1) return '#0d9488';
+            if (['zip', 'rar', '7z', 'tar', 'gz'].indexOf(ext) !== -1) return '#d97706';
+            if (['ppt', 'pptx'].indexOf(ext) !== -1) return '#ea580c';
+            if (['psd', 'ai', 'fig', 'sketch'].indexOf(ext) !== -1) return '#9333ea';
+            return '#475569';
+        },
+        fileColorBgHex() {
+            const ext = this.fileExtension;
+            if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return '#f0fdf4';
+            if (ext === 'pdf') return '#fff1f2';
+            if (['doc', 'docx'].indexOf(ext) !== -1) return '#eff6ff';
+            if (['xls', 'xlsx', 'csv'].indexOf(ext) !== -1) return '#f0fdfa';
+            if (['zip', 'rar', '7z', 'tar', 'gz'].indexOf(ext) !== -1) return '#fffbeb';
+            if (['ppt', 'pptx'].indexOf(ext) !== -1) return '#fff7ed';
+            if (['psd', 'ai', 'fig', 'sketch'].indexOf(ext) !== -1) return '#faf5ff';
+            return '#f8fafc';
+        },
+        fileColorBorderHex() {
+            const ext = this.fileExtension;
+            if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].indexOf(ext) !== -1) return '#bbf7d0';
+            if (ext === 'pdf') return '#fecdd3';
+            if (['doc', 'docx'].indexOf(ext) !== -1) return '#bfdbfe';
+            if (['xls', 'xlsx', 'csv'].indexOf(ext) !== -1) return '#99f6e4';
+            if (['zip', 'rar', '7z', 'tar', 'gz'].indexOf(ext) !== -1) return '#fde68a';
+            if (['ppt', 'pptx'].indexOf(ext) !== -1) return '#fed7aa';
+            if (['psd', 'ai', 'fig', 'sketch'].indexOf(ext) !== -1) return '#e9d5ff';
+            return '#e2e8f0';
+        },
+        fileExtensionUpper() {
+            return (this.fileExtension || 'FILE').toUpperCase();
         },
         formatBytes(bytes) {
             const b = Number(bytes) || 0;
@@ -140,10 +183,20 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             this.errorMessage = '';
             this.isSubmitting = true;
 
-            const token = this.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            let token = this.csrfToken;
+            if (!token) {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) token = meta.getAttribute('content');
+            }
+            if (!token) {
+                const input = document.querySelector('input[name="_token"]');
+                if (input) token = input.value;
+            }
 
             const formData = new FormData();
-            formData.append('_token', token);
+            if (token) {
+                formData.append('_token', token);
+            }
             formData.append('response_text', text);
             formData.append('compression_mode', this.compressionMode);
             if (hasSelectedFile && fileInput.files[0]) {
@@ -151,12 +204,17 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             }
 
             try {
+                const headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                };
+                if (token) {
+                    headers['X-CSRF-TOKEN'] = token;
+                }
+
                 const response = await fetch(this.replyUrl, {
                     method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
+                    headers: headers,
                     body: formData,
                 });
 
@@ -183,6 +241,16 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
     };
 };
 </script>
+
+<style>
+@keyframes bbpomSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.bbpom-spinner-rotate {
+    animation: bbpomSpin 0.85s linear infinite !important;
+}
+</style>
 
 <div 
     x-data="bbpomTicketConversation({ ticketId: {{ $ticket->id }}, replyUrl: '{{ route('tickets.reply', $ticket) }}', csrfToken: '{{ csrf_token() }}' })"
@@ -326,12 +394,12 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                 @if($response->attachments->isNotEmpty())
                                     <div class="mt-2 space-y-2">
                                         @foreach($response->attachments as $att)
-                                            <div class="rounded-xl p-2.5 sm:p-3 bg-white/95 border border-emerald-200/90 shadow-2xs flex items-center justify-between gap-3 max-w-sm transition-all hover:shadow-xs group" style="background-color: rgba(255, 255, 255, 0.95); border: 1px solid rgba(167, 243, 208, 0.9); border-radius: 0.75rem; padding: 0.625rem 0.75rem;">
+                                            <div class="rounded-xl p-2.5 sm:p-3 shadow-2xs flex items-center justify-between gap-3 max-w-sm transition-all hover:shadow-xs group" style="background-color: {{ $att->document_card_bg_hex }} !important; border: 1px solid {{ $att->document_card_border_hex }} !important; border-radius: 0.75rem; padding: 0.625rem 0.75rem;">
                                                 <!-- Icon Box & File Info -->
                                                 <a href="{{ $att->download_url }}" class="flex items-center gap-2.5 min-w-0 flex-1 text-left no-underline group-hover:opacity-95" style="display: flex; align-items: center; gap: 0.625rem; min-width: 0; flex: 1; text-decoration: none;" title="Unduh {{ $att->file_name }}">
-                                                    <div class="w-10 h-10 rounded-xl {{ $att->document_color_class }} flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                        <i class="{{ $att->icon_class }} text-base text-white leading-none" style="font-size: 1rem; color: #ffffff;"></i>
-                                                        <span class="text-[8.5px] font-extrabold tracking-wider uppercase mt-0.5 text-white/95" style="font-size: 8.5px; font-weight: 800; color: #ffffff; text-transform: uppercase;">{{ $att->extension_upper }}</span>
+                                                    <div class="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background-color: {{ $att->document_hex_color }} !important; color: #ffffff !important; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.12);">
+                                                        <i class="{{ $att->pure_icon_class }}" style="font-size: 1rem; color: #ffffff !important; line-height: 1;"></i>
+                                                        <span style="font-size: 8.5px; font-weight: 800; color: #ffffff !important; text-transform: uppercase; margin-top: 2px; line-height: 1;">{{ $att->extension_upper }}</span>
                                                     </div>
                                                     <div class="min-w-0 flex-1">
                                                         <p class="text-xs sm:text-[13px] font-bold text-slate-800 group-hover:text-emerald-700 truncate block leading-tight transition-colors" style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.25;" title="{{ $att->file_name }}">
@@ -339,18 +407,18 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                         </p>
                                                         <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex; align-items: center; gap: 0.375rem; font-size: 10.5px; color: #64748b; margin-top: 0.25rem;">
                                                             <span>{{ $att->formatted_size }}</span>
-                                                            <span class="text-slate-300">•</span>
-                                                            <span class="uppercase font-semibold text-slate-600">{{ $att->extension_upper }}</span>
+                                                            <span style="color: #cbd5e1;">•</span>
+                                                            <span style="text-transform: uppercase; font-weight: 600; color: #475569;">{{ $att->extension_upper }}</span>
                                                             @if($att->is_compressed)
-                                                                <span class="text-slate-300">•</span>
-                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200/60" title="Ukuran asli: {{ $att->formatted_original_size }}">
+                                                                <span style="color: #cbd5e1;">•</span>
+                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200/60" style="display: inline-flex; align-items: center; gap: 2px; font-size: 10px; font-weight: 700; color: #047857; background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 1px 6px; border-radius: 9999px;" title="Ukuran asli: {{ $att->formatted_original_size }}">
                                                                     <i class="ri-flashlight-line"></i>
                                                                     <span>-{{ $att->saving_percentage }}%</span>
                                                                 </span>
                                                             @else
-                                                                <span class="text-slate-300">•</span>
-                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-full border border-slate-200">
-                                                                    <i class="ri-hd-line text-slate-400"></i>
+                                                                <span style="color: #cbd5e1;">•</span>
+                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-full border border-slate-200" style="display: inline-flex; align-items: center; gap: 2px; font-size: 10px; font-weight: 600; color: #475569; background-color: #f1f5f9; border: 1px solid #e2e8f0; padding: 1px 6px; border-radius: 9999px;">
+                                                                    <i class="ri-hd-line" style="color: #94a3b8;"></i>
                                                                     <span>Asli</span>
                                                                 </span>
                                                             @endif
@@ -361,10 +429,10 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                 <a 
                                                     href="{{ $att->download_url }}" 
                                                     class="shrink-0 w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
-                                                    style="width: 2.25rem; height: 2.25rem; border-radius: 9999px; background-color: #059669; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none;"
+                                                    style="width: 2.25rem; height: 2.25rem; border-radius: 9999px; background-color: #059669 !important; color: #ffffff !important; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,0.12);"
                                                     title="Unduh {{ $att->file_name }}"
                                                 >
-                                                    <i class="ri-download-2-line text-base" style="font-size: 1rem;"></i>
+                                                    <i class="ri-download-2-line text-base" style="font-size: 1rem; color: #ffffff !important;"></i>
                                                 </a>
                                             </div>
                                         @endforeach
@@ -409,12 +477,12 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                 @if($response->attachments->isNotEmpty())
                                     <div class="mt-2 space-y-2">
                                         @foreach($response->attachments as $att)
-                                            <div class="rounded-xl p-2.5 sm:p-3 bg-slate-50/90 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 max-w-sm transition-all hover:shadow-xs group" style="background-color: rgba(248, 250, 252, 0.9); border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 0.75rem; padding: 0.625rem 0.75rem;">
+                                            <div class="rounded-xl p-2.5 sm:p-3 shadow-2xs flex items-center justify-between gap-3 max-w-sm transition-all hover:shadow-xs group" style="background-color: {{ $att->document_card_bg_hex }} !important; border: 1px solid {{ $att->document_card_border_hex }} !important; border-radius: 0.75rem; padding: 0.625rem 0.75rem;">
                                                 <!-- Icon Box & File Info -->
                                                 <a href="{{ $att->download_url }}" class="flex items-center gap-2.5 min-w-0 flex-1 text-left no-underline group-hover:opacity-95" style="display: flex; align-items: center; gap: 0.625rem; min-width: 0; flex: 1; text-decoration: none;" title="Unduh {{ $att->file_name }}">
-                                                    <div class="w-10 h-10 rounded-xl {{ $att->document_color_class }} flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                        <i class="{{ $att->icon_class }} text-base text-white leading-none" style="font-size: 1rem; color: #ffffff;"></i>
-                                                        <span class="text-[8.5px] font-extrabold tracking-wider uppercase mt-0.5 text-white/95" style="font-size: 8.5px; font-weight: 800; color: #ffffff; text-transform: uppercase;">{{ $att->extension_upper }}</span>
+                                                    <div class="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background-color: {{ $att->document_hex_color }} !important; color: #ffffff !important; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.12);">
+                                                        <i class="{{ $att->pure_icon_class }}" style="font-size: 1rem; color: #ffffff !important; line-height: 1;"></i>
+                                                        <span style="font-size: 8.5px; font-weight: 800; color: #ffffff !important; text-transform: uppercase; margin-top: 2px; line-height: 1;">{{ $att->extension_upper }}</span>
                                                     </div>
                                                     <div class="min-w-0 flex-1">
                                                         <p class="text-xs sm:text-[13px] font-bold text-slate-800 group-hover:text-emerald-700 truncate block leading-tight transition-colors" style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.25;" title="{{ $att->file_name }}">
@@ -422,18 +490,18 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                         </p>
                                                         <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex; align-items: center; gap: 0.375rem; font-size: 10.5px; color: #64748b; margin-top: 0.25rem;">
                                                             <span>{{ $att->formatted_size }}</span>
-                                                            <span class="text-slate-300">•</span>
-                                                            <span class="uppercase font-semibold text-slate-600">{{ $att->extension_upper }}</span>
+                                                            <span style="color: #cbd5e1;">•</span>
+                                                            <span style="text-transform: uppercase; font-weight: 600; color: #475569;">{{ $att->extension_upper }}</span>
                                                             @if($att->is_compressed)
-                                                                <span class="text-slate-300">•</span>
-                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200/60" title="Ukuran asli: {{ $att->formatted_original_size }}">
+                                                                <span style="color: #cbd5e1;">•</span>
+                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200/60" style="display: inline-flex; align-items: center; gap: 2px; font-size: 10px; font-weight: 700; color: #047857; background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 1px 6px; border-radius: 9999px;" title="Ukuran asli: {{ $att->formatted_original_size }}">
                                                                     <i class="ri-flashlight-line"></i>
                                                                     <span>-{{ $att->saving_percentage }}%</span>
                                                                 </span>
                                                             @else
-                                                                <span class="text-slate-300">•</span>
-                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-full border border-slate-200">
-                                                                    <i class="ri-hd-line text-slate-400"></i>
+                                                                <span style="color: #cbd5e1;">•</span>
+                                                                <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-full border border-slate-200" style="display: inline-flex; align-items: center; gap: 2px; font-size: 10px; font-weight: 600; color: #475569; background-color: #f1f5f9; border: 1px solid #e2e8f0; padding: 1px 6px; border-radius: 9999px;">
+                                                                    <i class="ri-hd-line" style="color: #94a3b8;"></i>
                                                                     <span>Asli</span>
                                                                 </span>
                                                             @endif
@@ -443,11 +511,11 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                 <!-- Tombol Unduh WhatsApp -->
                                                 <a 
                                                     href="{{ $att->download_url }}" 
-                                                    class="shrink-0 w-9 h-9 rounded-full bg-slate-200 hover:bg-emerald-600 text-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
-                                                    style="width: 2.25rem; height: 2.25rem; border-radius: 9999px; background-color: #e2e8f0; color: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none;"
+                                                    class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
+                                                    style="width: 2.25rem; height: 2.25rem; border-radius: 9999px; background-color: #ffffff !important; border: 1px solid {{ $att->document_card_border_hex }} !important; color: {{ $att->document_hex_color }} !important; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.06);"
                                                     title="Unduh {{ $att->file_name }}"
                                                 >
-                                                    <i class="ri-download-2-line text-base" style="font-size: 1rem;"></i>
+                                                    <i class="ri-download-2-line text-base" style="font-size: 1rem; color: {{ $att->document_hex_color }} !important;"></i>
                                                 </a>
                                             </div>
                                         @endforeach
@@ -485,42 +553,48 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
         <!-- Floating Attachment Pill Preview -->
         <div 
             x-show="hasFileSelected()" 
-            class="mb-3 p-3 rounded-2xl bg-white border border-emerald-300 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all"
-            style="background-color: #ffffff; border: 1px solid rgba(110, 231, 183, 0.9); border-radius: 1rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+            class="mb-3 p-3 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all"
+            :style="'background-color: ' + fileColorBgHex() + ' !important; border: 1px solid ' + fileColorBorderHex() + ' !important; border-radius: 1rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);'"
         >
             <div class="flex items-center gap-2.5 min-w-0" style="display: flex; align-items: center; gap: 0.625rem;">
-                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center shrink-0" style="width: 2.25rem; height: 2.25rem; border-radius: 0.75rem; background-color: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <i :class="fileIconClass()" class="text-lg"></i>
+                <div 
+                    class="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-2xs leading-none p-1 text-center" 
+                    :style="'width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background-color: ' + fileColorHex() + ' !important; color: #ffffff !important; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'"
+                >
+                    <i :class="fileIconClass()" style="font-size: 1rem; color: #ffffff !important; line-height: 1;"></i>
+                    <span style="font-size: 8.5px; font-weight: 800; color: #ffffff !important; text-transform: uppercase; margin-top: 2px; line-height: 1;" x-text="fileExtensionUpper()"></span>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <p class="text-xs font-bold text-slate-800 truncate" style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; margin: 0;" x-text="fileName"></p>
-                    <p class="text-[11px] text-slate-500" style="font-size: 11px; color: #64748b; margin: 0;">
-                        Ukuran Berkas: <span class="font-semibold text-slate-700" x-text="fileSizeFormatted"></span>
-                    </p>
+                    <p class="text-xs sm:text-[13px] font-bold text-slate-800 truncate" style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.25;" x-text="fileName"></p>
+                    <div class="flex items-center gap-1.5 mt-1 flex-wrap text-[10.5px] text-slate-500 font-medium leading-none" style="display: flex; align-items: center; gap: 0.375rem; font-size: 10.5px; color: #64748b; margin-top: 0.25rem;">
+                        <span x-text="fileSizeFormatted"></span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="text-transform: uppercase; font-weight: 600; color: #475569;" x-text="fileExtensionUpper()"></span>
+                    </div>
                 </div>
             </div>
 
             <!-- Segmented Mode Switcher Pill -->
             <div class="flex items-center gap-2 self-end sm:self-auto shrink-0" style="display: flex; align-items: center; gap: 0.5rem;">
-                <div class="inline-flex p-0.5 rounded-xl bg-slate-100 border border-slate-200 text-[11px] font-semibold" style="display: inline-flex; padding: 2px; border-radius: 0.75rem; background-color: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600;">
+                <div class="inline-flex p-0.5 rounded-xl bg-white/90 border border-slate-200 text-[11px] font-semibold shadow-2xs" style="display: inline-flex; padding: 2px; border-radius: 0.75rem; background-color: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600;">
                     <button 
                         type="button" 
                         @click="setMode('compressed')" 
-                        :class="isCompressedMode() ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'"
+                        :style="isCompressedMode() ? 'background-color: #059669 !important; color: #ffffff !important;' : 'background-color: transparent !important; color: #475569 !important;'"
                         class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer border-0"
                         title="Kompresi cerdas hemat kapasitas penyimpanan database & server"
                     >
-                        <i class="ri-sparkling-fill text-xs"></i>
+                        <i class="ri-sparkling-fill text-xs" style="font-size: 0.75rem;"></i>
                         <span>Kompres Cerdas</span>
                     </button>
                     <button 
                         type="button" 
                         @click="setMode('original')" 
-                        :class="isOriginalMode() ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'"
+                        :style="isOriginalMode() ? 'background-color: #059669 !important; color: #ffffff !important;' : 'background-color: transparent !important; color: #475569 !important;'"
                         class="px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer border-0"
                         title="Kirim ukuran & resolusi asli tanpa kompresi"
                     >
-                        <i class="ri-hd-line text-xs"></i>
+                        <i class="ri-hd-line text-xs" style="font-size: 0.75rem;"></i>
                         <span>Ukuran Asli</span>
                     </button>
                 </div>
@@ -528,20 +602,21 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 <button 
                     type="button" 
                     @click="clearFile()" 
-                    class="w-7 h-7 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-700 flex items-center justify-center transition-colors cursor-pointer border-0"
+                    class="w-7 h-7 rounded-full bg-white/80 hover:bg-rose-100 text-slate-500 hover:text-rose-700 flex items-center justify-center transition-colors cursor-pointer border border-slate-200/80"
                     style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
                     title="Batalkan lampiran berkas"
                 >
-                    <i class="ri-close-line text-base"></i>
+                    <i class="ri-close-line text-base" style="font-size: 1rem;"></i>
                 </button>
             </div>
         </div>
 
         <!-- Input Baris Chat & Tombol Lampiran -->
         <div class="flex items-center gap-2.5" style="display: flex; align-items: center; gap: 0.625rem;">
-            <!-- Label Klip Lampiran Berkas (Memicu File Chooser secara Native) -->
+            <!-- Label Klip Lampiran Berkas (Memicu File Chooser secara Native & Handled) -->
             <label 
                 for="ticket_conversation_file_input_{{ $ticket->id }}" 
+                @click.prevent="triggerFilePicker()"
                 role="button" 
                 class="w-11 h-11 rounded-full border border-slate-200/90 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-600 hover:text-emerald-700 flex items-center justify-center transition-all hover:scale-105 shrink-0 cursor-pointer"
                 style="width: 2.75rem; height: 2.75rem; border-radius: 9999px; background-color: #f8fafc; border: 1px solid #e2e8f0; color: #475569; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.15s ease;"
@@ -576,8 +651,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 onmouseover="this.style.backgroundColor='#047857'; this.style.transform='scale(1.05)';"
                 onmouseout="this.style.backgroundColor='#059669'; this.style.transform='scale(1)';"
             >
-                <i x-show="!isSubmitting" class="ri-send-plane-2-fill text-lg" style="font-size: 1.125rem;"></i>
-                <i x-show="isSubmitting" class="ri-loader-4-line animate-spin text-lg" style="font-size: 1.125rem;"></i>
+                <i x-show="!isSubmitting" class="ri-send-plane-fill text-lg" style="font-size: 1.125rem; color: #ffffff !important; line-height: 1; display: inline-flex; align-items: center; justify-content: center;"></i>
+                <i x-show="isSubmitting" class="ri-loader-4-line text-lg bbpom-spinner-rotate" style="font-size: 1.125rem; color: #ffffff !important; line-height: 1; display: inline-flex; align-items: center; justify-content: center;"></i>
             </button>
         </div>
 

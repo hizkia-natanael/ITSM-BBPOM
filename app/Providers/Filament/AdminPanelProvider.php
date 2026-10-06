@@ -50,7 +50,9 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
-                fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString('
+                fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString(
+                    '<meta name="csrf-token" content="' . csrf_token() . '">' . PHP_EOL .
+                    app(\Illuminate\Foundation\Vite::class)(['resources/css/app.css'])->toHtml() . '
                     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
                     <script>
                         document.title = "Admin Layanan TIK BBPOM Di Semarang";
@@ -60,6 +62,245 @@ class AdminPanelProvider extends PanelProvider
                         window.addEventListener("DOMContentLoaded", function () {
                             document.title = "Admin Layanan TIK BBPOM Di Semarang";
                         });
+                    </script>
+                    <script>
+                        window.bbpomTicketConversation = function bbpomTicketConversation(config) {
+                            const cfg = config || {};
+                            return {
+                                ticketId: cfg.ticketId || null,
+                                replyUrl: cfg.replyUrl || "",
+                                csrfToken: cfg.csrfToken || "",
+                                isSubmitting: false,
+                                hasFile: false,
+                                fileName: "",
+                                fileSizeFormatted: "",
+                                fileExtension: "",
+                                compressionMode: "compressed",
+                                errorMessage: "",
+                                init() {
+                                    this.$nextTick(() => {
+                                        this.scrollToBottom();
+                                        this.adjustTextareaHeight();
+                                    });
+                                },
+                                triggerFilePicker() {
+                                    const input = this.getFileInput();
+                                    if (input) {
+                                        input.click();
+                                    }
+                                },
+                                hasFileSelected() {
+                                    return Boolean(this.hasFile);
+                                },
+                                isCompressedMode() {
+                                    return this.compressionMode === "compressed";
+                                },
+                                isOriginalMode() {
+                                    return this.compressionMode === "original";
+                                },
+                                hasErrorMessage() {
+                                    return this.errorMessage.length > 0;
+                                },
+                                setMode(mode) {
+                                    this.compressionMode = mode;
+                                },
+                                handleFileChange(e) {
+                                    this.errorMessage = "";
+                                    const files = e.target.files;
+                                    if (!files || files.length === 0) {
+                                        this.clearFile();
+                                        return;
+                                    }
+                                    const file = files[0];
+                                    if (file.size > 52428800) {
+                                        this.errorMessage = "Ukuran berkas melebihi batas maksimal 50 MB.";
+                                        this.clearFile();
+                                        return;
+                                    }
+                                    this.hasFile = true;
+                                    this.fileName = file.name;
+                                    const parts = file.name.split(".");
+                                    this.fileExtension = parts.length > 1 ? parts.pop().toLowerCase() : "";
+                                    this.fileSizeFormatted = this.formatBytes(file.size);
+                                },
+                                clearFile() {
+                                    this.hasFile = false;
+                                    this.fileName = "";
+                                    this.fileExtension = "";
+                                    this.fileSizeFormatted = "";
+                                    this.compressionMode = "compressed";
+                                    const input = this.getFileInput();
+                                    if (input) {
+                                        input.value = "";
+                                    }
+                                },
+                                getFileInput() {
+                                    if (this.$refs && this.$refs.fileInput) {
+                                        return this.$refs.fileInput;
+                                    }
+                                    return document.getElementById("ticket_conversation_file_input_" + this.ticketId);
+                                },
+                                fileIconClass() {
+                                    const ext = this.fileExtension;
+                                    if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "ri-image-2-line";
+                                    if (ext === "pdf") return "ri-file-pdf-2-line";
+                                    if (["doc", "docx"].indexOf(ext) !== -1) return "ri-file-word-2-line";
+                                    if (["xls", "xlsx", "csv"].indexOf(ext) !== -1) return "ri-file-excel-2-line";
+                                    if (["zip", "rar", "7z", "tar", "gz"].indexOf(ext) !== -1) return "ri-file-zip-line";
+                                    if (["ppt", "pptx"].indexOf(ext) !== -1) return "ri-file-ppt-2-line";
+                                    if (["psd", "ai", "fig", "sketch"].indexOf(ext) !== -1) return "ri-palette-line";
+                                    return "ri-file-text-line";
+                                },
+                                fileColorHex() {
+                                    const ext = this.fileExtension;
+                                    if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "#059669";
+                                    if (ext === "pdf") return "#e11d48";
+                                    if (["doc", "docx"].indexOf(ext) !== -1) return "#2563eb";
+                                    if (["xls", "xlsx", "csv"].indexOf(ext) !== -1) return "#0d9488";
+                                    if (["zip", "rar", "7z", "tar", "gz"].indexOf(ext) !== -1) return "#d97706";
+                                    if (["ppt", "pptx"].indexOf(ext) !== -1) return "#ea580c";
+                                    if (["psd", "ai", "fig", "sketch"].indexOf(ext) !== -1) return "#9333ea";
+                                    return "#475569";
+                                },
+                                fileColorBgHex() {
+                                    const ext = this.fileExtension;
+                                    if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "#f0fdf4";
+                                    if (ext === "pdf") return "#fff1f2";
+                                    if (["doc", "docx"].indexOf(ext) !== -1) return "#eff6ff";
+                                    if (["xls", "xlsx", "csv"].indexOf(ext) !== -1) return "#f0fdfa";
+                                    if (["zip", "rar", "7z", "tar", "gz"].indexOf(ext) !== -1) return "#fffbeb";
+                                    if (["ppt", "pptx"].indexOf(ext) !== -1) return "#fff7ed";
+                                    if (["psd", "ai", "fig", "sketch"].indexOf(ext) !== -1) return "#faf5ff";
+                                    return "#f8fafc";
+                                },
+                                fileColorBorderHex() {
+                                    const ext = this.fileExtension;
+                                    if (["jpg", "jpeg", "png", "webp", "gif", "svg"].indexOf(ext) !== -1) return "#bbf7d0";
+                                    if (ext === "pdf") return "#fecdd3";
+                                    if (["doc", "docx"].indexOf(ext) !== -1) return "#bfdbfe";
+                                    if (["xls", "xlsx", "csv"].indexOf(ext) !== -1) return "#99f6e4";
+                                    if (["zip", "rar", "7z", "tar", "gz"].indexOf(ext) !== -1) return "#fde68a";
+                                    if (["ppt", "pptx"].indexOf(ext) !== -1) return "#fed7aa";
+                                    if (["psd", "ai", "fig", "sketch"].indexOf(ext) !== -1) return "#e9d5ff";
+                                    return "#e2e8f0";
+                                },
+                                fileExtensionUpper() {
+                                    return (this.fileExtension || "FILE").toUpperCase();
+                                },
+                                formatBytes(bytes) {
+                                    const b = Number(bytes) || 0;
+                                    if (b >= 1048576) {
+                                        return (b / 1048576).toFixed(1) + " MB";
+                                    }
+                                    if (b >= 1024) {
+                                        return Math.round(b / 1024) + " KB";
+                                    }
+                                    return b + " B";
+                                },
+                                scrollToBottom() {
+                                    if (this.$refs.streamContainer) {
+                                        this.$refs.streamContainer.scrollTop = this.$refs.streamContainer.scrollHeight;
+                                    }
+                                },
+                                adjustTextareaHeight() {
+                                    const el = this.$refs.replyTextarea || document.getElementById("ticket_conversation_response_text_" + this.ticketId);
+                                    if (!el) return;
+                                    el.style.height = "auto";
+                                    if (el.scrollHeight > 128) {
+                                        el.style.height = "128px";
+                                        el.style.overflowY = "auto";
+                                    } else {
+                                        el.style.height = el.scrollHeight + "px";
+                                        el.style.overflowY = "hidden";
+                                    }
+                                },
+                                handleEnterSend(e) {
+                                    if (e && e.shiftKey) {
+                                        return;
+                                    }
+                                    if (e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+                                    this.submitReply(e);
+                                },
+                                async submitReply(e) {
+                                    if (e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+                                    if (this.isSubmitting) return;
+
+                                    const el = this.$refs.replyTextarea || document.getElementById("ticket_conversation_response_text_" + this.ticketId);
+                                    const text = el ? el.value.trim() : "";
+                                    const fileInput = this.getFileInput();
+                                    const hasSelectedFile = Boolean(fileInput && fileInput.files && fileInput.files.length > 0);
+
+                                    if (text.length === 0 && !hasSelectedFile) {
+                                        this.errorMessage = "Ketik pesan tanggapan atau lampirkan berkas terlebih dahulu.";
+                                        return;
+                                    }
+
+                                    this.errorMessage = "";
+                                    this.isSubmitting = true;
+
+                                    let token = this.csrfToken;
+                                    if (!token) {
+                                        const meta = document.querySelector(\'meta[name="csrf-token"]\');
+                                        if (meta) token = meta.getAttribute("content");
+                                    }
+                                    if (!token) {
+                                        const input = document.querySelector(\'input[name="_token"]\');
+                                        if (input) token = input.value;
+                                    }
+
+                                    const formData = new FormData();
+                                    if (token) {
+                                        formData.append("_token", token);
+                                    }
+                                    formData.append("response_text", text);
+                                    formData.append("compression_mode", this.compressionMode);
+                                    if (hasSelectedFile && fileInput.files[0]) {
+                                        formData.append("attachment", fileInput.files[0]);
+                                    }
+
+                                    try {
+                                        const headers = {
+                                            "X-Requested-With": "XMLHttpRequest",
+                                            "Accept": "application/json",
+                                        };
+                                        if (token) {
+                                            headers["X-CSRF-TOKEN"] = token;
+                                        }
+
+                                        const response = await fetch(this.replyUrl, {
+                                            method: "POST",
+                                            headers: headers,
+                                            body: formData,
+                                        });
+
+                                        if (response.ok) {
+                                            window.location.reload();
+                                            return;
+                                        }
+
+                                        const data = await response.json().catch(() => null);
+                                        if (data && data.errors) {
+                                            const firstKey = Object.keys(data.errors)[0];
+                                            this.errorMessage = data.errors[firstKey][0] || "Gagal mengirim berkas.";
+                                        } else if (data && data.message) {
+                                            this.errorMessage = data.message;
+                                        } else {
+                                            this.errorMessage = "Terjadi kendala saat mengirim. Silakan periksa kembali berkas Anda.";
+                                        }
+                                        this.isSubmitting = false;
+                                    } catch (err) {
+                                        this.errorMessage = "Koneksi terputus saat mengunggah berkas. Silakan coba kembali.";
+                                        this.isSubmitting = false;
+                                    }
+                                }
+                            };
+                        };
                     </script>
                     <script>
                         window.filamentChartJsGlobalPlugins = window.filamentChartJsGlobalPlugins || [];

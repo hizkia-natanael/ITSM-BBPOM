@@ -253,4 +253,66 @@ class TicketChatFileSharingTest extends TestCase
             'file_name' => 'dokumen_teknis.pdf',
         ]);
     }
+
+    public function test_admin_edit_ticket_page_renders_chat_component(): void
+    {
+        $response = $this->actingAs($this->admin)->get("/admin/tickets/{$this->ticket->id}/edit");
+        $response->assertOk();
+        $content = $response->getContent();
+        $this->assertStringContainsString('bbpom-conversation-card', $content);
+        $this->assertStringContainsString('remixicon', $content);
+        $this->assertStringContainsString('bbpomTicketConversation', $content);
+        $this->assertStringContainsString('triggerFilePicker', $content);
+        $this->assertStringContainsString('ri-send-plane-fill', $content);
+    }
+
+    public function test_admin_can_send_ajax_reply_with_attachment(): void
+    {
+        $file = UploadedFile::fake()->create('panduan_sistem.pdf', 300, 'application/pdf');
+
+        $response = $this->actingAs($this->admin)->postJson(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Berikut panduan dari tim teknis.',
+            'attachment' => $file,
+            'compression_mode' => 'compressed',
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => true,
+        ]);
+
+        $this->ticket->refresh();
+        $this->assertSame((int) $this->admin->id, (int) $this->ticket->handled_by_id);
+        $this->assertSame('diproses', $this->ticket->status);
+
+        $this->assertDatabaseHas('ticket_response_attachments', [
+            'ticket_response_id' => $this->ticket->responses()->latest()->first()->id,
+            'is_compressed' => true,
+        ]);
+    }
+
+    public function test_attachment_model_has_robust_hex_colors_for_file_types(): void
+    {
+        $pdfAtt = new TicketResponseAttachment(['file_name' => 'dokumen.pdf']);
+        $this->assertSame('#e11d48', $pdfAtt->document_hex_color);
+        $this->assertSame('#fff1f2', $pdfAtt->document_card_bg_hex);
+
+        $docAtt = new TicketResponseAttachment(['file_name' => 'surat.docx']);
+        $this->assertSame('#2563eb', $docAtt->document_hex_color);
+        $this->assertSame('#eff6ff', $docAtt->document_card_bg_hex);
+
+        $excelAtt = new TicketResponseAttachment(['file_name' => 'laporan.xlsx']);
+        $this->assertSame('#0d9488', $excelAtt->document_hex_color);
+        $this->assertSame('#f0fdfa', $excelAtt->document_card_bg_hex);
+        $this->assertSame('#99f6e4', $excelAtt->document_card_border_hex);
+        $this->assertSame('ri-file-excel-2-line', $excelAtt->pure_icon_class);
+
+        $zipAtt = new TicketResponseAttachment(['file_name' => 'arsip.zip']);
+        $this->assertSame('#d97706', $zipAtt->document_hex_color);
+        $this->assertSame('ri-file-zip-line', $zipAtt->pure_icon_class);
+
+        $imgAtt = new TicketResponseAttachment(['file_name' => 'foto.png']);
+        $this->assertSame('#059669', $imgAtt->document_hex_color);
+        $this->assertSame('ri-image-2-line', $imgAtt->pure_icon_class);
+    }
 }

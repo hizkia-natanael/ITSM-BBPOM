@@ -19,6 +19,8 @@ class ResponsesRelationManager extends RelationManager
 
     protected static ?string $title = 'Riwayat Tanggapan & Diskusi Pengaduan';
 
+    protected static bool $isLazy = false;
+
     public function render(): \Illuminate\Contracts\View\View
     {
         return view('filament.resources.tickets.relation-managers.responses-stream', [
