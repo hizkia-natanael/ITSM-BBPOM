@@ -1150,7 +1150,9 @@ class TicketController extends Controller
             abort(404, 'Berkas lampiran tidak ditemukan.');
         }
 
-        $disk = \Illuminate\Support\Facades\Storage::disk('public')->exists($path) ? 'public' : 'local';
+        $disk = Storage::disk('local')->exists($path)
+            ? 'local'
+            : (Storage::disk('public')->exists($path) ? 'public' : 'local');
 
         if (!\Illuminate\Support\Facades\Storage::disk($disk)->exists($path)) {
             abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
@@ -1177,7 +1179,9 @@ class TicketController extends Controller
         }
 
         $path = $attachment->file_path;
-        $disk = Storage::disk('public')->exists($path) ? 'public' : 'local';
+        $disk = Storage::disk('local')->exists($path)
+            ? 'local'
+            : (Storage::disk('public')->exists($path) ? 'public' : 'local');
 
         if (!Storage::disk($disk)->exists($path)) {
             abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
@@ -1228,10 +1232,11 @@ class TicketController extends Controller
         }
 
         $primaryPath = null;
+        $targetDisk = config('filesystems.attachment_disk', 'local');
 
         foreach ($files as $file) {
             if ($file && $file->isValid()) {
-                $path = $file->store('attachments', 'public');
+                $path = $file->store('attachments', $targetDisk);
 
                 $ticket->attachments()->create([
                     'file_path' => $path,

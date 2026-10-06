@@ -90,12 +90,16 @@
                 </span>
             </div>
 
-            {{-- Always show Helpdesk TIK Bot greeting under the ticket's creation date --}}
+            {{-- Always show Helpdesk TIK Bot greeting under the ticket's creation date (Left Side / Incoming) --}}
             @if($dateKey === $ticketDateKey)
-                <!-- Bot / IT Helpdesk Greeting Bubble (Right Side) -->
-                <div class="flex items-end justify-end gap-2 max-w-[85%] sm:max-w-[70%] ml-auto" style="display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.5rem; max-width: 85%; margin-left: auto; margin-bottom: 0.625rem;">
-                    <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2.5 border border-slate-200 shadow-2xs text-left" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem 1rem 0.25rem 1rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
-                        <div class="flex items-center justify-end gap-1.5 mb-1" style="display: flex; align-items: center; justify-content: flex-end; gap: 0.375rem;">
+                <!-- Bot / IT Helpdesk Greeting Bubble (Left Side) -->
+                <div class="flex items-end justify-start gap-2 max-w-[85%] sm:max-w-[70%]" style="display: flex; align-items: flex-end; justify-content: flex-start; gap: 0.5rem; max-width: 85%; margin-bottom: 0.625rem;">
+                    <!-- Avatar Helpdesk -->
+                    <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs" style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; background-color: #d1fae5; border: 1px solid #86efac; color: #065f46; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">
+                        {{ $ticket->handledBy ? strtoupper(substr($ticket->handledBy->name, 0, 2)) : 'IT' }}
+                    </div>
+                    <div class="bg-white rounded-2xl rounded-bl-xs px-3.5 py-2.5 border border-slate-200/80 shadow-2xs text-left" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem 1rem 1rem 0.25rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
+                        <div class="flex items-center justify-start gap-1.5 mb-1" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.375rem;">
                             <span class="text-[11px] font-bold text-slate-900 leading-tight" style="font-size: 11px; font-weight: 700; color: #0f172a;">
                                 Helpdesk TIK
                             </span>
@@ -110,66 +114,65 @@
                             {{ $ticket->created_at->format('H:i') }} WIB
                         </div>
                     </div>
-                    <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs" style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; background-color: #d1fae5; border: 1px solid #86efac; color: #065f46; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">
-                        {{ $ticket->handledBy ? strtoupper(substr($ticket->handledBy->name, 0, 2)) : 'IT' }}
-                    </div>
                 </div>
             @endif
 
             @if($grouped->has($dateKey))
                 @foreach($grouped->get($dateKey) as $response)
                     @php
-                        $isAdmin = $response->user->isAdmin();
+                        $isMe = auth()->check() && (int) $response->user_id === (int) auth()->id();
+                        $isSenderAdmin = $response->user->isAdmin();
                     @endphp
 
-                    @if(!$isAdmin)
-                        <!-- Pelapor Bubble (LEFT SIDE) -->
+                    @if($isMe)
+                        <!-- Pesan Keluar / Pengguna Aktif (KANAN) -->
+                        <div class="flex items-end justify-end gap-2 max-w-[85%] sm:max-w-[70%] ml-auto" style="display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.5rem; max-width: 85%; margin-left: auto; margin-bottom: 0.625rem;">
+                            <!-- Message Bubble (Right) -->
+                            <div class="bg-emerald-50/90 rounded-2xl rounded-br-xs px-3.5 py-2.5 border border-emerald-200/70 shadow-2xs text-left" style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 1rem 1rem 0.25rem 1rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
+                                <!-- Sender Name & Role Header -->
+                                <div class="flex items-center justify-end gap-1.5 mb-1" style="display: flex; align-items: center; justify-content: flex-end; gap: 0.375rem;">
+                                    <span class="text-[11px] font-bold text-slate-900 leading-tight" style="font-size: 11px; font-weight: 700; color: #0f172a;">
+                                        {{ $response->user->name }}
+                                    </span>
+                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold {{ $isSenderAdmin ? 'bg-blue-100 text-blue-800 border border-blue-200/60' : 'bg-emerald-200/80 text-emerald-900 border border-emerald-300/60' }}" style="font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px;">
+                                        {{ $isSenderAdmin ? 'Petugas IT (Anda)' : 'Pemohon (Anda)' }}
+                                    </span>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line" style="font-size: 0.8125rem; color: #1e293b; line-height: 1.4; margin: 0.25rem 0; white-space: pre-line;">{{ trim($response->response_text) }}</p>
+                                <div class="text-[10px] text-slate-500 text-right mt-1 font-mono flex items-center justify-end gap-1" style="font-size: 10px; color: #64748b; text-align: right; font-family: monospace; display: flex; align-items: center; justify-content: flex-end; gap: 0.25rem;">
+                                    <span>{{ $response->created_at->format('H:i') }} WIB</span>
+                                    <i class="ri-check-double-line text-emerald-600 text-xs" style="color: #059669; font-size: 0.75rem;"></i>
+                                </div>
+                            </div>
+
+                            <!-- Avatar Circle User (Right) -->
+                            <div class="w-7 h-7 rounded-full {{ $isSenderAdmin ? 'bg-blue-100 border border-blue-300 text-blue-800' : 'bg-emerald-100 border border-emerald-300 text-emerald-800' }} flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs" style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">
+                                {{ strtoupper(substr($response->user->name, 0, 2)) }}
+                            </div>
+                        </div>
+                    @else
+                        <!-- Pesan Masuk / Lawan Bicara (KIRI) -->
                         <div class="flex items-end gap-2 max-w-[85%] sm:max-w-[70%]" style="display: flex; align-items: flex-end; gap: 0.5rem; max-width: 85%; margin-bottom: 0.625rem;">
-                            <!-- Avatar Circle with User Initials -->
-                            <div class="w-7 h-7 rounded-full bg-slate-200/90 border border-slate-300 text-slate-700 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs" style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; background-color: #e2e8f0; border: 1px solid #cbd5e1; color: #334155; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">
+                            <!-- Avatar Circle Sender (Left) -->
+                            <div class="w-7 h-7 rounded-full {{ $isSenderAdmin ? 'bg-blue-100 border border-blue-300 text-blue-800' : 'bg-slate-200/90 border border-slate-300 text-slate-700' }} flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs" style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">
                                 {{ strtoupper(substr($response->user->name, 0, 2)) }}
                             </div>
 
-                            <!-- Message Bubble -->
-                            <div class="bg-slate-100/95 rounded-2xl rounded-bl-xs px-3.5 py-2.5 border border-slate-200/60 shadow-2xs text-left" style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 1rem 1rem 1rem 0.25rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
+                            <!-- Message Bubble (Left) -->
+                            <div class="bg-white rounded-2xl rounded-bl-xs px-3.5 py-2.5 border border-slate-200/80 shadow-2xs text-left" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem 1rem 1rem 0.25rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
                                 <!-- Sender Name & Role Header -->
                                 <div class="flex items-center gap-1.5 mb-1" style="display: flex; align-items: center; gap: 0.375rem;">
                                     <span class="text-[11px] font-bold text-slate-900 leading-tight" style="font-size: 11px; font-weight: 700; color: #0f172a;">
                                         {{ $response->user->name }}
                                     </span>
-                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200/60" style="background-color: #d1fae5; color: #065f46; font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px;">
-                                        Pemohon
+                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-semibold {{ $isSenderAdmin ? 'bg-blue-100 text-blue-800 border border-blue-200/60' : 'bg-emerald-100 text-emerald-800 border border-emerald-200/60' }}" style="font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px;">
+                                        {{ $isSenderAdmin ? 'Petugas IT' : 'Pemohon' }}
                                     </span>
                                 </div>
                                 <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line" style="font-size: 0.8125rem; color: #1e293b; line-height: 1.4; margin: 0.25rem 0; white-space: pre-line;">{{ trim($response->response_text) }}</p>
                                 <div class="text-[10px] text-slate-400 text-right mt-1 font-mono" style="font-size: 10px; color: #94a3b8; text-align: right; font-family: monospace;">
                                     {{ $response->created_at->format('H:i') }} WIB
                                 </div>
-                            </div>
-                        </div>
-                    @else
-                        <!-- Petugas IT Bubble (RIGHT SIDE) -->
-                        <div class="flex items-end justify-end gap-2 max-w-[85%] sm:max-w-[70%] ml-auto" style="display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.5rem; max-width: 85%; margin-left: auto; margin-bottom: 0.625rem;">
-                            <!-- Message Bubble -->
-                            <div class="bg-white rounded-2xl rounded-br-xs px-3.5 py-2.5 border border-slate-200 shadow-2xs text-left" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem 1rem 0.25rem 1rem; padding: 0.625rem 0.875rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); max-width: 100%;">
-                                <!-- Role Pill & Admin Name inside bubble -->
-                                <div class="flex items-center justify-end gap-1.5 mb-1" style="display: flex; align-items: center; justify-content: flex-end; gap: 0.375rem;">
-                                    <span class="text-[11px] font-bold text-slate-900 leading-tight" style="font-size: 11px; font-weight: 700; color: #0f172a;">
-                                        {{ $response->user->name }}
-                                    </span>
-                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-200/60" style="background-color: #dbeafe; color: #1e40af; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px;">
-                                        Petugas IT
-                                    </span>
-                                </div>
-                                <p class="text-xs sm:text-sm text-slate-800 leading-snug mt-0.5 whitespace-pre-line" style="font-size: 0.8125rem; color: #1e293b; line-height: 1.4; margin: 0.25rem 0; white-space: pre-line;">{{ trim($response->response_text) }}</p>
-                                <div class="text-[10px] text-slate-400 text-right mt-1 font-mono" style="font-size: 10px; color: #94a3b8; text-align: right; font-family: monospace;">
-                                    {{ $response->created_at->format('H:i') }} WIB
-                                </div>
-                            </div>
-
-                            <!-- Avatar Circle IT -->
-                            <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[11px] shrink-0 self-end mb-0.5 shadow-2xs" style="width: 1.75rem; height: 1.75rem; border-radius: 9999px; background-color: #d1fae5; border: 1px solid #86efac; color: #065f46; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">
-                                {{ strtoupper(substr($response->user->name, 0, 2)) }}
                             </div>
                         </div>
                     @endif

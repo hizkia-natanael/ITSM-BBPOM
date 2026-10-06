@@ -196,6 +196,7 @@ class SecurityTest extends TestCase
     public function test_user_can_submit_multiple_attachments_and_access_them(): void
     {
         Storage::fake('public');
+        Storage::fake('local');
 
         $user = User::factory()->create();
         $category = Category::first() ?? Category::create(['name' => 'General']);
