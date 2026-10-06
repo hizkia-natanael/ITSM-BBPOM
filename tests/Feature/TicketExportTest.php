@@ -90,6 +90,40 @@ class TicketExportTest extends TestCase
         $this->assertStringContainsString('.pdf', $response->headers->get('Content-Disposition'));
     }
 
+    public function test_pdf_export_contains_single_helpdesk_officer_signature_for_admin(): void
+    {
+        $this->admin->update(['nip' => '198501142025211020']);
+
+        Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'service_key' => 'srikandi',
+            'category_id' => 2,
+            'subject' => 'Kendala Registrasi Naskah Dinas',
+            'description' => 'Tidak dapat melakukan penomoran surat pada aplikasi Srikandi.',
+            'status' => 'pending',
+        ]);
+
+        $queryBuilder = app(\App\Services\Export\TicketQueryBuilder::class);
+        $this->actingAs($this->admin);
+        $result = $queryBuilder->build(['category' => 'all', 'period_type' => 'all']);
+
+        $this->assertSame($this->admin->name, $result['summary']['generated_by']);
+        $this->assertSame('198501142025211020', $result['summary']['generated_by_nip']);
+
+        $view = view('exports.tickets-pdf', [
+            'tickets' => $result['tickets'],
+            'summary' => $result['summary'],
+            'logoBase64' => '',
+        ])->render();
+
+        $this->assertStringContainsString('Petugas Pengelola Helpdesk TIK,', $view);
+        $this->assertStringContainsString($this->admin->name, $view);
+        $this->assertStringContainsString('198501142025211020', $view);
+        $this->assertStringNotContainsString('Mengetahui,', $view);
+        $this->assertStringNotContainsString('TIM MANAJEMEN LAYANAN TIK', $view);
+        $this->assertStringNotContainsString('Kepala Bagian Tata Usaha', $view);
+    }
+
     public function test_admin_can_export_all_tickets_to_excel(): void
     {
         Ticket::create([

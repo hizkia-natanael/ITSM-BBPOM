@@ -206,6 +206,19 @@ class TicketQueryBuilder
         ];
         $statusLabel = $statusLabels[$status] ?? 'Semua Status';
 
+        $currentUser = auth()->user();
+        if (!$currentUser && !empty($filters['current_user_id'])) {
+            $currentUser = User::find($filters['current_user_id']);
+        }
+
+        $signatoryAdmin = $currentUser;
+        if (!empty($handledBy) && is_numeric($handledBy)) {
+            $selectedAdmin = User::find($handledBy);
+            if ($selectedAdmin) {
+                $signatoryAdmin = $selectedAdmin;
+            }
+        }
+
         $summary = [
             'total' => $total,
             'pending' => $pending,
@@ -224,7 +237,8 @@ class TicketQueryBuilder
             'handled_by' => $handledBy,
             'handled_by_label' => $handledByLabel,
             'generated_at' => now()->translatedFormat('d F Y, H:i') . ' WIB',
-            'generated_by' => auth()->user()?->name ?? 'Administrator ITSM BBPOM',
+            'generated_by' => $signatoryAdmin?->name ?? 'Administrator ITSM BBPOM',
+            'generated_by_nip' => $signatoryAdmin?->nip ?? null,
             'audit_id' => 'ISO-ITSM-' . now()->format('Ymd-His'),
         ];
 
