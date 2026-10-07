@@ -9,8 +9,6 @@
     $longFields = [];
     $questions = [];
     $qrLink = null;
-    $subAttachmentUrl = null;
-    $subAttachmentName = null;
 
     // 1. Ekstraksi dari Dedicated Sub-detail (BSrE, Zoom, Kegiatan, Windows, Office, Lainnya)
     if ($record->bsreDetail) {
@@ -20,19 +18,11 @@
         if (!empty($detail->email)) $fields['Email Dinas'] = $detail->email;
         if (!empty($detail->nomor_telepon)) $fields['Nomor Telepon / WA'] = $detail->nomor_telepon;
         if (!empty($detail->deskripsi)) $longFields['Deskripsi Kebutuhan / Kendala'] = $detail->deskripsi;
-        if (!empty($detail->file_lampiran)) {
-            $subAttachmentUrl = asset('storage/' . $detail->file_lampiran);
-            $subAttachmentName = 'Unduh Berkas Lampiran BSrE';
-        }
     } elseif ($record->zoomDetail) {
         $detail = $record->zoomDetail;
         if (!empty($detail->nama_acara)) $fields['Nama Acara / Kegiatan'] = $detail->nama_acara;
         if (!empty($detail->jam)) $fields['Jam Pelaksanaan'] = $detail->jam;
         if (!empty($detail->deskripsi)) $longFields['Deskripsi Kebutuhan / Kendala'] = $detail->deskripsi;
-        if (!empty($detail->file_lampiran)) {
-            $subAttachmentUrl = asset('storage/' . $detail->file_lampiran);
-            $subAttachmentName = 'Unduh Berkas Lampiran Zoom';
-        }
     } elseif ($record->kegiatanDetail) {
         $detail = $record->kegiatanDetail;
         if (!empty($detail->nama_acara)) $fields['Nama Acara / Kegiatan'] = $detail->nama_acara;
@@ -43,10 +33,6 @@
         if (!empty($detail->jenis_test)) $fields['Jenis Evaluasi'] = $detail->jenis_test_label;
         if (!empty($detail->pertanyaan_data) && is_array($detail->pertanyaan_data)) $questions = $detail->pertanyaan_data;
         if (!empty($detail->deskripsi)) $longFields['Deskripsi Kebutuhan / Kendala'] = $detail->deskripsi;
-        if (!empty($detail->file_lampiran)) {
-            $subAttachmentUrl = asset('storage/' . $detail->file_lampiran);
-            $subAttachmentName = 'Unduh Berkas Lampiran Kegiatan';
-        }
     } elseif ($record->windowsDetail) {
         $detail = $record->windowsDetail;
         if (!empty($detail->bidang)) $fields['Bidang / Substansi'] = $detail->bidang;
@@ -62,10 +48,6 @@
     } elseif ($record->lainnyaDetail) {
         $detail = $record->lainnyaDetail;
         if (!empty($detail->deskripsi)) $longFields['Deskripsi Permintaan / Kendala'] = $detail->deskripsi;
-        if (!empty($detail->file_lampiran)) {
-            $subAttachmentUrl = asset('storage/' . $detail->file_lampiran);
-            $subAttachmentName = 'Unduh Berkas Lampiran';
-        }
     }
 
     // 2. Ekstraksi dari Structured Markdown Description (SIPT, Srikandi, Email, Internet, Subsite, Infografis)
@@ -88,7 +70,7 @@
     $serviceName = $extracted['meta']['Layanan'] ?? $record->service_name;
     $subLabel = $extracted['meta']['Sub Kategori'] ?? ($record->subcategory_label ?: 'Umum');
 
-    $hasContent = !empty($fields) || !empty($longFields) || !empty($questions) || !empty($qrLink) || !empty($subAttachmentUrl);
+    $hasContent = !empty($fields) || !empty($longFields) || !empty($questions) || !empty($qrLink);
     if (!$hasContent) {
         return;
     }
@@ -167,20 +149,6 @@
                     </div>
                 @endforeach
             </div>
-        </div>
-    @endif
-
-    <!-- Berkas Lampiran Sub-Detail Spesifik (BSrE / Zoom / Kegiatan / Lainnya) -->
-    @if($subAttachmentUrl)
-        <div class="bbpom-spec-meta-card" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <i class="ri-attachment-2" style="color: #047857; font-size: 1.1rem;"></i>
-                <span style="font-size: 12.5px; font-weight: 600; color: #1e293b;">{{ $subAttachmentName }}</span>
-            </div>
-            <a href="{{ $subAttachmentUrl }}" target="_blank" class="bbpom-spec-subcat-badge" style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
-                <i class="ri-download-2-line"></i>
-                <span>Lihat / Unduh</span>
-            </a>
         </div>
     @endif
 
