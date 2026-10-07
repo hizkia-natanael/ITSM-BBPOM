@@ -15,6 +15,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -129,31 +130,19 @@ class TicketForm
                         // ==========================================
                         // 5. BERKAS LAMPIRAN PENDUKUNG TIKET
                         // ==========================================
-                        Placeholder::make('attachment')
-                            ->label('Berkas Lampiran Pendukung Tiket')
+                        ViewField::make('attachments_list')
+                            ->view('filament.resources.tickets.components.attachments-list')
+                            ->hiddenLabel()
                             ->visible(function ($record) {
                                 if (!$record) return false;
-                                return ($record->attachments && $record->attachments->isNotEmpty()) || !empty($record->attachment);
-                            })
-                            ->content(function ($record) {
-                                if (!$record) {
-                                    return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
-                                }
-                                $attachments = $record->attachments;
-                                if ($attachments && $attachments->isNotEmpty()) {
-                                    $html = '<div class="space-y-1.5 text-xs">';
-                                    foreach ($attachments as $att) {
-                                        $url = route('tickets.attachments.item', ['ticket' => $record, 'attachment' => $att]);
-                                        $html .= '<div class="flex items-center gap-2"><a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i> ' . e($att->file_name) . ' (' . e($att->formatted_size) . ')</a></div>';
-                                    }
-                                    $html .= '</div>';
-                                    return new HtmlString($html);
-                                }
-                                if ($record->attachment) {
-                                    $url = route('tickets.attachment', ['ticket' => $record]);
-                                    return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i> Lihat / Unduh Lampiran Berkas</a>');
-                                }
-                                return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada lampiran berkas yang disertakan.</span>');
+                                return ($record->attachments && $record->attachments->isNotEmpty())
+                                    || !empty($record->attachment)
+                                    || !empty($record->bsreDetail?->file_lampiran)
+                                    || !empty($record->zoomDetail?->file_lampiran)
+                                    || !empty($record->kegiatanDetail?->file_lampiran)
+                                    || !empty($record->windowsDetail?->file_lampiran)
+                                    || !empty($record->officeDetail?->file_lampiran)
+                                    || !empty($record->lainnyaDetail?->file_lampiran);
                             })
                             ->columnSpanFull(),
 

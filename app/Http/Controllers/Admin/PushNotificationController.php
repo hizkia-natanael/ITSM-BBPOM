@@ -136,6 +136,47 @@ class PushNotificationController extends Controller
     }
 
     /**
+     * Cek aduan baru secara realtime untuk auto-refresh tabel admin/tickets (Smart Delta Polling).
+     */
+    public function realtimeCheck(Request $request): JsonResponse
+    {
+        $hasClientLatestId = $request->has('latest_id');
+        $clientLatestId = (int) $request->query('latest_id', 0);
+        $totalCount = Ticket::count();
+        $latestTicket = Ticket::with('user:id,name')
+            ->latest('id')
+            ->first(['id', 'ticket_number', 'subject', 'user_id', 'created_at']);
+        $latestId = (int) ($latestTicket?->id ?? 0);
+
+        $hasNew = $hasClientLatestId && ($latestId > $clientLatestId);
+        $newTickets = [];
+
+        if ($hasNew) {
+            $newTickets = Ticket::where('id', '>', $clientLatestId)
+                ->with('user:id,name')
+                ->latest('id')
+                ->take(5)
+                ->get()
+                ->map(fn ($t) => [
+                    'id' => $t->id,
+                    'ticket_number' => $t->ticket_number,
+                    'subject' => \Illuminate\Support\Str::limit($t->subject, 60),
+                    'user_name' => $t->user?->name ?? 'Pegawai BBPOM',
+                    'time_ago' => $t->created_at->diffForHumans(),
+                    'edit_url' => url('/admin/tickets/' . $t->id . '/edit'),
+                ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'latest_id' => $latestId,
+            'total_count' => $totalCount,
+            'has_new' => $hasNew,
+            'new_tickets' => $newTickets,
+        ]);
+    }
+
+    /**
      * Tandai satu notifikasi chat spesifik sebagai terbaca saat diklik oleh admin.
      */
     public function markItemRead(Request $request): JsonResponse

@@ -60,6 +60,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->pref
     Route::post('/push/unsubscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unsubscribe'])->name('push.unsubscribe');
     Route::post('/push/test', [\App\Http\Controllers\Admin\PushNotificationController::class, 'test'])->name('push.test');
     Route::get('/tickets/unhandled/status', [\App\Http\Controllers\Admin\PushNotificationController::class, 'unhandledStatus'])->name('tickets.unhandled.status');
+    Route::get('/tickets/realtime-check', [\App\Http\Controllers\Admin\PushNotificationController::class, 'realtimeCheck'])->name('tickets.realtime-check');
     Route::post('/notifications/read-item', [\App\Http\Controllers\Admin\PushNotificationController::class, 'markItemRead'])->name('notifications.read-item');
     Route::post('/notifications/read-all', [\App\Http\Controllers\Admin\PushNotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/tickets/{ticket}/claim', [\App\Http\Controllers\Admin\PushNotificationController::class, 'claimTicket'])->name('tickets.claim');

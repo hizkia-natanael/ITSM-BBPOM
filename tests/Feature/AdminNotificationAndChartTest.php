@@ -214,4 +214,145 @@ class AdminNotificationAndChartTest extends TestCase
         $response->assertStatus(400)
             ->assertJsonPath('success', false);
     }
+
+    public function test_admin_tickets_realtime_check_detects_new_tickets(): void
+    {
+        $this->actingAs($this->admin);
+
+        $initialResponse = $this->getJson(route('admin.tickets.realtime-check', ['latest_id' => 0]));
+        $initialResponse->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('has_new', false);
+
+        $ticket = Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'category_id' => $this->category->id,
+            'subject' => 'Kendala Jaringan Baru',
+            'description' => 'Tidak bisa koneksi',
+            'status' => 'pending',
+        ]);
+
+        $checkResponse = $this->getJson(route('admin.tickets.realtime-check', ['latest_id' => $ticket->id - 1]));
+        $checkResponse->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('has_new', true)
+            ->assertJsonPath('latest_id', $ticket->id)
+            ->assertJsonFragment([
+                'ticket_number' => $ticket->ticket_number,
+            ]);
+    }
+
+    public function test_unauthorized_user_cannot_access_tickets_realtime_check(): void
+    {
+        $this->actingAs($this->regularUser);
+
+        $response = $this->getJson(route('admin.tickets.realtime-check'));
+        $response->assertForbidden();
+    }
+
+    public function test_admin_tickets_index_renders_auto_refresh_component(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->get('/admin/tickets');
+        $response->assertOk()
+            ->assertSee('bbpom-tickets-live-sync-wrapper', false)
+            ->assertSee('bbpomAdminTicketsPoller', false);
+    }
+
+    public function test_admin_ticket_edit_page_renders_rich_attachments_ui(): void
+    {
+        $this->actingAs($this->admin);
+
+        $ticket = Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'category_id' => $this->category->id,
+            'subject' => 'Tiket dengan Lampiran',
+            'description' => 'Lihat lampiran',
+            'status' => 'pending',
+        ]);
+
+        \App\Models\TicketAttachment::create([
+            'ticket_id' => $ticket->id,
+            'file_name' => 'bukti_kendala.png',
+            'file_path' => 'attachments/test_image.png',
+            'file_size' => 102400,
+            'mime_type' => 'image/png',
+        ]);
+
+        $response = $this->get('/admin/tickets/' . $ticket->id . '/edit');
+        $response->assertOk()
+            ->assertSee('Berkas Lampiran Pendukung')
+            ->assertSee('bukti_kendala.png')
+            ->assertSee('Pratinjau')
+            ->assertSee('Unduh');
+    }
+
+    public function test_user_tickets_index_supports_per_page_filter_and_showing_indicator(): void
+    {
+        $this->actingAs($this->regularUser);
+
+        // Create 15 tickets for regular user
+        for ($i = 1; $i <= 15; $i++) {
+            Ticket::create([
+                'user_id' => $this->regularUser->id,
+                'category_id' => $this->category->id,
+                'subject' => "Pengaduan User {$i}",
+                'description' => "Deskripsi {$i}",
+                'status' => 'pending',
+            ]);
+        }
+
+        // Test default (10 per page)
+        $response10 = $this->get(route('tickets.index'));
+        $response10->assertOk()
+            ->assertSee('Showing')
+            ->assertSee('results')
+            ->assertSee('Tampilkan:')
+            ->assertSee('per halaman');
+
+        // Test 25 per page
+        $response25 = $this->get(route('tickets.index', ['per_page' => 25]));
+        $response25->assertOk()
+            ->assertSee('Showing')
+            ->assertSee('results');
+    }
+
+    public function test_user_ticket_show_displays_kegiatan_subcategory_and_evaluasi(): void
+    {
+        $this->actingAs($this->regularUser);
+
+        $ticket = Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'category_id' => $this->category->id,
+            'service_key' => 'formulir_kegiatan',
+            'subcategory' => 'post_test_pretest',
+            'subject' => 'Permintaan Post Test',
+            'description' => 'Permintaan Post Test',
+            'status' => 'pending',
+        ]);
+
+        $detail = \App\Models\TicketKegiatanDetail::create([
+            'ticket_id' => $ticket->id,
+            'sub_category' => 'post_test_pretest',
+            'tanggal_pengajuan' => now(),
+            'nama' => 'Budi Santoso',
+            'judul_acara' => 'Bimtek Keamanan Pangan',
+            'jenis_test' => 'post_test',
+            'pertanyaan_data' => [
+                ['text' => 'Apa definisi pangan aman?', 'tipe' => 'Pilihan Ganda'],
+            ],
+        ]);
+
+        $this->assertEquals('Post Test', $detail->jenis_test_label);
+
+        $response = $this->get(route('tickets.show', $ticket));
+        $response->assertOk()
+            ->assertSee('Sub Kategori Kegiatan')
+            ->assertSee('Post Test / Pretest')
+            ->assertSee('Jenis Evaluasi')
+            ->assertSee('Post Test')
+            ->assertSee('Apa definisi pangan aman?');
+    }
 }
+

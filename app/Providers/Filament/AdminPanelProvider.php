@@ -54,6 +54,11 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::HEAD_END,
                 fn (): View => view('filament.hooks.head-scripts-styles')
             )
+            ->renderHook(
+                PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE,
+                fn (): View => view('components.admin-tickets-auto-refresh'),
+                scopes: \App\Filament\Resources\Tickets\Pages\ListTickets::class,
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

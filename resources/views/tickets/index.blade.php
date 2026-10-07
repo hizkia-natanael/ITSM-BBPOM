@@ -83,6 +83,9 @@
                     </div>
 
                     <div class="sm:col-span-2 flex gap-2">
+                        @if(request()->filled('per_page'))
+                            <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                        @endif
                         <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-2xs transition">
                             Terapkan
                         </button>
@@ -162,10 +165,36 @@
                     </table>
                 </div>
 
-                <!-- Pagination -->
+                <!-- Pagination & Record Count Bar -->
                 @if($tickets->hasPages())
                     <div class="px-5 py-3.5 border-t border-slate-100">
                         {{ $tickets->links() }}
+                    </div>
+                @else
+                    <div class="px-5 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-600">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <p class="text-sm font-medium text-gray-700 leading-5">
+                                Showing {{ $tickets->firstItem() ?? 1 }} to {{ $tickets->lastItem() ?? $tickets->count() }} of {{ $tickets->total() }} results
+                            </p>
+
+                            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                                <span class="text-gray-300">|</span>
+                                <label for="pagination_per_page_single" class="text-sm font-medium text-gray-700 whitespace-nowrap">Tampilkan:</label>
+                                <select
+                                    id="pagination_per_page_single"
+                                    name="per_page"
+                                    class="text-xs py-1 px-2.5 rounded-lg border-gray-300 bg-white text-gray-700 font-medium focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs cursor-pointer"
+                                    onchange="const u = new URL(window.location.href); u.searchParams.set('per_page', this.value); u.searchParams.set('page', '1'); window.location.href = u.toString();"
+                                >
+                                    @foreach([10, 25, 50, 100] as $count)
+                                        <option value="{{ $count }}" {{ (int)request('per_page', 10) === $count ? 'selected' : '' }}>
+                                            {{ $count }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="text-sm font-medium text-gray-700 whitespace-nowrap">per halaman</span>
+                            </div>
+                        </div>
                     </div>
                 @endif
             @else

@@ -46,18 +46,6 @@ class ZoomSpecification
                 ->disabled()
                 ->dehydrated(false)
                 ->columnSpanFull(),
-
-            Placeholder::make('zoom_lampiran')
-                ->label('Berkas Lampiran Zoom')
-                ->visible(fn ($record) => !empty($record?->zoomDetail?->file_lampiran))
-                ->content(function ($record) {
-                    if (!$record || !$record->zoomDetail?->file_lampiran) {
-                        return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                    }
-                    $url = asset('storage/' . $record->zoomDetail->file_lampiran);
-                    return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran Zoom</a>');
-                })
-                ->columnSpanFull(),
         ])
         ->visible(fn ($record) => $record && $record->zoomDetail !== null)
         ->columnSpanFull();

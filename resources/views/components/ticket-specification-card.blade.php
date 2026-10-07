@@ -13,6 +13,7 @@
         $detail = $ticket->bsreDetail;
         $tanggalPengajuan = $detail->tanggal_pengajuan ? $detail->tanggal_pengajuan->translatedFormat('d F Y') : null;
         $namaPemohon = $detail->nama;
+        if (!empty($detail->sub_category_label)) $fields['Sub Kategori BSrE'] = $detail->sub_category_label;
         if (!empty($detail->nip)) $fields['NIP Pemohon'] = $detail->nip;
         if (!empty($detail->nik)) $fields['NIK Pemohon'] = $detail->nik;
         if (!empty($detail->email)) $fields['Email Dinas'] = $detail->email;
@@ -22,6 +23,7 @@
         $detail = $ticket->zoomDetail;
         $tanggalPengajuan = $detail->tanggal_pengajuan ? $detail->tanggal_pengajuan->translatedFormat('d F Y') : null;
         $namaPemohon = $detail->nama;
+        if (!empty($detail->sub_category_label)) $fields['Sub Kategori Zoom'] = $detail->sub_category_label;
         if (!empty($detail->nama_acara)) $fields['Nama Acara / Kegiatan'] = $detail->nama_acara;
         if (!empty($detail->jam)) $fields['Jam Pelaksanaan'] = $detail->jam;
         if (!empty($detail->deskripsi)) $longFields['Deskripsi Kebutuhan / Kendala'] = $detail->deskripsi;
@@ -29,6 +31,7 @@
         $detail = $ticket->kegiatanDetail;
         $tanggalPengajuan = $detail->tanggal_pengajuan ? $detail->tanggal_pengajuan->translatedFormat('d F Y') : null;
         $namaPemohon = $detail->nama;
+        if (!empty($detail->sub_category_label)) $fields['Sub Kategori Kegiatan'] = $detail->sub_category_label;
         if (!empty($detail->nama_acara)) $fields['Nama Acara / Kegiatan'] = $detail->nama_acara;
         if (!empty($detail->jam)) $fields['Jam Pelaksanaan'] = $detail->jam;
         if (!empty($detail->link_qrcode)) $qrLink = $detail->link_qrcode;
@@ -41,6 +44,7 @@
         $detail = $ticket->windowsDetail;
         $tanggalPengajuan = $detail->tanggal_pengajuan ? $detail->tanggal_pengajuan->translatedFormat('d F Y') : null;
         $namaPemohon = $detail->nama;
+        if (!empty($detail->sub_category_label)) $fields['Sub Kategori Windows'] = $detail->sub_category_label;
         if (!empty($detail->bidang)) $fields['Bidang / Substansi'] = $detail->bidang;
         if (!empty($detail->merk_perangkat)) $fields['Merk Laptop / PC'] = $detail->merk_perangkat;
         if (!empty($detail->kode_bmn)) $fields['Kode BMN Perangkat'] = $detail->kode_bmn;
@@ -49,6 +53,7 @@
         $detail = $ticket->officeDetail;
         $tanggalPengajuan = $detail->tanggal_pengajuan ? $detail->tanggal_pengajuan->translatedFormat('d F Y') : null;
         $namaPemohon = $detail->nama;
+        if (!empty($detail->sub_category_label)) $fields['Sub Kategori Lisensi'] = $detail->sub_category_label;
         if (!empty($detail->bidang)) $fields['Bidang / Substansi'] = $detail->bidang;
         if (!empty($detail->merk_perangkat)) $fields['Merk Laptop / PC'] = $detail->merk_perangkat;
         if (!empty($detail->kode_bmn)) $fields['Kode BMN Perangkat'] = $detail->kode_bmn;
