@@ -405,6 +405,16 @@ class TicketChatFileSharingTest extends TestCase
         $syncAsUser->assertJsonCount(1, 'responses');
         $syncAsUser->assertJsonPath('responses.0.id', $adminMsg->id);
         $syncAsUser->assertJsonPath('responses.0.is_me', false);
+        $syncAsUser->assertJsonPath('ticket_status', $this->ticket->status);
+        $syncAsUser->assertJsonPath('has_admin_response', true);
+        $syncAsUser->assertJsonStructure([
+            'success',
+            'ticket_status',
+            'has_admin_response',
+            'updated_at_formatted',
+            'responses',
+            'latest_id',
+        ]);
 
         // Admin message is marked as read by user
         $this->assertNotNull($adminMsg->fresh()->read_at);

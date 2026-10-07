@@ -299,9 +299,21 @@ class TicketController extends Controller
             return $this->formatResponseForJson($res, $currentUserId);
         });
 
+        $hasAdminResponse = $ticket->responses()
+            ->whereHas('user', function ($q) {
+                $q->where('role', 'admin');
+            })
+            ->exists();
+
         return response()->json([
             'success' => true,
             'ticket_status' => $ticket->status,
+            'handled_by' => $ticket->handledBy ? [
+                'id' => $ticket->handledBy->id,
+                'name' => $ticket->handledBy->name,
+            ] : null,
+            'has_admin_response' => $hasAdminResponse,
+            'updated_at_formatted' => $ticket->updated_at->translatedFormat('d M Y, H:i') . ' WIB',
             'responses' => $formatted,
             'latest_id' => $responses->isNotEmpty() ? $responses->last()->id : $afterId,
         ]);

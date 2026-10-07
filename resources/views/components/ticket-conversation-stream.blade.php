@@ -84,6 +84,18 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                     return;
                 }
                 const data = await res.json();
+                if (data && data.ticket_status) {
+                    window.dispatchEvent(new CustomEvent('ticket-status-updated', {
+                        detail: {
+                            ticketId: this.ticketId,
+                            status: data.ticket_status,
+                            handledBy: data.handled_by || null,
+                            hasAdminResponse: Boolean(data.has_admin_response),
+                            updatedAtFormatted: data.updated_at_formatted || null,
+                        }
+                    }));
+                }
+
                 if (data && data.responses && data.responses.length > 0) {
                     let hasNew = false;
                     for (const msg of data.responses) {
