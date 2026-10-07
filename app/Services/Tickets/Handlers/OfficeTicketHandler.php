@@ -42,7 +42,7 @@ class OfficeTicketHandler
                 . "• Bidang / Substansi: {$validated['bidang']}\n"
                 . "• Merk Perangkat: {$validated['merk_perangkat']}\n"
                 . "• Kode BMN: {$validated['kode_bmn']}\n\n"
-                . "Deskripsi Kendala:\n" . $validated['deskripsi'];
+                . "Deskripsi Kendala: " . trim($validated['deskripsi']);
 
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
@@ -61,7 +61,7 @@ class OfficeTicketHandler
                 'bidang' => $validated['bidang'],
                 'merk_perangkat' => $validated['merk_perangkat'],
                 'kode_bmn' => $validated['kode_bmn'],
-                'deskripsi' => $validated['deskripsi'],
+                'deskripsi' => trim($validated['deskripsi']),
             ]);
 
             return redirect()->route('tickets.show', $ticket)
@@ -83,7 +83,7 @@ class OfficeTicketHandler
         $description = "Permohonan Layanan Lisensi Office: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
-            . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
+            . "Deskripsi Kebutuhan/Kendala: " . trim($validated['deskripsi']);
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
@@ -101,7 +101,7 @@ class OfficeTicketHandler
             'sub_category' => 'lainnya',
             'tanggal_pengajuan' => $validated['tanggal_pengajuan'],
             'nama' => $validated['nama'],
-            'deskripsi' => $validated['deskripsi'],
+            'deskripsi' => trim($validated['deskripsi']),
             'file_lampiran' => $attachmentPath,
         ]);
 

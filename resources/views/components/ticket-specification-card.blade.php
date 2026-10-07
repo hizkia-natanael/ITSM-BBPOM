@@ -69,10 +69,11 @@
         $inRincian = false;
         $currentLongKey = null;
         $currentLongVal = [];
+        $lastFieldKey = null;
 
         foreach ($lines as $line) {
             $trimmed = trim($line);
-            if ($trimmed === '' || $trimmed === '---') continue;
+            if ($trimmed === '---') continue;
 
             if (str_starts_with($trimmed, '### Rincian Kebutuhan')) {
                 $inRincian = true;
@@ -80,6 +81,7 @@
             }
 
             if (!$inRincian) {
+                if ($trimmed === '') continue;
                 if (preg_match('/^\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
                     $k = trim($m[1]);
                     $v = trim($m[2]);
@@ -89,7 +91,10 @@
             } else {
                 if (preg_match('/^(\*|-)?\s*\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
                     if ($currentLongKey !== null) {
-                        $longFields[$currentLongKey] = implode("\n", $currentLongVal);
+                        $text = trim(implode("\n", $currentLongVal));
+                        if ($text !== '') {
+                            $longFields[$currentLongKey] = $text;
+                        }
                         $currentLongKey = null;
                         $currentLongVal = [];
                     }
@@ -97,28 +102,38 @@
                     $key = trim($m[2]);
                     $val = trim($m[3]);
 
-                    $isLong = strlen($val) > 80 || in_array(strtolower($key), [
-                        'deskripsi', 'deskripsi masalah', 'keterangan masalah', 'catatan tambahan',
-                        'detail permintaan', 'teks / konten infografis', 'isi pesan', 'keterangan'
-                    ]);
+                    $isLong = $val === '' 
+                        || strlen($val) > 80 
+                        || (bool) preg_match('/(deskripsi|keterangan|catatan|materi|konten|berita|pesan|keluhan|alasan|perbaikan|permintaan|detail|narasi)/i', $key);
 
                     if ($isLong) {
                         $currentLongKey = $key;
-                        $currentLongVal = [$val];
+                        $currentLongVal = $val !== '' ? [$val] : [];
+                        $lastFieldKey = null;
+                        unset($fields[$key]);
                     } else {
                         // Jangan timpa jika sudah ada dari subdetail
                         if (!isset($fields[$key])) {
                             $fields[$key] = $val;
+                            $lastFieldKey = $key;
                         }
                     }
                 } elseif ($currentLongKey !== null) {
                     $currentLongVal[] = $line;
+                } elseif ($lastFieldKey !== null && $trimmed !== '') {
+                    $currentLongKey = $lastFieldKey;
+                    $currentLongVal = [$fields[$lastFieldKey], $line];
+                    unset($fields[$lastFieldKey]);
+                    $lastFieldKey = null;
                 }
             }
         }
 
-        if ($currentLongKey !== null && !isset($longFields[$currentLongKey])) {
-            $longFields[$currentLongKey] = implode("\n", $currentLongVal);
+        if ($currentLongKey !== null) {
+            $text = trim(implode("\n", $currentLongVal));
+            if ($text !== '') {
+                $longFields[$currentLongKey] = $text;
+            }
         }
     } elseif (! $ticket->hasSubDetail() && empty($longFields) && !empty($desc) && !str_starts_with(trim($desc), 'Permohonan Layanan') && !str_starts_with(trim($desc), 'Pengaduan / Permohonan')) {
         // Fallback plain description HANYA untuk tiket pengaduan umum non-katalog formulir
@@ -151,6 +166,7 @@
         if (str_contains($k, 'bmn')) return 'ri-barcode-line';
         if (str_contains($k, 'nip') || str_contains($k, 'nik') || str_contains($k, 'jabatan')) return 'ri-id-card-line';
         if (str_contains($k, 'status') || str_contains($k, 'kondisi')) return 'ri-pulse-line';
+        if (str_contains($k, 'judul') || str_contains($k, 'materi') || str_contains($k, 'media') || str_contains($k, 'grafis') || str_contains($k, 'gambar') || str_contains($k, 'infografis')) return 'ri-image-line';
         return 'ri-information-line';
     };
 @endphp
@@ -260,12 +276,10 @@
             @foreach($longFields as $longLabel => $longVal)
                 <div class="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
                     <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 mb-2">
-                        <i class="ri-file-text-line text-emerald-700"></i>
+                        <i class="{{ (str_contains(strtolower($longLabel), 'materi') || str_contains(strtolower($longLabel), 'infografis') || str_contains(strtolower($longLabel), 'gambar')) ? 'ri-image-edit-line' : 'ri-file-text-line' }} text-emerald-700"></i>
                         {{ $longLabel }}:
                     </span>
-                    <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-white p-3.5 rounded-lg border border-slate-200/70">
-                        {{ trim($longVal) }}
-                    </div>
+                    <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-white p-3.5 rounded-lg border border-slate-200/70">{{ trim($longVal) }}</div>
                 </div>
             @endforeach
         </div>

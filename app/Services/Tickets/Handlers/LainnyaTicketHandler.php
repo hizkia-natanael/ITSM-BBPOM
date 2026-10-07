@@ -33,7 +33,7 @@ class LainnyaTicketHandler
         $description = "Permohonan Dukungan Layanan TIK Umum\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
-            . "Deskripsi Permintaan:\n" . $validated['deskripsi'];
+            . "Deskripsi Permintaan: " . trim($validated['deskripsi']);
 
         $category = Category::resolveForService('lainnya');
 
@@ -52,7 +52,7 @@ class LainnyaTicketHandler
         $ticket->lainnyaDetail()->create([
             'tanggal_pengajuan' => $validated['tanggal_pengajuan'],
             'nama' => $validated['nama'],
-            'deskripsi' => $validated['deskripsi'],
+            'deskripsi' => trim($validated['deskripsi']),
             'file_lampiran' => $attachmentPath,
         ]);
 

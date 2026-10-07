@@ -65,7 +65,7 @@ class TicketDynamicPayloadCompiler
                 $lines[] = "* **Nama Sampel:** {$nmSampel}";
                 $subjectSuffix = "Cek Posisi Sampel {$kdSampel}";
             } else {
-                $lines[] = "* **Deskripsi:** " . $request->input('service_description', $request->input('description', '-'));
+                $lines[] = "* **Deskripsi:** " . trim((string) $request->input('service_description', $request->input('description', '-')));
                 $subjectSuffix = "Kendala SIPT";
             }
         }
@@ -101,7 +101,7 @@ class TicketDynamicPayloadCompiler
                 $lines[] = "* **Permintaan:** Reset MFA (Multi-Factor Authentication)";
                 $subjectSuffix = "Reset MFA ({$userSrikandi})";
             } else {
-                $lines[] = "* **Deskripsi:** " . $request->input('service_description', $request->input('description', '-'));
+                $lines[] = "* **Deskripsi:** " . trim((string) $request->input('service_description', $request->input('description', '-')));
                 $subjectSuffix = "Kendala Srikandi";
             }
         }
@@ -116,7 +116,7 @@ class TicketDynamicPayloadCompiler
                 }
                 $subjectSuffix = "Reset Password (NIP: {$nip})";
             } else {
-                $lines[] = "* **Deskripsi:** " . $request->input('service_description', $request->input('description', '-'));
+                $lines[] = "* **Deskripsi:** " . trim((string) $request->input('service_description', $request->input('description', '-')));
                 $subjectSuffix = "Kendala Email Corporate";
             }
         }
@@ -126,15 +126,15 @@ class TicketDynamicPayloadCompiler
             if ($subKey === 'lemot_mati') {
                 $loc = $request->input('ap_location', '-');
                 $lines[] = "* **Lokasi Titik Access Point / Ruangan:** {$loc}";
-                $lines[] = "* **Keluhan:** " . $request->input('complaint_details', '-');
+                $lines[] = "* **Keluhan:** " . trim((string) $request->input('complaint_details', '-'));
                 $subjectSuffix = "Keluhan Internet Lemot / Mati ({$loc})";
             } elseif ($subKey === 'tambah_ap') {
                 $loc = $request->input('ap_location', '-');
                 $lines[] = "* **Request Lokasi Access Point:** {$loc}";
-                $lines[] = "* **Keluhan / Alasan Kebutuhan:** " . $request->input('complaint_details', '-');
+                $lines[] = "* **Keluhan / Alasan Kebutuhan:** " . trim((string) $request->input('complaint_details', '-'));
                 $subjectSuffix = "Permintaan Titik AP Baru ({$loc})";
             } else {
-                $lines[] = "* **Deskripsi:** " . $request->input('service_description', $request->input('description', '-'));
+                $lines[] = "* **Deskripsi:** " . trim((string) $request->input('service_description', $request->input('description', '-')));
                 $subjectSuffix = "Kendala Jaringan & Internet";
             }
         }
@@ -142,38 +142,38 @@ class TicketDynamicPayloadCompiler
         // 8. Subsite
         elseif ($service['id'] === 'subsite') {
             if ($subKey === 'upload_berita') {
-                $judul = $request->input('news_title', '-');
+                $judul = trim($request->input('news_title', '-'));
                 $lines[] = "* **Judul Berita:** {$judul}";
-                $lines[] = "* **Isi Berita:**\n" . $request->input('news_content', '-');
+                $lines[] = "* **Isi Berita:** " . trim($request->input('news_content', '-'));
                 if ($tgl = $request->input('target_date')) {
                     $lines[] = "* **Request Tanggal Upload:** {$tgl}";
                 }
                 $subjectSuffix = "Upload Berita: {$judul}";
             } elseif ($subKey === 'upload_dokumen') {
-                $doc = $request->input('doc_name', '-');
-                $loc = $request->input('doc_location', '-');
+                $doc = trim($request->input('doc_name', '-'));
+                $loc = trim($request->input('doc_location', '-'));
                 $lines[] = "* **Nama Dokumen:** {$doc}";
                 $lines[] = "* **Lokasi Upload / Kategori:** {$loc}";
                 $subjectSuffix = "Upload Dokumen: {$doc}";
             } elseif ($subKey === 'hapus_dokumen') {
-                $doc = $request->input('doc_name', '-');
+                $doc = trim($request->input('doc_name', '-'));
                 $lines[] = "* **Judul Dokumen yang Akan Dihapus:** {$doc}";
-                $lines[] = "* **Link Dokumen:** " . $request->input('doc_url', '-');
+                $lines[] = "* **Link Dokumen:** " . trim($request->input('doc_url', '-'));
                 $subjectSuffix = "Hapus Dokumen: {$doc}";
             }
         }
 
         // 9. Infografis
         elseif ($service['id'] === 'infografis') {
-            $judul = $request->input('infographic_title', '-');
+            $judul = trim($request->input('infographic_title', '-'));
             $lines[] = "* **Judul Infografis:** {$judul}";
-            $lines[] = "* **Isi Materi / Pesan Utama:**\n" . $request->input('infographic_content', '-');
+            $lines[] = "* **Isi Materi / Pesan Utama:** " . trim($request->input('infographic_content', '-'));
             $subjectSuffix = "Pembuatan Infografis: {$judul}";
         }
 
         // Fallback / Other services (4, 5, 6, 10, 11, 12)
         else {
-            $desc = $request->input('description', $request->input('service_description', '-'));
+            $desc = trim($request->input('description', $request->input('service_description', '-')));
             $lines[] = "* **Deskripsi:** {$desc}";
             $subjectSuffix = $request->input('subject', $subLabel);
         }

@@ -237,7 +237,7 @@ class KegiatanTicketHandler
         $description = "Permohonan Layanan Formulir & Kegiatan: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Pemohon: {$validated['nama']}\n\n"
-            . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
+            . "Deskripsi Kebutuhan/Kendala: " . trim($validated['deskripsi']);
 
         $ticket = Ticket::create([
             'user_id' => $request->user()->id,
@@ -255,7 +255,7 @@ class KegiatanTicketHandler
             'sub_category' => 'lainnya',
             'tanggal_pengajuan' => $validated['tanggal_pengajuan'],
             'nama' => $validated['nama'],
-            'deskripsi' => $validated['deskripsi'],
+            'deskripsi' => trim($validated['deskripsi']),
             'file_lampiran' => $attachmentPath,
         ]);
 

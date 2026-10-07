@@ -47,10 +47,10 @@ class AuthenticatedSessionController extends Controller
                     ->send();
             }
 
-            return redirect()->intended('/admin');
+            return redirect('/admin');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('dashboard');
     }
 
     /**

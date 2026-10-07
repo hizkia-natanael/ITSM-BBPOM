@@ -641,6 +641,12 @@ class HelpdeskTest extends TestCase
         $this->assertStringContainsString('Sosialisasi Keamanan Pangan Segar', $ticket->description);
 
         $response->assertRedirect(route('tickets.show', $ticket));
+
+        $showResponse = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $showResponse->assertSuccessful();
+        $showResponse->assertSee('Sosialisasi Keamanan Pangan Segar');
+        $showResponse->assertSee('Isi Berita');
+        $showResponse->assertSee('BBPOM Semarang melaksanakan inspeksi rutin bersama dinas kesehatan.');
     }
 
     public function test_user_can_submit_infografis_ticket(): void
@@ -662,6 +668,12 @@ class HelpdeskTest extends TestCase
         $this->assertStringContainsString('Tips Memilih Kosmetik Aman', $ticket->description);
 
         $response->assertRedirect(route('tickets.show', $ticket));
+
+        $showResponse = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $showResponse->assertSuccessful();
+        $showResponse->assertSee('Tips Memilih Kosmetik Aman');
+        $showResponse->assertSee('Isi Materi / Pesan Utama');
+        $showResponse->assertSee('Poin KLIK: Kemasan, Label, Izin Edar, Kedaluwarsa.');
     }
 
     public function test_user_can_submit_email_corporate_reset_password_ticket(): void

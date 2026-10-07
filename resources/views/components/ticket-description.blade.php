@@ -12,11 +12,12 @@
         $inRincian = false;
         $currentLongKey = null;
         $currentLongVal = [];
+        $lastFieldKey = null;
 
         foreach ($lines as $line) {
             $trimmed = trim($line);
 
-            if ($trimmed === '' || $trimmed === '---') {
+            if ($trimmed === '---') {
                 continue;
             }
 
@@ -26,13 +27,17 @@
             }
 
             if (!$inRincian) {
+                if ($trimmed === '') continue;
                 if (preg_match('/^\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
                     $meta[trim($m[1])] = trim($m[2]);
                 }
             } else {
                 if (preg_match('/^(\*|-)?\s*\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
                     if ($currentLongKey !== null) {
-                        $longFields[$currentLongKey] = implode("\n", $currentLongVal);
+                        $text = trim(implode("\n", $currentLongVal));
+                        if ($text !== '') {
+                            $longFields[$currentLongKey] = $text;
+                        }
                         $currentLongKey = null;
                         $currentLongVal = [];
                     }
@@ -40,25 +45,35 @@
                     $key = trim($m[2]);
                     $val = trim($m[3]);
 
-                    $isLong = strlen($val) > 80 || in_array(strtolower($key), [
-                        'deskripsi', 'deskripsi masalah', 'keterangan masalah', 'catatan tambahan',
-                        'detail permintaan', 'teks / konten infografis', 'isi pesan', 'keterangan'
-                    ]);
+                    $isLong = $val === '' 
+                        || strlen($val) > 80 
+                        || (bool) preg_match('/(deskripsi|keterangan|catatan|materi|konten|berita|pesan|keluhan|alasan|perbaikan|permintaan|detail|narasi)/i', $key);
 
                     if ($isLong) {
                         $currentLongKey = $key;
-                        $currentLongVal = [$val];
+                        $currentLongVal = $val !== '' ? [$val] : [];
+                        $lastFieldKey = null;
+                        unset($fields[$key]);
                     } else {
                         $fields[$key] = $val;
+                        $lastFieldKey = $key;
                     }
                 } elseif ($currentLongKey !== null) {
                     $currentLongVal[] = $line;
+                } elseif ($lastFieldKey !== null && $trimmed !== '') {
+                    $currentLongKey = $lastFieldKey;
+                    $currentLongVal = [$fields[$lastFieldKey], $line];
+                    unset($fields[$lastFieldKey]);
+                    $lastFieldKey = null;
                 }
             }
         }
 
         if ($currentLongKey !== null) {
-            $longFields[$currentLongKey] = implode("\n", $currentLongVal);
+            $text = trim(implode("\n", $currentLongVal));
+            if ($text !== '') {
+                $longFields[$currentLongKey] = $text;
+            }
         }
     }
 
@@ -78,6 +93,7 @@
         if (str_contains($k, 'orientasi') || str_contains($k, 'ukuran')) return 'ri-aspect-ratio-line';
         if (str_contains($k, 'jabatan') || str_contains($k, 'nip')) return 'ri-id-card-line';
         if (str_contains($k, 'status') || str_contains($k, 'kondisi')) return 'ri-pulse-line';
+        if (str_contains($k, 'judul') || str_contains($k, 'materi') || str_contains($k, 'media') || str_contains($k, 'grafis') || str_contains($k, 'gambar') || str_contains($k, 'infografis')) return 'ri-image-line';
         return 'ri-information-line';
     };
 @endphp
@@ -138,12 +154,10 @@
                 @foreach($longFields as $longLabel => $longVal)
                     <div class="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
                         <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 mb-2">
-                            <i class="ri-file-text-line text-emerald-700"></i>
+                            <i class="{{ (str_contains(strtolower($longLabel), 'materi') || str_contains(strtolower($longLabel), 'infografis') || str_contains(strtolower($longLabel), 'gambar')) ? 'ri-image-edit-line' : 'ri-file-text-line' }} text-emerald-700"></i>
                             {{ $longLabel }}:
                         </span>
-                        <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-white p-3 rounded-lg border border-slate-200/60">
-                            {{ $longVal }}
-                        </div>
+                        <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-white p-3 rounded-lg border border-slate-200/60">{{ trim($longVal) }}</div>
                     </div>
                 @endforeach
             </div>
@@ -156,8 +170,6 @@
             <i class="ri-file-list-2-line text-emerald-700 text-sm"></i>
             Deskripsi Pengaduan / Masalah:
         </h4>
-        <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
-            {{ $description }}
-        </div>
+        <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">{{ trim($description) }}</div>
     </div>
 @endif

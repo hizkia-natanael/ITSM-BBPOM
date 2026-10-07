@@ -76,7 +76,7 @@ class ZoomTicketHandler
         $description = "Permohonan Layanan Zoom: Lainnya\n\n"
             . "• Tanggal Pengajuan: " . Carbon::parse($validated['tanggal_pengajuan'])->translatedFormat('d F Y') . "\n"
             . "• Nama Pemohon: {$validated['nama']}\n\n"
-            . "Deskripsi Kebutuhan/Kendala:\n" . $validated['deskripsi'];
+            . "Deskripsi Kebutuhan/Kendala: " . trim($validated['deskripsi']);
 
         $category = Category::resolveForService('zoom');
 
@@ -96,7 +96,7 @@ class ZoomTicketHandler
             'sub_category' => 'lainnya',
             'tanggal_pengajuan' => $validated['tanggal_pengajuan'],
             'nama' => $validated['nama'],
-            'deskripsi' => $validated['deskripsi'],
+            'deskripsi' => trim($validated['deskripsi']),
             'file_lampiran' => $attachmentPath,
         ]);
 
