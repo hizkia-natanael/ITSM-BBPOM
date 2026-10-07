@@ -53,18 +53,6 @@ class OfficeSpecification
                 ->disabled()
                 ->dehydrated(false)
                 ->columnSpanFull(),
-
-            Placeholder::make('office_lampiran')
-                ->label('Berkas Lampiran Lisensi')
-                ->visible(fn ($record) => !empty($record?->officeDetail?->file_lampiran))
-                ->content(function ($record) {
-                    if (!$record || !$record->officeDetail?->file_lampiran) {
-                        return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                    }
-                    $url = asset('storage/' . $record->officeDetail->file_lampiran);
-                    return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Lampiran Office</a>');
-                })
-                ->columnSpanFull(),
         ])
         ->visible(fn ($record) => $record && $record->officeDetail !== null)
         ->columnSpanFull();

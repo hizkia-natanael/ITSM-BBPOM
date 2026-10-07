@@ -52,4 +52,18 @@ class TicketKegiatanDetail extends Model
             default => ucfirst(str_replace('_', ' ', $this->sub_category)),
         };
     }
+
+    public function getJenisTestLabelAttribute(): ?string
+    {
+        if (empty($this->jenis_test)) {
+            return null;
+        }
+
+        return match ($this->jenis_test) {
+            'pretest' => 'Pretest',
+            'post_test' => 'Post Test',
+            'pretest_posttest' => 'Pretest & Post Test',
+            default => ucfirst(str_replace('_', ' ', $this->jenis_test)),
+        };
+    }
 }

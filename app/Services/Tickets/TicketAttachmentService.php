@@ -25,7 +25,13 @@ class TicketAttachmentService
             'windows' => $ticket->windowsDetail?->file_lampiran,
             'office' => $ticket->officeDetail?->file_lampiran,
             'lainnya' => $ticket->lainnyaDetail?->file_lampiran,
-            default => $ticket->attachment,
+            default => $ticket->attachment ?: (
+                $ticket->bsreDetail?->file_lampiran
+                ?: ($ticket->zoomDetail?->file_lampiran
+                ?: ($ticket->kegiatanDetail?->file_lampiran
+                ?: ($ticket->windowsDetail?->file_lampiran
+                ?: ($ticket->officeDetail?->file_lampiran
+                ?: $ticket->lainnyaDetail?->file_lampiran)))))
         };
 
         if (!$path) {

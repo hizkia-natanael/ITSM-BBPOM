@@ -78,7 +78,12 @@ class TicketController extends Controller
             });
         }
 
-        $tickets = $query->latest()->paginate(10)->withQueryString();
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
+        $tickets = $query->latest()->paginate($perPage)->withQueryString();
         $categories = Category::orderBy('name')->get();
 
         return view('tickets.index', [
@@ -87,6 +92,7 @@ class TicketController extends Controller
             'selectedStatus' => $request->status,
             'selectedCategory' => $request->category_id,
             'search' => $request->search,
+            'perPage' => $perPage,
         ]);
     }
 
@@ -138,7 +144,7 @@ class TicketController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk melihat tiket ini.');
         }
 
-        $ticket->load(['category', 'user', 'handledBy', 'responses.user', 'responses.attachments', 'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail']);
+        $ticket->load(['attachments', 'category', 'user', 'handledBy', 'responses.user', 'responses.attachments', 'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail']);
 
         return view('tickets.show', [
             'ticket' => $ticket,

@@ -99,18 +99,6 @@ class KegiatanSpecification
                 ->disabled()
                 ->dehydrated(false)
                 ->columnSpanFull(),
-
-            Placeholder::make('kegiatan_lampiran')
-                ->label('Berkas Dokumen Lampiran')
-                ->visible(fn ($record) => !empty($record?->kegiatanDetail?->file_lampiran))
-                ->content(function ($record) {
-                    if (!$record || !$record->kegiatanDetail?->file_lampiran) {
-                        return new HtmlString('<span class="text-xs text-gray-500 italic">Tidak ada berkas lampiran.</span>');
-                    }
-                    $url = asset('storage/' . $record->kegiatanDetail->file_lampiran);
-                    return new HtmlString('<a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-lg text-xs font-semibold underline transition"><i class="ri-attachment-2 mr-1"></i>Lihat / Unduh Dokumen Kegiatan</a>');
-                })
-                ->columnSpanFull(),
         ])
         ->visible(fn ($record) => $record && $record->kegiatanDetail !== null)
         ->columnSpanFull();

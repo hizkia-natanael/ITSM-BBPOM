@@ -10,10 +10,17 @@ use Filament\Forms\Components\ViewField;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
+use Livewire\Attributes\On;
 
 class ListTickets extends ListRecords
 {
     protected static string $resource = TicketResource::class;
+
+    #[On('refresh-tickets')]
+    public function refreshTickets(): void
+    {
+        // Livewire will automatically re-render the tickets table
+    }
 
     protected function getHeaderActions(): array
     {
