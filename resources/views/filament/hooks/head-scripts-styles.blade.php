@@ -1,5 +1,237 @@
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
                     <style>
+                    [class^="ri-"], [class*=" ri-"] {
+                        font-family: 'remixicon' !important;
+                        font-style: normal;
+                        -webkit-font-smoothing: antialiased;
+                        -moz-osx-font-smoothing: grayscale;
+                        display: inline-block;
+                        line-height: 1;
+                    }
+
+                    /* ===================================================
+                       BBPOM SPECIFICATION CARD (FILAMENT ADMIN)
+                       =================================================== */
+                    .bbpom-spec-card-container {
+                        background: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 1rem !important;
+                        padding: 1.5rem !important;
+                        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 1.25rem !important;
+                        margin-top: 0.25rem !important;
+                        margin-bottom: 0.25rem !important;
+                        box-sizing: border-box !important;
+                    }
+                    .bbpom-spec-header-compact {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        gap: 0.75rem !important;
+                        flex-wrap: wrap !important;
+                        padding-bottom: 0.85rem !important;
+                        border-bottom: 1px solid #f1f5f9 !important;
+                    }
+                    .bbpom-spec-header-row {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        gap: 1rem !important;
+                        flex-wrap: wrap !important;
+                        padding-bottom: 1.15rem !important;
+                        border-bottom: 1px solid #f1f5f9 !important;
+                    }
+                    .bbpom-spec-header-left {
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 0.875rem !important;
+                    }
+                    .bbpom-spec-icon-box {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                        border-radius: 0.75rem !important;
+                        background: rgba(5, 150, 105, 0.1) !important;
+                        color: #047857 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        font-size: 1.35rem !important;
+                        flex-shrink: 0 !important;
+                    }
+                    .bbpom-spec-title-group {
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 0.15rem !important;
+                    }
+                    .bbpom-spec-badge-label {
+                        font-size: 11px !important;
+                        font-weight: 700 !important;
+                        color: #047857 !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.05em !important;
+                        line-height: 1 !important;
+                    }
+                    .bbpom-spec-service-title {
+                        font-size: 1.2rem !important;
+                        font-weight: 800 !important;
+                        color: #0f172a !important;
+                        margin: 0 !important;
+                        line-height: 1.25 !important;
+                    }
+                    .bbpom-spec-subcat-badge {
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        padding: 0.35rem 0.85rem !important;
+                        border-radius: 9999px !important;
+                        font-size: 12px !important;
+                        font-weight: 700 !important;
+                        background: #ecfdf5 !important;
+                        color: #065f46 !important;
+                        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+                    }
+                    .bbpom-spec-meta-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+                        gap: 1rem !important;
+                    }
+                    .bbpom-spec-meta-card {
+                        background: #f8fafc !important;
+                        border: 1px solid #f1f5f9 !important;
+                        border-radius: 0.75rem !important;
+                        padding: 0.85rem 1rem !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 0.25rem !important;
+                    }
+                    .bbpom-spec-meta-label {
+                        font-size: 11px !important;
+                        font-weight: 600 !important;
+                        color: #64748b !important;
+                    }
+                    .bbpom-spec-meta-value {
+                        font-size: 13.5px !important;
+                        font-weight: 700 !important;
+                        color: #0f172a !important;
+                    }
+                    .bbpom-spec-fields-section {
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 0.75rem !important;
+                    }
+                    .bbpom-spec-section-title {
+                        font-size: 11.5px !important;
+                        font-weight: 700 !important;
+                        color: #475569 !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.05em !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 0.45rem !important;
+                    }
+                    .bbpom-spec-section-title i {
+                        color: #047857 !important;
+                        font-size: 14px !important;
+                    }
+                    .bbpom-spec-fields-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+                        gap: 0.85rem !important;
+                    }
+                    .bbpom-spec-field-card {
+                        background: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 0.875rem !important;
+                        padding: 0.95rem 1rem !important;
+                        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+                        transition: border-color 0.15s ease !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 0.5rem !important;
+                    }
+                    .bbpom-spec-field-card:hover {
+                        border-color: #6ee7b7 !important;
+                    }
+                    .bbpom-spec-field-header {
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 0.45rem !important;
+                    }
+                    .bbpom-spec-field-header i {
+                        color: #94a3b8 !important;
+                        font-size: 14px !important;
+                    }
+                    .bbpom-spec-field-header span {
+                        font-size: 11px !important;
+                        font-weight: 700 !important;
+                        color: #64748b !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.05em !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        white-space: nowrap !important;
+                    }
+                    .bbpom-spec-field-value {
+                        background: #f8fafc !important;
+                        border: 1px solid #f1f5f9 !important;
+                        border-radius: 0.5rem !important;
+                        padding: 0.5rem 0.75rem !important;
+                        font-size: 12.5px !important;
+                        font-weight: 600 !important;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+                        color: #0f172a !important;
+                        word-break: break-all !important;
+                    }
+                    .bbpom-spec-long-section {
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 0.75rem !important;
+                        padding-top: 0.5rem !important;
+                        border-top: 1px solid #f1f5f9 !important;
+                    }
+                    .bbpom-spec-long-card {
+                        background: #f8fafc !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 0.75rem !important;
+                        padding: 1rem !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 0.5rem !important;
+                    }
+                    .bbpom-spec-long-label {
+                        font-size: 12px !important;
+                        font-weight: 700 !important;
+                        color: #334155 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 0.4rem !important;
+                    }
+                    .bbpom-spec-long-label i {
+                        color: #047857 !important;
+                        font-size: 14px !important;
+                    }
+                    .bbpom-spec-long-content {
+                        background: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 0.5rem !important;
+                        padding: 0.85rem !important;
+                        font-size: 13px !important;
+                        color: #1e293b !important;
+                        line-height: 1.6 !important;
+                        white-space: pre-wrap !important;
+                    }
+                    .bbpom-sr-only {
+                        position: absolute !important;
+                        width: 1px !important;
+                        height: 1px !important;
+                        padding: 0 !important;
+                        margin: -1px !important;
+                        overflow: hidden !important;
+                        clip: rect(0, 0, 0, 0) !important;
+                        white-space: nowrap !important;
+                        border: 0 !important;
+                    }
                     @keyframes bbpomHighlightPulse {
                         0% {
                             background-color: rgba(5, 150, 105, 0.24);

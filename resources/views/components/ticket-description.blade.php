@@ -1,101 +1,13 @@
 @props(['description'])
 
 @php
-    $isStructured = str_contains($description, '**Layanan:**') || str_contains($description, '### Rincian Kebutuhan');
+    $extracted = \App\Services\Tickets\TicketDynamicPayloadCompiler::extractStructuredPayload($description);
+    $isStructured = $extracted['is_structured'];
+    $meta = $extracted['meta'];
+    $fields = $extracted['fields'];
+    $longFields = $extracted['long_fields'];
 
-    $meta = [];
-    $fields = [];
-    $longFields = [];
-
-    if ($isStructured) {
-        $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $description));
-        $inRincian = false;
-        $currentLongKey = null;
-        $currentLongVal = [];
-        $lastFieldKey = null;
-
-        foreach ($lines as $line) {
-            $trimmed = trim($line);
-
-            if ($trimmed === '---') {
-                continue;
-            }
-
-            if (str_starts_with($trimmed, '### Rincian Kebutuhan')) {
-                $inRincian = true;
-                continue;
-            }
-
-            if (!$inRincian) {
-                if ($trimmed === '') continue;
-                if (preg_match('/^\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
-                    $meta[trim($m[1])] = trim($m[2]);
-                }
-            } else {
-                if (preg_match('/^(\*|-)?\s*\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
-                    if ($currentLongKey !== null) {
-                        $text = trim(implode("\n", $currentLongVal));
-                        if ($text !== '') {
-                            $longFields[$currentLongKey] = $text;
-                        }
-                        $currentLongKey = null;
-                        $currentLongVal = [];
-                    }
-
-                    $key = trim($m[2]);
-                    $val = trim($m[3]);
-
-                    $isLong = $val === '' 
-                        || strlen($val) > 80 
-                        || (bool) preg_match('/(deskripsi|keterangan|catatan|materi|konten|berita|pesan|keluhan|alasan|perbaikan|permintaan|detail|narasi)/i', $key);
-
-                    if ($isLong) {
-                        $currentLongKey = $key;
-                        $currentLongVal = $val !== '' ? [$val] : [];
-                        $lastFieldKey = null;
-                        unset($fields[$key]);
-                    } else {
-                        $fields[$key] = $val;
-                        $lastFieldKey = $key;
-                    }
-                } elseif ($currentLongKey !== null) {
-                    $currentLongVal[] = $line;
-                } elseif ($lastFieldKey !== null && $trimmed !== '') {
-                    $currentLongKey = $lastFieldKey;
-                    $currentLongVal = [$fields[$lastFieldKey], $line];
-                    unset($fields[$lastFieldKey]);
-                    $lastFieldKey = null;
-                }
-            }
-        }
-
-        if ($currentLongKey !== null) {
-            $text = trim(implode("\n", $currentLongVal));
-            if ($text !== '') {
-                $longFields[$currentLongKey] = $text;
-            }
-        }
-    }
-
-    $getFieldIcon = function(string $key): string {
-        $k = strtolower($key);
-        if (str_contains($k, 'user') || str_contains($k, 'nama') || str_contains($k, 'pemohon')) return 'ri-user-3-line';
-        if (str_contains($k, 'pass') || str_contains($k, 'sandi')) return 'ri-lock-password-line';
-        if (str_contains($k, 'sampel') || str_contains($k, 'kode')) return 'ri-test-tube-line';
-        if (str_contains($k, 'email') || str_contains($k, 'mail')) return 'ri-mail-line';
-        if (str_contains($k, 'domain') || str_contains($k, 'url') || str_contains($k, 'link') || str_contains($k, 'subsite')) return 'ri-global-line';
-        if (str_contains($k, 'ip') || str_contains($k, 'mac') || str_contains($k, 'port') || str_contains($k, 'lan')) return 'ri-router-line';
-        if (str_contains($k, 'telepon') || str_contains($k, 'wa') || str_contains($k, 'kontak') || str_contains($k, 'hp')) return 'ri-phone-line';
-        if (str_contains($k, 'lokasi') || str_contains($k, 'ruang') || str_contains($k, 'gedung')) return 'ri-map-pin-2-line';
-        if (str_contains($k, 'unit') || str_contains($k, 'seksi') || str_contains($k, 'bidang')) return 'ri-building-4-line';
-        if (str_contains($k, 'tanggal') || str_contains($k, 'waktu') || str_contains($k, 'deadline') || str_contains($k, 'tenggat')) return 'ri-calendar-event-line';
-        if (str_contains($k, 'tipe') || str_contains($k, 'kategori') || str_contains($k, 'jenis')) return 'ri-price-tag-3-line';
-        if (str_contains($k, 'orientasi') || str_contains($k, 'ukuran')) return 'ri-aspect-ratio-line';
-        if (str_contains($k, 'jabatan') || str_contains($k, 'nip')) return 'ri-id-card-line';
-        if (str_contains($k, 'status') || str_contains($k, 'kondisi')) return 'ri-pulse-line';
-        if (str_contains($k, 'judul') || str_contains($k, 'materi') || str_contains($k, 'media') || str_contains($k, 'grafis') || str_contains($k, 'gambar') || str_contains($k, 'infografis')) return 'ri-image-line';
-        return 'ri-information-line';
-    };
+    $getFieldIcon = fn(string $key): string => \App\Services\Tickets\TicketDynamicPayloadCompiler::getFieldIcon($key);
 @endphp
 
 @if($isStructured)

@@ -1,4 +1,3 @@
-<!-- Modal Loading Screen Pengiriman Pengaduan Tiket (Executive Glassmorphism Atomic Component) -->
 <div 
     x-show="isSubmitting" 
     x-cloak 
@@ -6,6 +5,7 @@
     aria-labelledby="submission-loading-title" 
     role="dialog" 
     aria-modal="true"
+    @keydown.escape.window="resetSubmissionState()"
 >
     <!-- Frosted Dark Glass Backdrop with Smooth Fade -->
     <div 
@@ -76,6 +76,17 @@
             <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-500">
                 <i class="ri-information-line text-emerald-600 text-sm"></i>
                 <span>Mohon tidak menutup peramban saat proses berlangsung</span>
+            </div>
+
+            <!-- Emergency Escape Action -->
+            <div class="mt-2.5 flex items-center justify-center">
+                <button 
+                    type="button" 
+                    @click="resetSubmissionState()"
+                    class="text-[10px] text-slate-400 hover:text-slate-600 underline transition cursor-pointer"
+                >
+                    Tutup Tampilan Loading
+                </button>
             </div>
         </div>
     </div>

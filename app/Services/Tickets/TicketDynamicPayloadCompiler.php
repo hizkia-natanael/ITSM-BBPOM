@@ -7,6 +7,133 @@ use Illuminate\Http\Request;
 class TicketDynamicPayloadCompiler
 {
     /**
+     * Parse structured markdown description (SIPT, Srikandi, Email, Internet, Subsite, Infografis, dll)
+     * menjadi metadata, fields (parameter singkat), dan longFields (deskripsi / narasi panjang).
+     *
+     * @param string|null $desc
+     * @return array{is_structured: bool, meta: array<string, string>, fields: array<string, string>, long_fields: array<string, string>}
+     */
+    public static function extractStructuredPayload(?string $desc): array
+    {
+        $desc = $desc ?: '';
+        $isStructured = str_contains($desc, '**Layanan:**') || str_contains($desc, '### Rincian Kebutuhan');
+
+        $meta = [];
+        $fields = [];
+        $longFields = [];
+
+        if (!$isStructured) {
+            return [
+                'is_structured' => false,
+                'meta' => [],
+                'fields' => [],
+                'long_fields' => [],
+            ];
+        }
+
+        $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $desc));
+        $inRincian = false;
+        $currentLongKey = null;
+        $currentLongVal = [];
+        $lastFieldKey = null;
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if ($trimmed === '---') continue;
+
+            if (str_starts_with($trimmed, '### Rincian Kebutuhan')) {
+                $inRincian = true;
+                continue;
+            }
+
+            if (!$inRincian) {
+                if ($trimmed === '') continue;
+                if (preg_match('/^\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
+                    $meta[trim($m[1])] = trim($m[2]);
+                }
+            } else {
+                if (preg_match('/^(\*|-)?\s*\*\*(.+?):\*\*\s*(.*)$/', $trimmed, $m)) {
+                    if ($currentLongKey !== null) {
+                        $text = trim(implode("\n", $currentLongVal));
+                        if ($text !== '') {
+                            $longFields[$currentLongKey] = $text;
+                        }
+                        $currentLongKey = null;
+                        $currentLongVal = [];
+                    }
+
+                    $key = trim($m[2]);
+                    $val = trim($m[3]);
+
+                    $isLong = $val === ''
+                        || strlen($val) > 80
+                        || (bool) preg_match('/(deskripsi|keterangan|catatan|materi|konten|berita|pesan|keluhan|alasan|perbaikan|permintaan|detail|narasi)/i', $key);
+
+                    if ($isLong) {
+                        $currentLongKey = $key;
+                        $currentLongVal = $val !== '' ? [$val] : [];
+                        $lastFieldKey = null;
+                        unset($fields[$key]);
+                    } else {
+                        if (!isset($fields[$key])) {
+                            $fields[$key] = $val;
+                            $lastFieldKey = $key;
+                        }
+                    }
+                } elseif ($currentLongKey !== null) {
+                    $currentLongVal[] = $line;
+                } elseif ($lastFieldKey !== null && $trimmed !== '') {
+                    $currentLongKey = $lastFieldKey;
+                    $currentLongVal = [$fields[$lastFieldKey], $line];
+                    unset($fields[$lastFieldKey]);
+                    $lastFieldKey = null;
+                }
+            }
+        }
+
+        if ($currentLongKey !== null) {
+            $text = trim(implode("\n", $currentLongVal));
+            if ($text !== '') {
+                $longFields[$currentLongKey] = $text;
+            }
+        }
+
+        return [
+            'is_structured' => true,
+            'meta' => $meta,
+            'fields' => $fields,
+            'long_fields' => $longFields,
+        ];
+    }
+
+    /**
+     * Dapatkan ikon Remix Icon yang sesuai berdasarkan kata kunci label parameter.
+     */
+    public static function getFieldIcon(string $key): string
+    {
+        $k = strtolower($key);
+        if (str_contains($k, 'user') || str_contains($k, 'nama') || str_contains($k, 'pemohon')) return 'ri-user-3-line';
+        if (str_contains($k, 'pass') || str_contains($k, 'sandi')) return 'ri-lock-password-line';
+        if (str_contains($k, 'sampel') || str_contains($k, 'kode')) return 'ri-test-tube-line';
+        if (str_contains($k, 'email') || str_contains($k, 'mail')) return 'ri-mail-line';
+        if (str_contains($k, 'domain') || str_contains($k, 'url') || str_contains($k, 'link') || str_contains($k, 'subsite')) return 'ri-global-line';
+        if (str_contains($k, 'ip') || str_contains($k, 'mac') || str_contains($k, 'port') || str_contains($k, 'lan') || str_contains($k, 'wifi')) return 'ri-router-line';
+        if (str_contains($k, 'telepon') || str_contains($k, 'wa') || str_contains($k, 'kontak') || str_contains($k, 'hp')) return 'ri-phone-line';
+        if (str_contains($k, 'lokasi') || str_contains($k, 'ruang') || str_contains($k, 'gedung')) return 'ri-map-pin-2-line';
+        if (str_contains($k, 'unit') || str_contains($k, 'seksi') || str_contains($k, 'bidang')) return 'ri-building-4-line';
+        if (str_contains($k, 'acara') || str_contains($k, 'kegiatan') || str_contains($k, 'rapat')) return 'ri-calendar-event-line';
+        if (str_contains($k, 'jam') || str_contains($k, 'waktu') || str_contains($k, 'tanggal') || str_contains($k, 'deadline') || str_contains($k, 'tenggat')) return 'ri-time-line';
+        if (str_contains($k, 'tipe') || str_contains($k, 'kategori') || str_contains($k, 'jenis')) return 'ri-price-tag-3-line';
+        if (str_contains($k, 'orientasi') || str_contains($k, 'ukuran')) return 'ri-aspect-ratio-line';
+        if (str_contains($k, 'perangkat') || str_contains($k, 'laptop') || str_contains($k, 'komputer') || str_contains($k, 'pc') || str_contains($k, 'merk')) return 'ri-computer-line';
+        if (str_contains($k, 'bmn')) return 'ri-barcode-line';
+        if (str_contains($k, 'nip') || str_contains($k, 'nik') || str_contains($k, 'jabatan')) return 'ri-id-card-line';
+        if (str_contains($k, 'status') || str_contains($k, 'kondisi')) return 'ri-pulse-line';
+        if (str_contains($k, 'judul') || str_contains($k, 'materi') || str_contains($k, 'media') || str_contains($k, 'grafis') || str_contains($k, 'gambar') || str_contains($k, 'infografis')) return 'ri-image-line';
+        return 'ri-information-line';
+    }
+
+    /**
      * Kompilasi data dinamis dari formulir spesifikasi layanan TIK ke format subject dan markdown description.
      *
      * @return array{0: string|null, 1: string} [generatedSubject, generatedDescription]

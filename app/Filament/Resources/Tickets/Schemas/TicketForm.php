@@ -122,14 +122,8 @@ class TicketForm
                             ->columnSpanFull(),
 
                         // ==========================================
-                        // 4. SPESIFIKASI LAYANAN SPESIFIK (MODULAR SCHEMAS)
+                        // 4. SPESIFIKASI LAYANAN SPESIFIK (UNIFIED 12 KATALOG)
                         // ==========================================
-                        BsreSpecification::make(),
-                        ZoomSpecification::make(),
-                        KegiatanSpecification::make(),
-                        WindowsSpecification::make(),
-                        OfficeSpecification::make(),
-                        LainnyaSpecification::make(),
                         StandardSpecification::make(),
 
                         // ==========================================

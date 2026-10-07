@@ -407,9 +407,21 @@
                     }
                 },
 
+                resetSubmissionState() {
+                    this.isSubmitting = false;
+                    this.submissionStepIndex = 0;
+                    if (this.submissionTimer) {
+                        clearInterval(this.submissionTimer);
+                        this.submissionTimer = null;
+                    }
+                },
+
                 startSubmission() {
                     this.isSubmitting = true;
                     this.submissionStepIndex = 0;
+                    try {
+                        sessionStorage.setItem('bbpom_ticket_submitted_success', '1');
+                    } catch (e) {}
                     if (this.submissionTimer) {
                         clearInterval(this.submissionTimer);
                     }
@@ -421,6 +433,8 @@
                 },
 
                 init() {
+                    this.resetSubmissionState();
+
                     try {
                         localStorage.removeItem('bbpom_itsm_ticket_draft');
                     } catch (e) {}
@@ -436,9 +450,24 @@
                         this.selectedSubCategory = this.selectedSubcategory;
                     }
 
+                    // Reset submission loading state whenever page is shown (handles Back/Forward Cache / bfcache)
+                    window.addEventListener('pageshow', (event) => {
+                        this.resetSubmissionState();
+                        let wasSubmitted = false;
+                        try {
+                            wasSubmitted = Boolean(sessionStorage.getItem('bbpom_ticket_submitted_success'));
+                            sessionStorage.removeItem('bbpom_ticket_submitted_success');
+                        } catch (e) {}
+
+                        if (event.persisted || wasSubmitted) {
+                            this.clearService();
+                        }
+                    });
+
                     // Intercept browser back button (popstate)
                     window.addEventListener('popstate', (e) => {
-                        if (this.selectedServiceKey && this.isDirty() && !this.isSubmitting) {
+                        this.resetSubmissionState();
+                        if (this.selectedServiceKey && this.isDirty()) {
                             try {
                                 window.history.pushState({ serviceKey: this.selectedServiceKey }, '', window.location.href);
                             } catch (err) {}
