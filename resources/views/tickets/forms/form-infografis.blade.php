@@ -41,7 +41,7 @@
                     name="attachments[]" 
                     label="Unggah File Materi Naskah / Dokumen Pendukung" 
                     :optional="true"
-                    helperText="Format: PDF, Word, PPT, ZIP, JPG, PNG (Maks 5MB per berkas, dapat memilih beberapa berkas)"
+                    helperText="Format: PDF, Word, PPT, ZIP, JPG, PNG (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
             </div>
         </div>

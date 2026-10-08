@@ -26,8 +26,7 @@
 
 @if($hasMultiple || $hasLegacy)
     <div 
-        class="bbpom-att-wrapper {{ $showTopBorder ? 'mt-8 pt-6 border-t border-slate-100' : 'mt-5 pt-4 border-t border-dashed border-slate-200' }}" 
-        x-data="bbpomTicketAttachmentsLightbox()"
+        class="bbpom-att-wrapper {{ $showTopBorder ? 'mt-8 pt-6 border-t border-slate-100' : 'mt-5 pt-4 border-t border-dashed border-slate-200' }}"
     >
         <!-- Header -->
         <div class="bbpom-att-header flex items-center justify-between mb-3.5">
@@ -65,16 +64,7 @@
                     @endphp
                     <div class="bbpom-att-card p-3.5 rounded-2xl border border-slate-200/90 bg-slate-50/70 hover:bg-white transition-all flex flex-col justify-between gap-3 shadow-xs">
                         <div class="bbpom-att-info-row flex items-start gap-3 min-w-0">
-                            @if($att->is_image)
-                                <button 
-                                    type="button" 
-                                    @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
-                                    class="bbpom-att-icon-box bbpom-att-type-{{ $typeCategory }} w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-200/80 bg-white shadow-xs cursor-pointer"
-                                    title="Pratinjau {{ $att->file_name }}"
-                                >
-                                    <i class="{{ $pureIcon }} text-xl"></i>
-                                </button>
-                            @elseif($att->is_pdf)
+                            @if($att->is_image || $att->is_pdf)
                                 <a 
                                     href="{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}" 
                                     target="_blank" 
@@ -98,16 +88,7 @@
                             @endif
 
                             <div class="bbpom-att-meta-wrap min-w-0 flex-1">
-                                @if($att->is_image)
-                                    <button 
-                                        type="button" 
-                                        @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
-                                        class="bbpom-att-name font-bold text-xs text-slate-900 truncate text-left cursor-pointer hover:underline block w-full" 
-                                        title="{{ $att->file_name }}"
-                                    >
-                                        {{ $att->file_name }}
-                                    </button>
-                                @elseif($att->is_pdf)
+                                @if($att->is_image || $att->is_pdf)
                                     <a 
                                         href="{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}" 
                                         target="_blank" 
@@ -140,52 +121,10 @@
                             </div>
                         </div>
 
-                        @if($att->is_image)
-                            <div class="bbpom-att-thumb-wrap">
-                                <button 
-                                    type="button" 
-                                    @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
-                                    class="bbpom-att-thumb-btn group relative"
-                                    title="Klik untuk memperbesar {{ $att->file_name }}"
-                                >
-                                    <img 
-                                        src="{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}" 
-                                        alt="{{ $att->file_name }}" 
-                                        class="bbpom-att-thumb-img" 
-                                        loading="lazy"
-                                    >
-                                    <div class="bbpom-att-thumb-overlay">
-                                        <span>
-                                            <i class="ri-zoom-in-line"></i>
-                                            Perbesar
-                                        </span>
-                                    </div>
-                                </button>
-                            </div>
-                        @endif
 
                         <!-- Action Buttons -->
                         <div class="bbpom-att-actions-row flex items-center gap-2 pt-2 border-t border-slate-200/60">
-                            @if($att->is_image)
-                                <button 
-                                    type="button" 
-                                    @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
-                                    class="bbpom-att-btn-preview inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors shadow-xs cursor-pointer"
-                                >
-                                    <i class="ri-eye-line text-xs"></i>
-                                    <span>Pratinjau</span>
-                                </button>
-                                <a 
-                                    href="{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att]) }}" 
-                                    target="_blank" 
-                                    download 
-                                    wire:ignore
-                                    class="bbpom-att-btn-download inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-xs"
-                                >
-                                    <i class="ri-download-2-line text-xs"></i>
-                                    <span>Unduh</span>
-                                </a>
-                            @elseif($att->is_pdf)
+                            @if($att->is_image || $att->is_pdf)
                                 <a 
                                     href="{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}" 
                                     target="_blank" 
@@ -255,16 +194,7 @@
                 <div class="bbpom-att-card p-4 rounded-2xl border border-slate-200/90 bg-slate-50/70 hover:bg-white transition-colors">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="bbpom-att-info-row flex items-center gap-3.5">
-                            @if($isImage)
-                                <button 
-                                    type="button" 
-                                    @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')"
-                                    class="bbpom-att-icon-box bbpom-att-type-{{ $typeCategory }} w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-xs cursor-pointer"
-                                    title="Pratinjau {{ $fileName }}"
-                                >
-                                    <i class="{{ $pureIcon }} text-2xl"></i>
-                                </button>
-                            @elseif($isPdf)
+                            @if($isImage || $isPdf)
                                 <a 
                                     href="{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}" 
                                     target="_blank" 
@@ -289,16 +219,7 @@
 
                             <div class="bbpom-att-meta-wrap">
                                 <div class="flex items-center gap-2">
-                                    @if($isImage)
-                                        <button 
-                                            type="button" 
-                                            @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')"
-                                            class="bbpom-att-name font-bold text-xs sm:text-sm text-slate-900 truncate max-w-xs sm:max-w-md text-left cursor-pointer hover:underline" 
-                                            title="{{ $fileName }}"
-                                        >
-                                            {{ $fileName }}
-                                        </button>
-                                    @elseif($isPdf)
+                                    @if($isImage || $isPdf)
                                         <a 
                                             href="{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}" 
                                             target="_blank" 
@@ -331,26 +252,7 @@
                         </div>
 
                         <div class="bbpom-att-actions-row flex items-center gap-2" style="border-top: none; padding-top: 0; margin-top: 0; width: auto;">
-                            @if($isImage)
-                                <button 
-                                    type="button" 
-                                    @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')" 
-                                    class="bbpom-att-btn-preview inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors shadow-xs cursor-pointer"
-                                >
-                                    <i class="ri-eye-line text-xs"></i>
-                                    <span>Pratinjau</span>
-                                </button>
-                                <a 
-                                    href="{{ route('tickets.attachment', $ticket) }}" 
-                                    target="_blank" 
-                                    download 
-                                    wire:ignore
-                                    class="bbpom-att-btn-download inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-xs"
-                                >
-                                    <i class="ri-download-2-line text-xs"></i>
-                                    <span>Unduh</span>
-                                </a>
-                            @elseif($isPdf)
+                            @if($isImage || $isPdf)
                                 <a 
                                     href="{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}" 
                                     target="_blank" 
@@ -384,72 +286,8 @@
                             @endif
                         </div>
                     </div>
-
-                    @if($isImage)
-                        <div class="bbpom-att-thumb-wrap mt-4" style="max-width: 20rem;">
-                            <button 
-                                type="button" 
-                                @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')" 
-                                class="bbpom-att-thumb-btn group relative"
-                                title="Klik untuk memperbesar gambar"
-                            >
-                                <img 
-                                    src="{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}" 
-                                    alt="Lampiran {{ $ticket->ticket_number }}" 
-                                    class="bbpom-att-thumb-img"
-                                >
-                                <div class="bbpom-att-thumb-overlay">
-                                    <span>
-                                        <i class="ri-zoom-in-line"></i>
-                                        Perbesar Gambar
-                                    </span>
-                                </div>
-                            </button>
-                        </div>
-                    @endif
                 </div>
             </div>
-        @endif
-
-        <!-- Universal Alpine.js Lightbox Modal (Hanya jika ada lampiran gambar) -->
-        @if($hasAnyImage)
-            <template x-teleport="body">
-                <div 
-                    x-show="lightboxOpen" 
-                    x-cloak 
-                    :class="{ 'is-active': lightboxOpen }"
-                    :style="lightboxOpen ? 'display: flex !important;' : 'display: none !important;'"
-                    @keydown.escape.window="closeLightbox()"
-                    class="bbpom-att-modal-overlay"
-                >
-                    <div 
-                        @click.away="closeLightbox()" 
-                        class="bbpom-att-modal-dialog"
-                    >
-                        <div class="bbpom-att-modal-header">
-                            <div class="bbpom-att-modal-title">
-                                <i class="ri-image-2-line"></i>
-                                <span x-text="lightboxTitle"></span>
-                            </div>
-                            <button 
-                                type="button" 
-                                @click="closeLightbox()" 
-                                class="bbpom-att-modal-close"
-                                title="Tutup Pratinjau"
-                            >
-                                <i class="ri-close-line"></i>
-                            </button>
-                        </div>
-                        <div class="bbpom-att-modal-body">
-                            <img 
-                                :src="lightboxSrc" 
-                                :alt="lightboxTitle" 
-                                class="bbpom-att-modal-img"
-                            >
-                        </div>
-                    </div>
-                </div>
-            </template>
         @endif
     </div>
 @endif
@@ -767,121 +605,5 @@
     color: #475569 !important;
     border-color: #cbd5e1 !important;
 }
-
-/* Universal Alpine.js Lightbox Modal (HANYA AKTIF SAAT DIBUKA) */
-.bbpom-att-modal-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 999999 !important;
-    background-color: rgba(15, 23, 42, 0.82) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    display: none;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 1rem !important;
-    overflow-y: auto !important;
-}
-.bbpom-att-modal-overlay.is-active {
-    display: flex !important;
-}
-.bbpom-att-modal-overlay[style*="display: none"],
-[x-cloak] {
-    display: none !important;
-}
-.bbpom-att-modal-dialog {
-    position: relative !important;
-    background-color: #ffffff !important;
-    border-radius: 1rem !important;
-    max-width: 56rem !important;
-    width: 100% !important;
-    padding: 1rem !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-    border: 1px solid rgba(226, 232, 240, 0.9) !important;
-    box-sizing: border-box !important;
-}
-.bbpom-att-modal-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding-bottom: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-}
-.bbpom-att-modal-title {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    font-size: 0.8125rem !important;
-    font-weight: 700 !important;
-    color: #0f172a !important;
-    max-width: calc(100% - 3rem) !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-}
-.bbpom-att-modal-title i {
-    color: #047857 !important;
-    font-size: 1rem !important;
-}
-.bbpom-att-modal-close {
-    width: 2rem !important;
-    height: 2rem !important;
-    border-radius: 0.5rem !important;
-    background-color: #f1f5f9 !important;
-    color: #64748b !important;
-    border: 1px solid #e2e8f0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: all 0.15s ease !important;
-    padding: 0 !important;
-}
-.bbpom-att-modal-close:hover {
-    background-color: #fee2e2 !important;
-    border-color: #fca5a5 !important;
-    color: #b91c1c !important;
-    transform: scale(1.05) !important;
-}
-.bbpom-att-modal-body {
-    max-height: 75vh !important;
-    overflow: auto !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background-color: #f8fafc !important;
-    border-radius: 0.75rem !important;
-    padding: 0.75rem !important;
-    border: 1px solid #f1f5f9 !important;
-}
-.bbpom-att-modal-img {
-    max-height: 70vh !important;
-    max-width: 100% !important;
-    width: auto !important;
-    height: auto !important;
-    border-radius: 0.5rem !important;
-    object-fit: contain !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-}
 </style>
 
-<script>
-if (typeof window.bbpomTicketAttachmentsLightbox === 'undefined') {
-    window.bbpomTicketAttachmentsLightbox = function bbpomTicketAttachmentsLightbox() {
-        return {
-            lightboxOpen: false,
-            lightboxSrc: '',
-            lightboxTitle: '',
-            openImage(src, title) {
-                this.lightboxSrc = src;
-                this.lightboxTitle = title;
-                this.lightboxOpen = true;
-            },
-            closeLightbox() {
-                this.lightboxOpen = false;
-            }
-        };
-    };
-}
-</script>

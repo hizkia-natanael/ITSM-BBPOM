@@ -165,14 +165,15 @@ class TicketController extends Controller
         $validated = $request->validate([
             'response_text' => [$hasAnyFile ? 'nullable' : 'required', 'string'],
             'reply_to_id' => ['nullable', 'integer', 'exists:ticket_responses,id'],
-            'attachment' => ['nullable', 'file', 'max:51200'],
-            'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:51200'],
+            'attachment' => ['nullable', 'file', 'max:102400'],
+            'attachments' => ['nullable', 'array', 'max:10'],
+            'attachments.*' => ['file', 'max:102400'],
             'compression_mode' => ['nullable', 'string', 'in:compressed,original'],
         ], [
             'response_text.required' => 'Pesan tanggapan tidak boleh kosong jika tidak melampirkan berkas.',
-            'attachment.max' => 'Ukuran berkas lampiran tidak boleh melebihi 50 MB.',
-            'attachments.*.max' => 'Ukuran berkas lampiran tidak boleh melebihi 50 MB.',
+            'attachment.max' => 'Ukuran berkas lampiran tidak boleh melebihi 100 MB.',
+            'attachments.max' => 'Maksimal jumlah berkas yang dapat diunggah adalah 10 dokumen.',
+            'attachments.*.max' => 'Ukuran berkas lampiran tidak boleh melebihi 100 MB.',
         ]);
 
         // Collect uploaded files from both 'attachment' and 'attachments'

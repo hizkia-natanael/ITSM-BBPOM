@@ -41,7 +41,7 @@
                         id="dropzone_subsite_news" 
                         name="attachments[]" 
                         label="Unggah Foto Dokumentasi Kegiatan" 
-                        helperText="Format didukung: JPG, PNG, WEBP (Maks. 5MB per berkas, dapat memilih beberapa foto)"
+                        helperText="Format didukung: JPG, PNG, WEBP (Maksimal 10 dokumen hingga 100MB per berkas)"
                     />
                 </div>
 
@@ -73,7 +73,7 @@
                     id="dropzone_subsite_doc" 
                     name="attachments[]" 
                     label="Unggah Berkas Dokumen Publikasi" 
-                    helperText="Format didukung: PDF, Word, Excel, ZIP (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                    helperText="Format didukung: PDF, Word, Excel, ZIP (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
             </div>
         </div>

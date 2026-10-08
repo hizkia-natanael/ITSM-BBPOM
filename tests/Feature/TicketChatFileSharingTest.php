@@ -509,6 +509,35 @@ class TicketChatFileSharingTest extends TestCase
         $this->assertTrue(Storage::disk($disk)->exists($attachment->file_path));
     }
 
+    public function test_multiple_files_upload_via_ajax_returns_json_and_bundled_zip(): void
+    {
+        $file1 = UploadedFile::fake()->create('laporan1.pdf', 500, 'application/pdf');
+        $file2 = UploadedFile::fake()->create('laporan2.docx', 500, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+        $response = $this->actingAs($this->user)->post(
+            route('tickets.reply', $this->ticket),
+            [
+                'response_text' => 'Mengirim berkas ganda via AJAX fetch',
+                'attachments' => [$file1, $file2],
+                'compression_mode' => 'compressed',
+            ],
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json',
+            ]
+        );
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => true,
+        ]);
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+        $this->assertCount(1, $ticketResponse->attachments);
+        $this->assertEquals('application/zip', $ticketResponse->attachments->first()->mime_type);
+    }
+
     public function test_conversation_stream_component_contains_file_chip_size_styling(): void
     {
         $response = $this->actingAs($this->admin)->get("/admin/tickets/{$this->ticket->id}/edit");
@@ -517,6 +546,51 @@ class TicketChatFileSharingTest extends TestCase
         $this->assertStringContainsString('bbpom-file-chip', $content);
         $this->assertStringContainsString('bbpom-file-chip-size', $content);
         $this->assertStringContainsString('white-space: nowrap', $content);
+    }
+
+    public function test_can_upload_up_to_ten_attachments_with_mixed_formats(): void
+    {
+        $files = [
+            UploadedFile::fake()->create('dokumen1.pdf', 100, 'application/pdf'),
+            UploadedFile::fake()->image('foto2.png', 200, 200),
+            UploadedFile::fake()->image('foto3.jpg', 200, 200),
+            UploadedFile::fake()->create('dokumen4.docx', 100, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
+            UploadedFile::fake()->create('data5.xlsx', 100, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+            UploadedFile::fake()->create('arsip6.zip', 100, 'application/zip'),
+            UploadedFile::fake()->create('catatan7.txt', 50, 'text/plain'),
+            UploadedFile::fake()->create('tabel8.csv', 50, 'text/csv'),
+            UploadedFile::fake()->image('banner9.webp', 200, 200),
+            UploadedFile::fake()->create('panduan10.pdf', 100, 'application/pdf'),
+        ];
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Mengirim 10 berkas berbagai format.',
+            'attachments' => $files,
+            'compression_mode' => 'compressed',
+        ]);
+
+        $response->assertRedirect(route('tickets.show', $this->ticket));
+
+        $ticketResponse = TicketResponse::where('ticket_id', $this->ticket->id)->latest('id')->first();
+        $this->assertNotNull($ticketResponse);
+        $this->assertCount(1, $ticketResponse->attachments);
+        $attachment = $ticketResponse->attachments()->first();
+        $this->assertStringStartsWith('arsip_lampiran_10_berkas_', $attachment->file_name);
+    }
+
+    public function test_exceeding_ten_attachments_fails_validation(): void
+    {
+        $files = [];
+        for ($i = 1; $i <= 11; $i++) {
+            $files[] = UploadedFile::fake()->create("dokumen{$i}.pdf", 50, 'application/pdf');
+        }
+
+        $response = $this->actingAs($this->user)->post(route('tickets.reply', $this->ticket), [
+            'response_text' => 'Mengirim 11 berkas.',
+            'attachments' => $files,
+        ]);
+
+        $response->assertSessionHasErrors(['attachments']);
     }
 }
 

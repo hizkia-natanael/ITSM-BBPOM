@@ -115,7 +115,7 @@
                     id="dropzone_srikandi" 
                     name="attachments[]" 
                     label="Unggah Foto / Berkas Kendala Srikandi" 
-                    helperText="Format didukung: JPG, PNG, PDF, DOCX, ZIP (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                    helperText="Format didukung: JPG, PNG, PDF, DOCX, ZIP (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
                 <x-input-error class="mt-1" :messages="$errors->get('attachments')" />
             </div>

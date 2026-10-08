@@ -655,6 +655,9 @@
                                 isAboveOneMb() {
                                     return this.totalBytes > 1048576;
                                 },
+                                isSingleAboveOneMb() {
+                                    return !this.isMultipleFiles() && this.isAboveOneMb();
+                                },
                                 isCompressedMode() {
                                     return this.compressionMode === "compressed";
                                 },
@@ -684,12 +687,18 @@
                                         return;
                                     }
 
+                                    if (files.length > 10) {
+                                        this.errorMessage = "Maksimal jumlah berkas yang dapat diunggah adalah 10 dokumen.";
+                                        this.clearFile();
+                                        return;
+                                    }
+
                                     let total = 0;
                                     const fileList = [];
                                     for (let i = 0; i < files.length; i++) {
                                         const f = files[i];
-                                        if (f.size > 52428800) {
-                                            this.errorMessage = "Ukuran berkas \"" + f.name + "\" melebihi batas maksimal 50 MB.";
+                                        if (f.size > 104857600) {
+                                            this.errorMessage = "Ukuran berkas \"" + f.name + "\" melebihi batas maksimal 100 MB.";
                                             this.clearFile();
                                             return;
                                         }
@@ -2203,100 +2212,5 @@
                             background-color: #f1f5f9 !important;
                             color: #475569 !important;
                             border-color: #cbd5e1 !important;
-                        }
-                        .bbpom-att-modal-overlay {
-                            position: fixed !important;
-                            inset: 0 !important;
-                            z-index: 999999 !important;
-                            background-color: rgba(15, 23, 42, 0.82) !important;
-                            backdrop-filter: blur(12px) !important;
-                            -webkit-backdrop-filter: blur(12px) !important;
-                            display: none;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            padding: 1rem !important;
-                            overflow-y: auto !important;
-                        }
-                        .bbpom-att-modal-overlay.is-active {
-                            display: flex !important;
-                        }
-                        .bbpom-att-modal-overlay[style*="display: none"],
-                        [x-cloak] {
-                            display: none !important;
-                        }
-                        .bbpom-att-modal-dialog {
-                            position: relative !important;
-                            background-color: #ffffff !important;
-                            border-radius: 1rem !important;
-                            max-width: 56rem !important;
-                            width: 100% !important;
-                            padding: 1rem !important;
-                            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-                            border: 1px solid rgba(226, 232, 240, 0.9) !important;
-                            box-sizing: border-box !important;
-                        }
-                        .bbpom-att-modal-header {
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: space-between !important;
-                            padding-bottom: 0.75rem !important;
-                            margin-bottom: 0.75rem !important;
-                            border-bottom: 1px solid #e2e8f0 !important;
-                        }
-                        .bbpom-att-modal-title {
-                            display: flex !important;
-                            align-items: center !important;
-                            gap: 0.5rem !important;
-                            font-size: 0.8125rem !important;
-                            font-weight: 700 !important;
-                            color: #0f172a !important;
-                            max-width: calc(100% - 3rem) !important;
-                            overflow: hidden !important;
-                            text-overflow: ellipsis !important;
-                            white-space: nowrap !important;
-                        }
-                        .bbpom-att-modal-title i {
-                            color: #047857 !important;
-                            font-size: 1rem !important;
-                        }
-                        .bbpom-att-modal-close {
-                            width: 2rem !important;
-                            height: 2rem !important;
-                            border-radius: 0.5rem !important;
-                            background-color: #f1f5f9 !important;
-                            color: #64748b !important;
-                            border: 1px solid #e2e8f0 !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            cursor: pointer !important;
-                            transition: all 0.15s ease !important;
-                            padding: 0 !important;
-                        }
-                        .bbpom-att-modal-close:hover {
-                            background-color: #fee2e2 !important;
-                            border-color: #fca5a5 !important;
-                            color: #b91c1c !important;
-                            transform: scale(1.05) !important;
-                        }
-                        .bbpom-att-modal-body {
-                            max-height: 75vh !important;
-                            overflow: auto !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            background-color: #f8fafc !important;
-                            border-radius: 0.75rem !important;
-                            padding: 0.75rem !important;
-                            border: 1px solid #f1f5f9 !important;
-                        }
-                        .bbpom-att-modal-img {
-                            max-height: 70vh !important;
-                            max-width: 100% !important;
-                            width: auto !important;
-                            height: auto !important;
-                            border-radius: 0.5rem !important;
-                            object-fit: contain !important;
-                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
                         }
                     </style>

@@ -83,7 +83,7 @@
                     id="dropzone_zoom" 
                     name="attachments[]" 
                     label="Unggah Berkas Lampiran Zoom" 
-                    helperText="Format didukung: JPG, PNG, PDF, DOCX (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                    helperText="Format didukung: JPG, PNG, PDF, DOCX (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
                 <x-input-error class="mt-1" :messages="$errors->get('attachments')" />
             </div>

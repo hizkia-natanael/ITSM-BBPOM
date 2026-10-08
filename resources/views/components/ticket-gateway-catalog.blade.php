@@ -66,51 +66,50 @@
                 </div>
             </div>
 
-            <!-- Right: Helpdesk Information Panel (Narrower 4-column card) -->
-            <div class="lg:col-span-4">
-                <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-3.5 sm:p-4 shadow-xl relative overflow-hidden">
-                    <div class="flex items-center justify-between pb-2.5 border-b border-white/10 mb-2.5">
+            <!-- Right: 3-Step Mini Stepper Workflow Card (Konsep B) -->
+            <div class="hidden lg:flex flex-col justify-center lg:col-span-4 shrink-0">
+                <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-4 sm:p-4.5 shadow-xl relative overflow-hidden">
+                    <div class="flex items-center justify-between pb-2.5 border-b border-white/10 mb-3">
                         <div class="flex items-center gap-1.5">
-                            <i class="ri-customer-service-2-line text-emerald-400 text-sm"></i>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-200">Helpdesk TIK</span>
+                            <i class="ri-route-line text-emerald-400 text-sm"></i>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-200">Alur Pengaduan</span>
                         </div>
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            Siaga
+                            3 Langkah
                         </span>
                     </div>
 
-                    <div class="space-y-2 text-xs">
-                        <!-- 1. Jam Layanan -->
+                    <div class="space-y-2.5">
+                        <!-- Langkah 1 -->
                         <div class="flex items-start gap-2.5">
-                            <div class="w-6 h-6 rounded-md bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
-                                <i class="ri-time-line text-xs"></i>
+                            <div class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 font-bold text-xs mt-0.5">
+                                1
                             </div>
                             <div class="min-w-0">
-                                <p class="font-semibold text-slate-100 text-[11px] leading-tight">Jam Layanan</p>
-                                <p class="text-[10.5px] text-slate-300/90 mt-0.5">Senin &ndash; Jumat, 08.00 &ndash; 16.00</p>
+                                <p class="font-semibold text-slate-100 text-[11px] leading-tight">Pilih Menu Layanan</p>
+                                <p class="text-[10px] text-slate-300/80 mt-0.5">Tentukan jenis kebutuhan atau kendala teknis</p>
                             </div>
                         </div>
 
-                        <!-- 2. SLA Penanganan -->
+                        <!-- Langkah 2 -->
                         <div class="flex items-start gap-2.5">
-                            <div class="w-6 h-6 rounded-md bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
-                                <i class="ri-flashlight-line text-xs"></i>
+                            <div class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 font-bold text-xs mt-0.5">
+                                2
                             </div>
                             <div class="min-w-0">
-                                <p class="font-semibold text-slate-100 text-[11px] leading-tight">SLA Respons Awal</p>
-                                <p class="text-[10.5px] text-slate-300/90 mt-0.5">Target respon dalam &le; 2 Jam</p>
+                                <p class="font-semibold text-slate-100 text-[11px] leading-tight">Lengkapi Formulir</p>
+                                <p class="text-[10px] text-slate-300/80 mt-0.5">Isi rincian permohonan &amp; lampirkan berkas</p>
                             </div>
                         </div>
 
-                        <!-- 3. Bantuan & Lokasi -->
+                        <!-- Langkah 3 -->
                         <div class="flex items-start gap-2.5">
-                            <div class="w-6 h-6 rounded-md bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center shrink-0 mt-0.5">
-                                <i class="ri-building-4-line text-xs"></i>
+                            <div class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0 font-bold text-xs mt-0.5">
+                                3
                             </div>
                             <div class="min-w-0">
-                                <p class="font-semibold text-slate-100 text-[11px] leading-tight">Ruang Tim TI &amp; Ext</p>
-                                <p class="text-[10.5px] text-slate-300/90 mt-0.5">Tata Usaha Lt. 2 (Ext. 104)</p>
+                                <p class="font-semibold text-slate-100 text-[11px] leading-tight">Pantau Tindak Lanjut</p>
+                                <p class="text-[10px] text-slate-300/80 mt-0.5">Komunikasi langsung dengan admin via chat</p>
                             </div>
                         </div>
                     </div>

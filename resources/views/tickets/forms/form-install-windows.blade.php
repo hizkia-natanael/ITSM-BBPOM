@@ -104,7 +104,7 @@
                     id="dropzone_win_lainnya" 
                     name="attachments[]" 
                     label="Unggah Foto / Berkas Kendala Windows" 
-                    helperText="Format didukung: JPG, PNG, PDF (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                    helperText="Format didukung: JPG, PNG, PDF (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
             </div>
         </div>

@@ -3,10 +3,10 @@
     'id' => 'dropzone_' . uniqid(),
     'label' => 'Unggah Dokumen / Berkas Pendukung',
     'optional' => true,
-    'maxFiles' => 5,
-    'maxFileSizeMb' => 5,
-    'acceptedTypes' => '.pdf,.doc,.docx,.jpg,.jpeg,.png,.zip,.txt',
-    'helperText' => 'Dapat memilih lebih dari 1 dokumen sekaligus (Maksimal 5 berkas, 5MB per berkas).',
+    'maxFiles' => 10,
+    'maxFileSizeMb' => 100,
+    'acceptedTypes' => '.pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.zip,.txt,.xls,.xlsx,.csv',
+    'helperText' => 'Dapat memilih hingga 10 dokumen sekaligus (Maksimal 10 dokumen, format PNG, JPG, PDF, DOC, ZIP hingga 100MB per berkas).',
 ])
 
 <div 
@@ -135,8 +135,8 @@ if (typeof window.fileDropzoneUploader !== 'function') {
         return {
             inputId: config.inputId,
             fieldName: config.fieldName,
-            maxFiles: config.maxFiles || 5,
-            maxSizeBytes: (config.maxSizeMb || 5) * 1024 * 1024,
+            maxFiles: config.maxFiles || 10,
+            maxSizeBytes: (config.maxSizeMb || 100) * 1024 * 1024,
             isDragging: false,
             fileList: [],
             errorMessage: '',

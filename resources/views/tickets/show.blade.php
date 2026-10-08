@@ -143,23 +143,13 @@
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-between py-1 border-b border-slate-100/80">
+                        <div class="flex items-center justify-between py-1">
                             <span class="text-slate-500 flex items-center gap-1.5">
                                 <i class="ri-history-line text-slate-400"></i>
                                 Pembaruan Terakhir:
                             </span>
                             <span class="font-medium text-slate-700 text-right">
                                 {{ $ticket->updated_at->diffForHumans() }}
-                            </span>
-                        </div>
-
-                        <div class="flex items-center justify-between py-1">
-                            <span class="text-slate-500 flex items-center gap-1.5">
-                                <i class="ri-time-line text-slate-400"></i>
-                                Target Respon (SLA):
-                            </span>
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                1x24 Jam Kerja
                             </span>
                         </div>
                     </div>

@@ -46,6 +46,7 @@ class FileCompressionService
 
         // Add all files into the zip archive with deduplicated entry names
         $usedNames = [];
+        $addedAny = false;
         foreach ($files as $f) {
             $origName = $f->getClientOriginalName();
             $entryName = $origName;
@@ -59,12 +60,27 @@ class FileCompressionService
             }
 
             $usedNames[] = $entryName;
-            $zip->addFile($f->getRealPath(), $entryName);
+            $filePath = $f->getRealPath() ?: $f->getPathname();
+            if ($filePath && file_exists($filePath)) {
+                $zip->addFile($filePath, $entryName);
+                $addedAny = true;
+            }
         }
 
-        $zip->close();
+        if (!$addedAny) {
+            $zip->close();
+            @unlink($tmpZipPath);
+            return $this->processUpload($files[0], $ticketId, $mode);
+        }
+
+        $closeOk = $zip->close();
         clearstatcache(true, $tmpZipPath);
-        $zipSize = file_exists($tmpZipPath) ? filesize($tmpZipPath) : 0;
+        $zipSize = ($closeOk && file_exists($tmpZipPath)) ? filesize($tmpZipPath) : 0;
+
+        if (!$closeOk || !file_exists($tmpZipPath) || $zipSize === 0) {
+            @unlink($tmpZipPath);
+            return $this->processUpload($files[0], $ticketId, $mode);
+        }
 
         $randomName = Str::random(40) . '.zip';
         $finalPath = "{$subDirectory}/{$randomName}";
@@ -195,7 +211,7 @@ class FileCompressionService
      */
     protected function compressImage(UploadedFile $file, string $ext, string $subDirectory, string $disk): ?array
     {
-        $realPath = $file->getRealPath();
+        $realPath = $file->getRealPath() ?: $file->getPathname();
         $originalSize = (int) $file->getSize();
 
         // Validate image
@@ -318,11 +334,14 @@ class FileCompressionService
             return null;
         }
 
-        $zip->addFile($file->getRealPath(), $originalName);
-        $zip->close();
+        $filePath = $file->getRealPath() ?: $file->getPathname();
+        if ($filePath && file_exists($filePath)) {
+            $zip->addFile($filePath, $originalName);
+        }
+        $closeOk = $zip->close();
 
         clearstatcache(true, $tmpZipPath);
-        $zipSize = file_exists($tmpZipPath) ? filesize($tmpZipPath) : 0;
+        $zipSize = ($closeOk && file_exists($tmpZipPath)) ? filesize($tmpZipPath) : 0;
 
         // Check if zip saved at least 10% space
         if ($zipSize > 0 && $zipSize <= ($originalSize * 0.90)) {

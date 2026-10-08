@@ -104,7 +104,7 @@
                     id="dropzone_bsre" 
                     name="attachments[]" 
                     label="Unggah Berkas Lampiran BSrE" 
-                    helperText="Format didukung: PDF, DOCX, JPG, PNG (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                    helperText="Format didukung: PDF, DOCX, JPG, PNG (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
             </div>
         </div>

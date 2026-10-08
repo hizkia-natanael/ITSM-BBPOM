@@ -21,10 +21,10 @@ class LainnyaTicketHandler
             'tanggal_pengajuan' => ['required', 'date'],
             'nama' => ['required', 'string', 'max:255'],
             'deskripsi' => ['required', 'string', 'min:5'],
-            'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
-            'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
-            'attachments' => ['nullable', 'array', 'max:5'],
-            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt', 'max:5120'],
+            'file_lampiran' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt,xls,xlsx,csv,webp', 'max:102400'],
+            'attachment' => ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt,xls,xlsx,csv,webp', 'max:102400'],
+            'attachments' => ['nullable', 'array', 'max:10'],
+            'attachments.*' => ['file', 'mimes:jpeg,png,jpg,pdf,doc,docx,zip,txt,xls,xlsx,csv,webp', 'max:102400'],
         ], [
             'deskripsi.required' => 'Deskripsi permintaan / kendala wajib diisi minimal 5 karakter.',
         ]);

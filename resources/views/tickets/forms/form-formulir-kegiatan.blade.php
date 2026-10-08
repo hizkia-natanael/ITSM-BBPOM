@@ -297,7 +297,7 @@
                     id="dropzone_kegiatan_lainnya" 
                     name="attachments[]" 
                     label="Unggah Dokumen Lampiran Kegiatan" 
-                    helperText="Format didukung: JPG, PNG, PDF, DOCX (Maks. 5MB per berkas)"
+                    helperText="Format didukung: JPG, PNG, PDF, DOCX (Maksimal 10 dokumen hingga 100MB per berkas)"
                 />
             </div>
         </div>

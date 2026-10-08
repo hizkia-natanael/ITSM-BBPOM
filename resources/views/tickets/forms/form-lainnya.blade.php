@@ -19,7 +19,7 @@
                 id="dropzone_lainnya" 
                 name="attachments[]" 
                 label="Unggah Foto / Dokumen Pendukung" 
-                helperText="Format didukung: JPG, PNG, PDF, DOCX, ZIP, TXT (Maks. 5MB per berkas, dapat memilih beberapa berkas)"
+                helperText="Format didukung: JPG, PNG, PDF, DOCX, ZIP, TXT (Maksimal 10 dokumen hingga 100MB per berkas)"
             />
         </div>
     </div>

@@ -221,8 +221,6 @@
                         </div>
                     </div>
 
-                    <!-- SLA & Rules (Atomic Component) -->
-                    <x-sla-info-card />
                 </div>
 
             </div>

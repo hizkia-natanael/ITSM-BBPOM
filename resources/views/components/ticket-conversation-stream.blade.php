@@ -176,6 +176,9 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
         isAboveOneMb() {
             return this.totalBytes > 1048576;
         },
+        isSingleAboveOneMb() {
+            return !this.isMultipleFiles() && this.isAboveOneMb();
+        },
         isCompressedMode() {
             return this.compressionMode === 'compressed';
         },
@@ -205,12 +208,18 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 return;
             }
 
+            if (files.length > 10) {
+                this.errorMessage = 'Maksimal jumlah berkas yang dapat diunggah adalah 10 dokumen.';
+                this.clearFile();
+                return;
+            }
+
             let total = 0;
             const fileList = [];
             for (let i = 0; i < files.length; i++) {
                 const f = files[i];
-                if (f.size > 52428800) {
-                    this.errorMessage = 'Ukuran berkas "' + f.name + '" melebihi batas maksimal 50 MB.';
+                if (f.size > 104857600) {
+                    this.errorMessage = 'Ukuran berkas "' + f.name + '" melebihi batas maksimal 100 MB.';
                     this.clearFile();
                     return;
                 }
@@ -1441,10 +1450,10 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                     <span>Otomatis ZIP</span>
                                 </span>
                             </template>
-                            <template x-if="!isMultipleFiles() && isAboveOneMb()">
+                            <template x-if="isSingleAboveOneMb()">
                                 <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300/70" style="font-size: 10px; font-weight: 700; background-color: #d1fae5; color: #065f46; border: 1px solid #86efac; border-radius: 9999px; padding: 1px 6px; line-height: 1;">
                                     <i class="ri-flashlight-line text-[11px]" style="font-size: 11px;"></i>
-                                    <span>Auto-ZIP (>1MB)</span>
+                                    <span>Auto-ZIP (&gt;1MB)</span>
                                 </span>
                             </template>
                         </div>

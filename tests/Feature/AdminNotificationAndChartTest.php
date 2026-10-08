@@ -284,7 +284,7 @@ class AdminNotificationAndChartTest extends TestCase
         $response->assertOk()
             ->assertSee('Berkas Lampiran Pendukung')
             ->assertSee('bukti_kendala.png')
-            ->assertSee('Pratinjau')
+            ->assertSee('Buka Dokumen')
             ->assertSee('Unduh');
     }
 
