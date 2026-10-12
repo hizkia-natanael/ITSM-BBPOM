@@ -87,6 +87,19 @@
                 <i class="ri-arrow-right-s-line text-slate-300 group-hover:text-emerald-600 transition"></i>
             </a>
 
+            <a 
+                href="{{ route('guide.index') }}" 
+                class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-slate-50 transition group"
+            >
+                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100 group-hover:text-emerald-800 flex items-center justify-center shrink-0 transition text-sm">
+                    <i class="ri-book-read-line"></i>
+                </div>
+                <span class="text-xs font-semibold text-slate-800 group-hover:text-emerald-900 transition flex-1">
+                    Buku Panduan
+                </span>
+                <i class="ri-arrow-right-s-line text-slate-300 group-hover:text-emerald-600 transition"></i>
+            </a>
+
             @if($user->isAdmin())
                 <a 
                     href="/admin" 

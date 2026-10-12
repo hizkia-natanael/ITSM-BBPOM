@@ -6,7 +6,7 @@
     <title>Laporan Rekapitulasi Aduan ITSM - BBPOM di Semarang</title>
     <style>
         @page {
-            margin: 12mm 14mm 16mm 14mm;
+            margin: 8mm 12mm 16mm 12mm;
             size: a4 landscape;
         }
 
@@ -20,85 +20,106 @@
             background-color: #ffffff;
         }
 
-        /* Kop Surat Resmi */
+        /* Fixed Footer Wave Background */
+        footer {
+            position: fixed;
+            bottom: -16mm;
+            left: -12mm;
+            right: -12mm;
+            height: 14mm;
+        }
+        .footer-wave-img {
+            width: 100%;
+            height: 14mm;
+            display: block;
+        }
+
+        /* Kop Surat Resmi Dokumen BBPOM di Semarang (Native Vector & Typography) */
         .kop-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
         }
         .kop-logo {
-            width: 65px;
+            width: 72px;
             vertical-align: middle;
-            text-align: center;
+            text-align: left;
+            padding-left: 2px;
+            padding-bottom: 2px;
         }
         .kop-logo img {
-            width: 58px;
+            width: 64px;
             height: auto;
+            display: block;
         }
         .kop-text {
             vertical-align: middle;
             text-align: center;
-            padding-left: 8px;
-            padding-right: 20px;
+            padding-right: 70px; /* Offset logo width for perfect optical centering */
         }
-        .kop-text .instansi-1 {
-            font-size: 9.5pt;
-            font-weight: 700;
-            color: #0f172a;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin: 0;
+        @font-face {
+            font-family: 'Trebuchet MS';
+            src: url('{{ str_replace('\\', '/', public_path('fonts/trebucbd.ttf')) }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
         }
-        .kop-text .instansi-2 {
+        @font-face {
+            font-family: 'Arial Narrow';
+            src: url('{{ str_replace('\\', '/', public_path('fonts/ARIALN.TTF')) }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .kop-instansi-title {
             font-size: 13.5pt;
             font-weight: 800;
-            color: #064e3b;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 2px 0 0 0;
+            letter-spacing: 0.5px;
+            line-height: 1.25;
+            margin: 0 0 3px 0;
+            font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
         }
-        .kop-text .instansi-3 {
+        .kop-blue {
+            color: #014282;
+        }
+        .kop-green {
+            color: #04A651;
+        }
+        .kop-alamat-line {
             font-size: 8.5pt;
-            font-weight: 600;
-            color: #334155;
-            margin: 2px 0 0 0;
+            font-weight: 400;
+            color: #181C18;
+            line-height: 1.35;
+            margin: 0;
+            font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
         }
-        .kop-text .instansi-alamat {
-            font-size: 7.5pt;
-            color: #64748b;
-            margin: 3px 0 0 0;
+        .kop-kontak-line {
+            font-size: 8.5pt;
+            font-weight: 400;
+            color: #181C18;
+            line-height: 1.35;
+            margin: 1px 0 0 0;
+            font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
+        }
+        .kop-web-line {
+            font-size: 8.5pt;
+            font-weight: 400;
+            color: #181C18;
+            line-height: 1.35;
+            margin: 1px 0 0 0;
+            font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
         }
 
         .kop-divider-thick {
             height: 2.5px;
-            background-color: #064e3b;
+            background-color: #1261B0;
             margin-top: 5px;
             margin-bottom: 1.5px;
         }
         .kop-divider-thin {
             height: 0.8px;
-            background-color: #0f172a;
+            background-color: #1261B0;
             margin-bottom: 10px;
-        }
-
-        /* Judul Dokumen */
-        .report-header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .report-title {
-            font-size: 11pt;
-            font-weight: 800;
-            color: #0f172a;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin: 0;
-        }
-        .report-subtitle {
-            font-size: 8pt;
-            color: #475569;
-            margin-top: 2px;
-            margin-bottom: 0;
         }
 
         /* Metadata & KPI Strip */
@@ -290,31 +311,34 @@
 </head>
 <body>
 
-    <!-- KOP RESMI DOKUMEN BBPOM DI SEMARANG -->
+    @if(!empty($kopFooterBase64))
+        <!-- Fixed Official Footer Wave BBPOM Semarang across all pages -->
+        <footer>
+            <img src="data:image/jpeg;base64,{{ $kopFooterBase64 }}" class="footer-wave-img" alt="Footer Wave BBPOM Semarang">
+        </footer>
+    @endif
+
+    <!-- KOP RESMI DOKUMEN BBPOM DI SEMARANG (NATIVE VECTOR TEXT & LOGO) -->
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
                 @if(!empty($logoBase64))
-                    <img src="data:image/png;base64,{{ $logoBase64 }}" alt="Logo BPOM">
+                    <img src="data:image/png;base64,{{ $logoBase64 }}" alt="Logo Badan POM">
                 @endif
             </td>
             <td class="kop-text">
-                <div class="instansi-1">Badan Pengawas Obat dan Makanan Republik Indonesia</div>
-                <div class="instansi-2">Balai Besar Pengawas Obat dan Makanan di Semarang</div>
-                <div class="instansi-3">Sub-Bagian Tata Usaha &mdash; Tim Pengelola Teknologi Informasi & Komunikasi (ITSM)</div>
-                <div class="instansi-alamat">Jl. Sukun Raya No. 41A, Banyumanik, Kota Semarang, Jawa Tengah 50268 &bull; Telp: (024) 7612345 &bull; Laman: semarang.pom.go.id</div>
+                <div class="kop-instansi-title">
+                    <span class="kop-blue">BALAI BESAR </span><span class="kop-green">PENGAWAS OBAT DAN MAKANAN DI SEMARANG</span>
+                </div>
+                <div class="kop-alamat-line">Jl. Sukun Raya No. 41A Banyumanik Semarang 50264</div>
+                <div class="kop-kontak-line">Telp. 024 - 7612324 (ULPK), Fax : 024-7613633</div>
+                <div class="kop-web-line">Email : bpom_semarang@pom.go.id &nbsp;;&nbsp; Website : www.pom.go.id</div>
             </td>
         </tr>
     </table>
 
     <div class="kop-divider-thick"></div>
     <div class="kop-divider-thin"></div>
-
-    <!-- JUDUL LAPORAN RESMI -->
-    <div class="report-header">
-        <div class="report-title">Laporan Rekapitulasi Pengaduan & Layanan TI (ITSM)</div>
-        <div class="report-subtitle">Standar Audit Kinerja Sistem Layanan Helpdesk Teknologi Informasi & Komunikasi BBPOM Semarang</div>
-    </div>
 
     <!-- METADATA AUDIT & FILTER -->
     <table class="meta-strip-table">
@@ -331,37 +355,33 @@
             <td class="meta-val">{{ $summary['handled_by_label'] ?? 'Semua Petugas IT' }}</td>
             <td class="meta-label">Waktu Ekspor:</td>
             <td class="meta-val">{{ $summary['generated_at'] }}</td>
-            <td class="meta-label">Kode Audit ISO:</td>
-            <td class="meta-val" style="font-family: monospace; font-size: 7.2pt;">{{ $summary['audit_id'] }}</td>
+            <td class="meta-label">Petugas Admin:</td>
+            <td class="meta-val">{{ $summary['generated_by'] }}</td>
         </tr>
     </table>
 
     <!-- EXECUTIVE KPI STRIP -->
     <table class="kpi-table">
         <tr>
-            <td class="kpi-card" style="width: 17%;">
+            <td class="kpi-card" style="width: 20%;">
                 <div class="kpi-title">Total Aduan Masuk</div>
                 <div class="kpi-number">{{ $summary['total'] }}</div>
             </td>
-            <td class="kpi-card kpi-selesai" style="width: 17%;">
+            <td class="kpi-card kpi-selesai" style="width: 20%;">
                 <div class="kpi-title">Tuntas / Selesai</div>
                 <div class="kpi-number">{{ $summary['selesai'] }}</div>
             </td>
-            <td class="kpi-card kpi-diproses" style="width: 17%;">
+            <td class="kpi-card kpi-diproses" style="width: 20%;">
                 <div class="kpi-title">Sedang Diproses</div>
                 <div class="kpi-number">{{ $summary['diproses'] }}</div>
             </td>
-            <td class="kpi-card kpi-pending" style="width: 16%;">
+            <td class="kpi-card kpi-pending" style="width: 20%;">
                 <div class="kpi-title">Menunggu Antrian</div>
                 <div class="kpi-number">{{ $summary['pending'] }}</div>
             </td>
-            <td class="kpi-card kpi-ditolak" style="width: 16%;">
+            <td class="kpi-card kpi-ditolak" style="width: 20%;">
                 <div class="kpi-title">Ditolak / Batal</div>
                 <div class="kpi-number">{{ $summary['ditolak'] }}</div>
-            </td>
-            <td class="kpi-card kpi-sla" style="width: 17%;">
-                <div class="kpi-title">SLA Resolution Rate</div>
-                <div class="kpi-number">{{ $summary['completion_rate'] }}%</div>
             </td>
         </tr>
     </table>
@@ -446,8 +466,8 @@
                 <td style="text-align: left;">
                     Dokumen ini digenerate secara otomatis oleh Sistem Manajemen Layanan TI (ITSM) BBPOM Semarang.
                 </td>
-                <td style="text-align: right; font-family: monospace;">
-                    Audit ID: {{ $summary['audit_id'] }} &bull; Confidential
+                <td style="text-align: right;">
+                    Rekapitulasi Resmi Layanan &bull; Confidential
                 </td>
             </tr>
         </table>

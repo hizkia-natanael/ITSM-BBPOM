@@ -51,6 +51,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Buku Panduan Interaktif ITSM BBPOM
+    Route::get('/panduan', [\App\Http\Controllers\GuideBookController::class, 'index'])->name('guide.index');
+    Route::redirect('/guide-book', '/panduan');
 });
 
 // Admin Web Push Notifications & Realtime Aduan Status

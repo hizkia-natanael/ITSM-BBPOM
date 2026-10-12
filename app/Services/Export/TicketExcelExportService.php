@@ -3,10 +3,13 @@
 namespace App\Services\Export;
 
 use Illuminate\Support\Collection;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -33,26 +36,76 @@ class TicketExcelExportService
         $sheet->setTitle('Rekapitulasi Aduan');
         $sheet->setShowGridLines(true);
 
-        // 1. Header Instansi (Baris 1 & 2)
-        $sheet->mergeCells('A1:M1');
-        $sheet->setCellValue('A1', 'BALAI BESAR PENGAWAS OBAT DAN MAKANAN (BBPOM) DI SEMARANG');
-        $sheet->getStyle('A1')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 13, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '064E3B']],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
-        ]);
-        $sheet->getRowDimension(1)->setRowHeight(30);
+        // Pengaturan Halaman: Cetak Landscape A4 Standar BBPOM
+        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+        $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
 
-        $sheet->mergeCells('A2:M2');
-        $sheet->setCellValue('A2', 'LAPORAN REKAPITULASI PENGADUAN & LAYANAN TEKNOLOGI INFORMASI (ITSM)');
-        $sheet->getStyle('A2')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 10, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '0F172A']],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
-        ]);
-        $sheet->getRowDimension(2)->setRowHeight(22);
+        // Header & Footer Cetak Resmi BBPOM
+        $sheet->getHeaderFooter()
+            ->setOddHeader('&C&B&10BALAI BESAR PENGAWAS OBAT DAN MAKANAN DI SEMARANG')
+            ->setOddFooter('&L&8Dokumen Rekapitulasi ITSM BBPOM Semarang&R&8Halaman &P dari &N');
 
-        // 2. Metadata Block (Baris 4 - 6)
+        // Drawing: Logo Badan POM Resmi di Pojok Kiri Kop Surat
+        $logoPath = public_path('images/logo-bpom.png');
+        if (file_exists($logoPath)) {
+            $drawing = new Drawing();
+            $drawing->setName('Logo Badan POM');
+            $drawing->setDescription('Logo Badan POM');
+            $drawing->setPath($logoPath);
+            $drawing->setCoordinates('A1');
+            $drawing->setOffsetX(12);
+            $drawing->setOffsetY(4);
+            $drawing->setHeight(68);
+            $drawing->setWorksheet($sheet);
+        }
+
+        // 1. Header Kop Surat Resmi BBPOM Semarang (1 Large Merged Cell B1:M3 with RichText)
+        $sheet->mergeCells('B1:M3');
+        $richText = new RichText();
+
+        $run1 = $richText->createTextRun("BALAI BESAR ");
+        $run1->getFont()->setName('Trebuchet MS')->setBold(true)->setSize(13)->getColor()->setRGB('014282');
+
+        $run2 = $richText->createTextRun("PENGAWAS OBAT DAN MAKANAN DI SEMARANG\n");
+        $run2->getFont()->setName('Trebuchet MS')->setBold(true)->setSize(13)->getColor()->setRGB('04A651');
+
+        $run3 = $richText->createTextRun("Jl. Sukun Raya No. 41A Banyumanik Semarang 50264\n");
+        $run3->getFont()->setName('Arial Narrow')->setBold(false)->setSize(9.5)->getColor()->setRGB('181C18');
+
+        $run4 = $richText->createTextRun("Telp. 024 - 7612324 (ULPK), Fax : 024-7613633\n");
+        $run4->getFont()->setName('Arial Narrow')->setBold(false)->setSize(9)->getColor()->setRGB('181C18');
+
+        $run5 = $richText->createTextRun("Email : bpom_semarang@pom.go.id ; Website : www.pom.go.id");
+        $run5->getFont()->setName('Arial Narrow')->setBold(false)->setSize(9)->getColor()->setRGB('181C18');
+
+        $sheet->setCellValue('B1', $richText);
+        $sheet->getStyle('B1')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+                'wrapText' => true,
+            ],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(26);
+        $sheet->getRowDimension(2)->setRowHeight(24);
+        $sheet->getRowDimension(3)->setRowHeight(26);
+
+        // Garis Pembatas Ganda Kop Surat (Double Border di bawah Baris 3)
+        $sheet->getStyle('A3:M3')->applyFromArray([
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_DOUBLE,
+                    'color' => ['rgb' => '1261B0'],
+                ],
+            ],
+        ]);
+
+        // Baris 4: Spasi Pemisah
+        $sheet->getRowDimension(4)->setRowHeight(10);
+
+        // 2. Metadata Block (Baris 5 & 6, Font 9pt, Bersih dan Rapi)
         $metaStyles = [
             'font' => ['bold' => true, 'size' => 9, 'color' => ['rgb' => '475569']],
         ];
@@ -60,31 +113,35 @@ class TicketExcelExportService
             'font' => ['bold' => false, 'size' => 9, 'color' => ['rgb' => '0F172A']],
         ];
 
-        $sheet->setCellValue('B4', 'Kategori Layanan:')->getStyle('B4')->applyFromArray($metaStyles);
-        $sheet->setCellValue('C4', $summary['category_name'])->getStyle('C4')->applyFromArray($valStyles);
-        $sheet->setCellValue('H4', 'Waktu Ekspor:')->getStyle('H4')->applyFromArray($metaStyles);
-        $sheet->setCellValue('I4', $summary['generated_at'])->getStyle('I4')->applyFromArray($valStyles);
+        // Baris 5: Kategori, Status, Waktu Ekspor
+        $sheet->setCellValue('B5', 'Kategori Layanan:')->getStyle('B5')->applyFromArray($metaStyles);
+        $sheet->setCellValue('C5', $summary['category_name'])->getStyle('C5')->applyFromArray($valStyles);
+        $sheet->setCellValue('F5', 'Filter Status:')->getStyle('F5')->applyFromArray($metaStyles);
+        $sheet->setCellValue('G5', $summary['status_label'])->getStyle('G5')->applyFromArray($valStyles);
+        $sheet->setCellValue('J5', 'Waktu Ekspor:')->getStyle('J5')->applyFromArray($metaStyles);
+        $sheet->setCellValue('K5', $summary['generated_at'])->getStyle('K5')->applyFromArray($valStyles);
 
-        $sheet->setCellValue('B5', 'Periode Waktu:')->getStyle('B5')->applyFromArray($metaStyles);
-        $sheet->setCellValue('C5', $summary['period_label'])->getStyle('C5')->applyFromArray($valStyles);
-        $sheet->setCellValue('H5', 'Petugas Admin:')->getStyle('H5')->applyFromArray($metaStyles);
-        $sheet->setCellValue('I5', $summary['generated_by'])->getStyle('I5')->applyFromArray($valStyles);
+        // Baris 6: Periode, Petugas IT, Petugas Admin
+        $sheet->setCellValue('B6', 'Periode Waktu:')->getStyle('B6')->applyFromArray($metaStyles);
+        $sheet->setCellValue('C6', $summary['period_label'])->getStyle('C6')->applyFromArray($valStyles);
+        $sheet->setCellValue('F6', 'Petugas IT:')->getStyle('F6')->applyFromArray($metaStyles);
+        $sheet->setCellValue('G6', $summary['handled_by_label'] ?? 'Semua Petugas IT')->getStyle('G6')->applyFromArray($valStyles);
+        $sheet->setCellValue('J6', 'Petugas Admin:')->getStyle('J6')->applyFromArray($metaStyles);
+        $sheet->setCellValue('K6', $summary['generated_by'])->getStyle('K6')->applyFromArray($valStyles);
 
-        $sheet->setCellValue('B6', 'Filter Status:')->getStyle('B6')->applyFromArray($metaStyles);
-        $sheet->setCellValue('C6', $summary['status_label'])->getStyle('C6')->applyFromArray($valStyles);
-        $sheet->setCellValue('E6', 'Petugas IT:')->getStyle('E6')->applyFromArray($metaStyles);
-        $sheet->setCellValue('F6', $summary['handled_by_label'] ?? 'Semua Petugas IT')->getStyle('F6')->applyFromArray($valStyles);
-        $sheet->setCellValue('H6', 'Kode Audit ISO:')->getStyle('H6')->applyFromArray($metaStyles);
-        $sheet->setCellValue('I6', $summary['audit_id'])->getStyle('I6')->applyFromArray($valStyles);
+        $sheet->getRowDimension(5)->setRowHeight(18);
+        $sheet->getRowDimension(6)->setRowHeight(18);
 
-        // 3. KPI Executive Ribbon (Baris 8)
+        // Baris 7: Spasi Pemisah
+        $sheet->getRowDimension(7)->setRowHeight(10);
+
+        // 3. KPI Executive Ribbon (Baris 8, Font 9.5pt, 5 Kartu Rata Memenuhi B-M)
         $kpiItems = [
             ['range' => 'B8:C8', 'title' => 'Total Aduan', 'val' => $summary['total'], 'bg' => 'F1F5F9', 'fg' => '0F172A'],
             ['range' => 'D8:E8', 'title' => 'Selesai', 'val' => $summary['selesai'], 'bg' => 'DCFCE7', 'fg' => '15803D'],
             ['range' => 'F8:G8', 'title' => 'Diproses', 'val' => $summary['diproses'], 'bg' => 'E0F2FE', 'fg' => '0284C7'],
             ['range' => 'H8:I8', 'title' => 'Pending', 'val' => $summary['pending'], 'bg' => 'FEF3C7', 'fg' => 'B45309'],
-            ['range' => 'J8:K8', 'title' => 'Ditolak', 'val' => $summary['ditolak'], 'bg' => 'FFE4E6', 'fg' => 'E11D48'],
-            ['range' => 'L8:M8', 'title' => 'SLA Resolusi', 'val' => $summary['completion_rate'] . '%', 'bg' => 'ECFDF5', 'fg' => '065F46'],
+            ['range' => 'J8:M8', 'title' => 'Ditolak', 'val' => $summary['ditolak'], 'bg' => 'FFE4E6', 'fg' => 'E11D48'],
         ];
 
         foreach ($kpiItems as $kpi) {
@@ -100,7 +157,10 @@ class TicketExcelExportService
         }
         $sheet->getRowDimension(8)->setRowHeight(24);
 
-        // 4. Data Table Header (Baris 10)
+        // Baris 9: Spasi Pemisah
+        $sheet->getRowDimension(9)->setRowHeight(12);
+
+        // 4. Data Table Header (Baris 10, Font 9.5pt Bold)
         $headers = [
             'A10' => 'No',
             'B10' => 'No. Tiket',
@@ -221,12 +281,60 @@ class TicketExcelExportService
             $sheet->getColumnDimension($col)->setWidth($width);
         }
 
+        // 8. Lembar Pengesahan Resmi Petugas Helpdesk TIK
+        $sigStart = $lastRow + 2;
+        $sheet->setCellValue("J{$sigStart}", 'Semarang, ' . now()->translatedFormat('d F Y'));
+        $sheet->getStyle("J{$sigStart}")->applyFromArray([
+            'font' => ['size' => 9, 'color' => ['rgb' => '334155']],
+        ]);
+
+        $sigRole = $sigStart + 1;
+        $sheet->setCellValue("J{$sigRole}", 'Petugas Pengelola Helpdesk TIK,');
+        $sheet->getStyle("J{$sigRole}")->applyFromArray([
+            'font' => ['bold' => true, 'size' => 9.5, 'color' => ['rgb' => '0F172A']],
+        ]);
+
+        $sigName = $sigRole + 4;
+        $sheet->setCellValue("J{$sigName}", $summary['generated_by'] ?? 'Administrator ITSM');
+        $sheet->getStyle("J{$sigName}")->applyFromArray([
+            'font' => ['bold' => true, 'underline' => true, 'size' => 9.5, 'color' => ['rgb' => '0F172A']],
+        ]);
+
+        $sigNip = $sigName + 1;
+        $nipLabel = !empty($summary['generated_by_nip']) ? 'NIP. ' . $summary['generated_by_nip'] : 'Administrator Sistem Layanan TI BBPOM di Semarang';
+        $sheet->setCellValue("J{$sigNip}", $nipLabel);
+        $sheet->getStyle("J{$sigNip}")->applyFromArray([
+            'font' => ['size' => 8.5, 'color' => ['rgb' => '64748B']],
+        ]);
+
+        // 9. Catatan Jejak Rekapitulasi Resmi
+        $auditRow = $sigNip + 2;
+        $sheet->mergeCells("A{$auditRow}:M{$auditRow}");
+        $sheet->setCellValue("A{$auditRow}", "Dokumen ini digenerate secara otomatis oleh Sistem Manajemen Layanan TI (ITSM) BBPOM Semarang • Rekapitulasi Resmi Layanan");
+        $sheet->getStyle("A{$auditRow}")->applyFromArray([
+            'font' => ['italic' => true, 'size' => 8, 'color' => ['rgb' => '94A3B8']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT, 'vertical' => Alignment::VERTICAL_CENTER],
+            'borders' => ['top' => ['borderStyle' => Border::BORDER_DASHED, 'color' => ['rgb' => 'CBD5E1']]],
+        ]);
+        $sheet->getRowDimension($auditRow)->setRowHeight(20);
+
         // ==========================================
         // SHEET 2: RINGKASAN EKSEKUTIF 12 KATALOG
         // ==========================================
         $summarySheet = $spreadsheet->createSheet();
         $summarySheet->setTitle('Ringkasan 12 Katalog');
         $summarySheet->setShowGridLines(true);
+
+        // Pengaturan Halaman: Cetak Landscape A4 Standar BBPOM
+        $summarySheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+        $summarySheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+        $summarySheet->getPageSetup()->setFitToWidth(1);
+        $summarySheet->getPageSetup()->setFitToHeight(0);
+
+        // Header & Footer Cetak Resmi BBPOM
+        $summarySheet->getHeaderFooter()
+            ->setOddHeader('&C&B&10BALAI BESAR PENGAWAS OBAT DAN MAKANAN DI SEMARANG')
+            ->setOddFooter('&L&8Dokumen Rekapitulasi ITSM BBPOM Semarang&R&8Halaman &P dari &N');
 
         $summarySheet->mergeCells('A1:G1');
         $summarySheet->setCellValue('A1', 'RINGKASAN REKAPITULASI PER 12 KATALOG LAYANAN TIK');
