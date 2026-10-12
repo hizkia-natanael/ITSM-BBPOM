@@ -7,7 +7,7 @@
 @endphp
 
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false" @keydown.escape.window="open = false">
-    <!-- Trigger Pill Button (Minimalist Glassmorphic: Nama + NIP) -->
+    <!-- Trigger Pill Button (Minimalist Glassmorphic) -->
     <button 
         type="button"
         @click="open = ! open"
@@ -15,7 +15,6 @@
         class="group relative inline-flex items-center gap-2.5 p-1 sm:pe-3 rounded-2xl bg-white/95 hover:bg-white border border-slate-200/90 hover:border-emerald-500/40 shadow-2xs hover:shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all duration-150 active:scale-[0.99]"
         title="Menu Profil Pengguna"
     >
-        <!-- Squircle Avatar with Presence Indicator -->
         <div class="relative shrink-0">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-emerald-500/15 group-hover:ring-emerald-500/35 transition-all">
                 {{ $initials }}
@@ -23,7 +22,6 @@
             <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" title="Status: Online & Terverifikasi"></span>
         </div>
 
-        <!-- User Information (Nama & NIP) -->
         <div class="text-start hidden sm:block max-w-[140px] md:max-w-[180px]">
             <div class="font-bold text-xs text-slate-900 truncate leading-tight group-hover:text-emerald-950 transition-colors">
                 {{ $user->name }}
@@ -33,7 +31,6 @@
             </div>
         </div>
 
-        <!-- Animated Caret Icon -->
         <div class="ms-0.5 text-slate-400 group-hover:text-emerald-700 transition-colors shrink-0">
             <i class="ri-arrow-down-s-line text-base transition-transform duration-200" :class="{ 'rotate-180 text-emerald-700': open }"></i>
         </div>
@@ -52,11 +49,9 @@
         style="display: none;"
         @click="open = false"
     >
-        <!-- Identity Header Card (Clean Nama & NIP) -->
+        <!-- Identity Header Card -->
         <div class="p-3.5 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white relative overflow-hidden">
-            <!-- Subtle Ambient Glow -->
             <div class="absolute -top-10 -right-10 w-28 h-28 bg-emerald-500/20 rounded-full blur-xl pointer-events-none"></div>
-
             <div class="relative z-10 flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-md ring-2 ring-white/20">
                     {{ $initials }}
@@ -72,45 +67,30 @@
             </div>
         </div>
 
-        <!-- Action Menu Links (Profil & Admin Panel) -->
+        <!-- Action Menu Links -->
         <div class="p-1.5 space-y-1 bg-white">
-            <a 
-                href="{{ route('profile.edit') }}" 
-                class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-slate-50 transition group"
-            >
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-slate-50 transition group">
                 <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 group-hover:bg-emerald-100 group-hover:text-emerald-800 flex items-center justify-center shrink-0 transition text-sm">
                     <i class="ri-user-settings-line"></i>
                 </div>
-                <span class="text-xs font-semibold text-slate-800 group-hover:text-emerald-900 transition flex-1">
-                    Profil Saya
-                </span>
+                <span class="text-xs font-semibold text-slate-800 group-hover:text-emerald-900 transition flex-1">Profil Saya</span>
                 <i class="ri-arrow-right-s-line text-slate-300 group-hover:text-emerald-600 transition"></i>
             </a>
 
-            <a 
-                href="{{ route('guide.index') }}" 
-                class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-slate-50 transition group"
-            >
+            <a href="{{ route('guide.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-slate-50 transition group">
                 <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100 group-hover:text-emerald-800 flex items-center justify-center shrink-0 transition text-sm">
                     <i class="ri-book-read-line"></i>
                 </div>
-                <span class="text-xs font-semibold text-slate-800 group-hover:text-emerald-900 transition flex-1">
-                    Buku Panduan
-                </span>
+                <span class="text-xs font-semibold text-slate-800 group-hover:text-emerald-900 transition flex-1">Buku Panduan</span>
                 <i class="ri-arrow-right-s-line text-slate-300 group-hover:text-emerald-600 transition"></i>
             </a>
 
             @if($user->isAdmin())
-                <a 
-                    href="/admin" 
-                    class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-emerald-900 bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-200/60 transition group"
-                >
+                <a href="/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-emerald-900 bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-200/60 transition group">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs text-sm">
                         <i class="ri-shield-keyhole-line"></i>
                     </div>
-                    <span class="text-xs font-semibold text-emerald-950 flex-1">
-                        Panel Admin (Filament)
-                    </span>
+                    <span class="text-xs font-semibold text-emerald-950 flex-1">Panel Admin (Filament)</span>
                     <i class="ri-external-link-line text-emerald-700 text-xs"></i>
                 </a>
             @endif
@@ -120,10 +100,7 @@
         <div class="p-1.5 border-t border-slate-100 bg-slate-50/70">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button 
-                    type="submit" 
-                    class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 active:bg-rose-100 border border-transparent hover:border-rose-200 transition-all group"
-                >
+                <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 active:bg-rose-100 border border-transparent hover:border-rose-200 transition-all group">
                     <span class="flex items-center gap-2.5">
                         <span class="w-7 h-7 rounded-lg bg-rose-50 group-hover:bg-rose-100 text-rose-600 flex items-center justify-center transition text-sm">
                             <i class="ri-logout-box-r-line"></i>

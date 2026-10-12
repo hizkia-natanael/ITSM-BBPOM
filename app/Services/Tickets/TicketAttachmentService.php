@@ -26,31 +26,26 @@ class TicketAttachmentService
             'office' => $ticket->officeDetail?->file_lampiran,
             'lainnya' => $ticket->lainnyaDetail?->file_lampiran,
             default => $ticket->attachment ?: (
-                $ticket->bsreDetail?->file_lampiran
-                ?: ($ticket->zoomDetail?->file_lampiran
-                ?: ($ticket->kegiatanDetail?->file_lampiran
-                ?: ($ticket->windowsDetail?->file_lampiran
-                ?: ($ticket->officeDetail?->file_lampiran
-                ?: $ticket->lainnyaDetail?->file_lampiran)))))
+                $ticket->bsreDetail?->file_lampiran ?:
+                ($ticket->zoomDetail?->file_lampiran ?:
+                ($ticket->kegiatanDetail?->file_lampiran ?:
+                ($ticket->windowsDetail?->file_lampiran ?:
+                ($ticket->officeDetail?->file_lampiran ?: $ticket->lainnyaDetail?->file_lampiran))))
+            )
         };
 
         if (!$path) {
             abort(404, 'Berkas lampiran tidak ditemukan.');
         }
 
-        $disk = Storage::disk('local')->exists($path)
-            ? 'local'
-            : (Storage::disk('public')->exists($path) ? 'public' : 'local');
-
+        $disk = $this->resolveDisk($path);
         if (!Storage::disk($disk)->exists($path)) {
             abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
         }
 
-        if ($request->boolean('inline')) {
-            return Storage::disk($disk)->response($path);
-        }
-
-        return Storage::disk($disk)->download($path);
+        return $request->boolean('inline')
+            ? Storage::disk($disk)->response($path)
+            : Storage::disk($disk)->download($path);
     }
 
     /**
@@ -66,76 +61,35 @@ class TicketAttachmentService
             abort(404, 'Berkas lampiran tidak cocok dengan nomor tiket.');
         }
 
-        $path = $attachment->file_path;
-        $disk = Storage::disk('local')->exists($path)
-            ? 'local'
-            : (Storage::disk('public')->exists($path) ? 'public' : 'local');
-
-        if (!Storage::disk($disk)->exists($path)) {
+        $disk = $this->resolveDisk($attachment->file_path);
+        if (!Storage::disk($disk)->exists($attachment->file_path)) {
             abort(404, 'Berkas fisik tidak ditemukan di server penyimpanan.');
         }
 
-        if ($request->boolean('inline')) {
-            return Storage::disk($disk)->response($path, $attachment->file_name);
-        }
-
-        return Storage::disk($disk)->download($path, $attachment->file_name);
+        return $request->boolean('inline')
+            ? Storage::disk($disk)->response($attachment->file_path, $attachment->file_name)
+            : Storage::disk($disk)->download($attachment->file_path, $attachment->file_name);
     }
 
     /**
-     * Simpan file lampiran tunggal maupun multiple ke tabel ticket_attachments dan kembalikan path lampiran utama.
+     * Simpan file lampiran tunggal maupun multiple ke tabel ticket_attachments.
      */
     public function handleUploadedAttachments(Ticket $ticket, Request $request): ?string
     {
-        $files = [];
-
-        // 1. Ambil dari 'attachments' (multiple array atau single)
-        if ($request->hasFile('attachments')) {
-            $attFiles = $request->file('attachments');
-            if (is_array($attFiles)) {
-                $files = array_merge($files, $attFiles);
-            } elseif ($attFiles instanceof \Illuminate\Http\UploadedFile) {
-                $files[] = $attFiles;
-            }
-        }
-
-        // 2. Ambil dari 'attachment' (single atau array)
-        if ($request->hasFile('attachment')) {
-            $att = $request->file('attachment');
-            if (is_array($att)) {
-                $files = array_merge($files, $att);
-            } elseif ($att instanceof \Illuminate\Http\UploadedFile) {
-                $files[] = $att;
-            }
-        }
-
-        // 3. Ambil dari 'file_lampiran' (single atau array)
-        if ($request->hasFile('file_lampiran')) {
-            $fl = $request->file('file_lampiran');
-            if (is_array($fl)) {
-                $files = array_merge($files, $fl);
-            } elseif ($fl instanceof \Illuminate\Http\UploadedFile) {
-                $files[] = $fl;
-            }
-        }
-
+        $files = $this->collectUploadedFiles($request);
         $primaryPath = null;
         $targetDisk = config('filesystems.attachment_disk', 'local');
 
         foreach ($files as $file) {
             if ($file && $file->isValid()) {
                 $path = $file->store('attachments', $targetDisk);
-
                 $ticket->attachments()->create([
                     'file_path' => $path,
                     'file_name' => $file->getClientOriginalName(),
                     'file_size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
                 ]);
-
-                if (!$primaryPath) {
-                    $primaryPath = $path;
-                }
+                $primaryPath ??= $path;
             }
         }
 
@@ -145,5 +99,24 @@ class TicketAttachmentService
         }
 
         return $primaryPath;
+    }
+
+    private function collectUploadedFiles(Request $request): array
+    {
+        $files = [];
+        foreach (['attachments', 'attachment', 'file_lampiran'] as $key) {
+            if ($request->hasFile($key)) {
+                $item = $request->file($key);
+                $files = array_merge($files, is_array($item) ? $item : [$item]);
+            }
+        }
+        return $files;
+    }
+
+    private function resolveDisk(string $path): string
+    {
+        return Storage::disk('local')->exists($path)
+            ? 'local'
+            : (Storage::disk('public')->exists($path) ? 'public' : 'local');
     }
 }
