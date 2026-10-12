@@ -2,25 +2,11 @@
     <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}">
         {{-- Mobile Pagination View --}}
         <div class="flex flex-col gap-2.5 sm:hidden">
-            <div class="flex items-center justify-between text-xs text-gray-600">
-                <p class="text-sm font-medium text-gray-700">
+            <div class="flex items-center justify-between text-xs sm:text-sm text-gray-600">
+                <p class="font-medium text-gray-700">
                     Showing {{ $paginator->firstItem() ?? 1 }} to {{ $paginator->lastItem() ?? $paginator->count() }} of {{ $paginator->total() }} results
                 </p>
-                <div class="flex items-center gap-1">
-                    <label for="mobile_per_page" class="text-sm font-medium text-gray-700">Tampilkan:</label>
-                    <select
-                        id="mobile_per_page"
-                        name="per_page"
-                        class="text-xs py-1 px-1.5 rounded-lg border-gray-300 bg-white text-gray-700 font-medium focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs"
-                        onchange="const u = new URL(window.location.href); u.searchParams.set('per_page', this.value); u.searchParams.set('page', '1'); window.location.href = u.toString();"
-                    >
-                        @foreach([10, 25, 50, 100] as $count)
-                            <option value="{{ $count }}" {{ (int)request('per_page', 10) === $count ? 'selected' : '' }}>
-                                {{ $count }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                <x-per-page-selector id="mobile_per_page" :has-separator="false" />
             </div>
 
             <div class="flex gap-2 items-center justify-between">
@@ -48,29 +34,13 @@
 
         {{-- Desktop Pagination View --}}
         <div class="hidden sm:flex-1 sm:flex sm:gap-4 sm:items-center sm:justify-between">
-            {{-- Left Side: Showing Count + Per-Page Dropdown (Styled exact like Filament Admin) --}}
+            {{-- Left Side: Showing Count + Per-Page Dropdown --}}
             <div class="flex flex-wrap items-center gap-3">
                 <p class="text-sm font-medium text-gray-700 leading-5">
                     Showing {{ $paginator->firstItem() ?? 1 }} to {{ $paginator->lastItem() ?? $paginator->count() }} of {{ $paginator->total() }} results
                 </p>
 
-                <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                    <span class="text-gray-300">|</span>
-                    <label for="pagination_per_page" class="text-sm font-medium text-gray-700 whitespace-nowrap">Tampilkan:</label>
-                    <select
-                        id="pagination_per_page"
-                        name="per_page"
-                        class="text-xs py-1 px-2.5 rounded-lg border-gray-300 bg-white text-gray-700 font-medium focus:border-emerald-600 focus:ring-emerald-600 shadow-2xs cursor-pointer"
-                        onchange="const u = new URL(window.location.href); u.searchParams.set('per_page', this.value); u.searchParams.set('page', '1'); window.location.href = u.toString();"
-                    >
-                        @foreach([10, 25, 50, 100] as $count)
-                            <option value="{{ $count }}" {{ (int)request('per_page', 10) === $count ? 'selected' : '' }}>
-                                {{ $count }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <span class="text-sm font-medium text-gray-700 whitespace-nowrap">per halaman</span>
-                </div>
+                <x-per-page-selector id="pagination_per_page" />
             </div>
 
             {{-- Right Side: Pagination Navigation Buttons --}}
