@@ -3,7 +3,8 @@ set -e
 
 echo "[BBPOM-Docker] Menyinkronkan aset statis ke shared volume..."
 if [ -d "/opt/public-dist" ]; then
-    cp -rf /opt/public-dist/. /var/www/html/public/
+    cp -rf /opt/public-dist/* /var/www/html/public/
+    chmod -R 755 /var/www/html/public
 fi
 
 echo "[BBPOM-Docker] Memastikan struktur direktori storage tersedia..."
