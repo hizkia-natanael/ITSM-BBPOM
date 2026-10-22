@@ -25,7 +25,7 @@
                     @if (Route::has('login'))
                         @auth
                             @if(Auth::user()->isAdmin())
-                                <a href="/admin" class="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">
+                                <a href="{{ url('/admin') }}" class="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">
                                     Panel Admin
                                 </a>
                             @else

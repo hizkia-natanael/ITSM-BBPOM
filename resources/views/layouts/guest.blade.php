@@ -22,7 +22,7 @@
     </head>
     <body class="font-sans text-gray-900 antialiased bg-slate-50 min-h-full flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-            <a href="/" class="inline-flex justify-center">
+            <a href="{{ url('/') }}" class="inline-flex justify-center">
                 <x-application-logo class="w-auto h-12" />
             </a>
             <h2 class="mt-4 text-center text-xl font-bold tracking-tight text-gray-900">

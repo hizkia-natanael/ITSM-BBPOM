@@ -86,7 +86,7 @@
             </a>
 
             @if($user->isAdmin())
-                <a href="/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-emerald-900 bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-200/60 transition group">
+                <a href="{{ url('/admin') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-emerald-900 bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-200/60 transition group">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs text-sm">
                         <i class="ri-shield-keyhole-line"></i>
                     </div>

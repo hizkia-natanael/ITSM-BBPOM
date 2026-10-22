@@ -27,6 +27,32 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! $this->app->runningInConsole()) {
+            if (request()->getPort() === 8085) {
+                \Illuminate\Support\Facades\URL::useAssetOrigin(null);
+            } else {
+                $origin = in_array(request()->getHost(), ['192.168.1.254', '127.0.0.1', 'localhost'], true)
+                    ? 'http://' . request()->getHttpHost() . '/helpdesk'
+                    : (string) config('app.url');
+
+                \Illuminate\Support\Facades\URL::useOrigin($origin);
+                \Illuminate\Support\Facades\URL::useAssetOrigin($origin);
+
+                if (str_starts_with($origin, 'https://')) {
+                    \Illuminate\Support\Facades\URL::forceScheme('https');
+                }
+
+                $basePath = rtrim((string) parse_url($origin, PHP_URL_PATH), '/');
+                if ($basePath !== '') {
+                    \Illuminate\Support\Facades\URL::formatPathUsing(
+                        fn (string $path) => ($path === $basePath || str_starts_with($path, $basePath . '/'))
+                            ? (substr($path, strlen($basePath)) ?: '/')
+                            : $path
+                    );
+                }
+            }
+        }
+
         config(['app.timezone' => 'Asia/Jakarta']);
         date_default_timezone_set('Asia/Jakarta');
         \Carbon\Carbon::setLocale('id');

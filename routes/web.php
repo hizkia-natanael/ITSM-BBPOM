@@ -14,7 +14,7 @@ Route::get('/', function () {
     return view('auth.login', compact('users'));
 })->name('home');
 
-Route::redirect('/admin/login', '/login');
+Route::get('/admin/login', fn () => redirect()->route('login'));
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // User Portal Dashboard
@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Buku Panduan Interaktif ITSM BBPOM
     Route::get('/panduan', [\App\Http\Controllers\GuideBookController::class, 'index'])->name('guide.index');
-    Route::redirect('/guide-book', '/panduan');
+    Route::get('/guide-book', fn () => redirect()->route('guide.index'));
 });
 
 // Admin Web Push Notifications & Realtime Aduan Status

@@ -13,7 +13,7 @@ function desktopPushController() {
             }
 
             try {
-                this.swRegistration = await navigator.serviceWorker.register('/sw.js');
+                this.swRegistration = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
                 await navigator.serviceWorker.ready;
                 const subscription = await this.swRegistration.pushManager.getSubscription();
                 this.isSubscribed = Boolean(subscription);
@@ -28,7 +28,7 @@ function desktopPushController() {
         async syncSubscription(sub) {
             try {
                 const subData = JSON.parse(JSON.stringify(sub));
-                await fetch('/admin/push/subscribe', {
+                await fetch('{{ url('/admin/push/subscribe') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ function desktopPushController() {
                 }
 
                 if (!this.swRegistration) {
-                    this.swRegistration = await navigator.serviceWorker.register('/sw.js');
+                    this.swRegistration = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
                 }
                 const reg = await navigator.serviceWorker.ready;
                 this.swRegistration = reg;
@@ -91,7 +91,7 @@ function desktopPushController() {
                 }
 
                 const subData = JSON.parse(JSON.stringify(sub));
-                const response = await fetch('/admin/push/subscribe', {
+                const response = await fetch('{{ url('/admin/push/subscribe') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -120,12 +120,12 @@ function desktopPushController() {
             this.isLoading = true;
             try {
                 if (!this.swRegistration) {
-                    this.swRegistration = await navigator.serviceWorker.register('/sw.js');
+                    this.swRegistration = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
                 }
                 const reg = await navigator.serviceWorker.ready;
                 const sub = await reg.pushManager.getSubscription();
                 if (sub) {
-                    await fetch('/admin/push/unsubscribe', {
+                    await fetch('{{ url('/admin/push/unsubscribe') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ function desktopPushController() {
                 }
 
                 if (!this.swRegistration) {
-                    this.swRegistration = await navigator.serviceWorker.register('/sw.js');
+                    this.swRegistration = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
                 }
                 const reg = await navigator.serviceWorker.ready;
                 this.swRegistration = reg;
@@ -189,12 +189,12 @@ function desktopPushController() {
                 const notifTitle = 'Uji Notifikasi Pop-up Desktop BBPOM';
                 const notifOptions = {
                     body: 'Tes notifikasi pop-up desktop BBPOM berhasil diterima! Sistem siap menampilkan aduan masuk.',
-                    icon: '/images/logo-bpom.png',
-                    badge: '/images/logo-bpom.png',
+                    icon: '{{ asset('images/logo-bpom.png') }}',
+                    badge: '{{ asset('images/logo-bpom.png') }}',
                     tag: 'bbpom-test-popup-' + Date.now(),
                     renotify: true,
                     requireInteraction: true,
-                    data: { url: '/admin' }
+                    data: { url: '{{ url('/admin') }}' }
                 };
 
                 this.playChime();
@@ -226,7 +226,7 @@ function desktopPushController() {
                     contentEncoding: (window.PushManager && PushManager.supportedContentEncodings || ['aes128gcm'])[0]
                 } : {};
 
-                const res = await fetch('/admin/push/test', {
+                const res = await fetch('{{ url('/admin/push/test') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

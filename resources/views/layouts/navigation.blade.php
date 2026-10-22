@@ -33,7 +33,7 @@
                     </x-nav-link>
 
                     @if(Auth::user()->isAdmin())
-                        <a href="/admin" class="inline-flex items-center px-3 py-2 text-sm font-medium text-emerald-800 hover:text-emerald-950 transition duration-150 my-auto">
+                        <a href="{{ url('/admin') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-emerald-800 hover:text-emerald-950 transition duration-150 my-auto">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                                 <i class="ri-shield-keyhole-line text-sm"></i>
                                 Panel Admin (Filament)
@@ -82,7 +82,7 @@
                 {{ __('Buku Panduan') }}
             </x-responsive-nav-link>
             @if(Auth::user()->isAdmin())
-                <x-responsive-nav-link href="/admin">
+                <x-responsive-nav-link :href="url('/admin')">
                     {{ __('Panel Admin (Filament)') }}
                 </x-responsive-nav-link>
             @endif
