@@ -1,0 +1,64 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bbpom_helpdesk_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/var/www/html/.env
+      - storage_data:/var/www/html/storage
+      - public_assets:/var/www/html/public
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - bbpom_network
+
+  webserver:
+    image: nginx:1.27-alpine
+    container_name: bbpom_helpdesk_nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - public_assets:/var/www/html/public:ro
+      - storage_data:/var/www/html/storage:ro
+    depends_on:
+      - app
+    networks:
+      - bbpom_network
+
+  db:
+    image: mysql:8.0
+    container_name: bbpom_helpdesk_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-bbpom_helpdesk}
+      MYSQL_USER: ${DB_USERNAME:-bbpom_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-BbpomSecret2026!}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-BbpomRootSecret2026!}
+      TZ: Asia/Jakarta
+    ports:
+      - "${FORWARD_DB_PORT:-33060}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-BbpomRootSecret2026!}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - bbpom_network
+
+networks:
+  bbpom_network:
+    driver: bridge
+
+volumes:
+  db_data:
+  storage_data:
+  public_assets:
