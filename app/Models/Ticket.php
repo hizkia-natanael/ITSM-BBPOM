@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTicketServiceAttributes;
+use App\Services\WebPushService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 
 class Ticket extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTicketServiceAttributes;
 
     protected $fillable = [
         'ticket_number',
@@ -35,7 +38,6 @@ class Ticket extends Model
                 $nextId = $lastTicket ? ($lastTicket->id + 1) : 1;
                 $ticket->ticket_number = 'TIK-BBPOM-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
 
-                // Ensure uniqueness if id gaps exist
                 while (static::where('ticket_number', $ticket->ticket_number)->exists()) {
                     $nextId++;
                     $ticket->ticket_number = 'TIK-BBPOM-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
@@ -46,20 +48,19 @@ class Ticket extends Model
         static::created(function ($ticket) {
             if ($ticket->status === 'pending' && is_null($ticket->handled_by_id)) {
                 try {
-                    app(\App\Services\WebPushService::class)->sendTicketNotification($ticket);
+                    app(WebPushService::class)->sendTicketNotification($ticket);
                 } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::warning('Error sending web push on ticket created: ' . $e->getMessage());
+                    Log::warning('Error sending web push on ticket created: ' . $e->getMessage());
                 }
             }
         });
 
         static::updated(function ($ticket) {
-            if (! $ticket->wasChanged('status') || ! in_array($ticket->status, TicketEvent::NOTIFIABLE_STATUSES, true)) {
+            if (!$ticket->wasChanged('status') || !in_array($ticket->status, TicketEvent::NOTIFIABLE_STATUSES, true)) {
                 return;
             }
 
             $actorId = auth()->id();
-
             if ($actorId !== null && $actorId === $ticket->user_id) {
                 return;
             }
@@ -71,9 +72,9 @@ class Ticket extends Model
             ]);
 
             try {
-                app(\App\Services\WebPushService::class)->sendStatusNotification($ticket, $event);
+                app(WebPushService::class)->sendStatusNotification($ticket, $event);
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('Error sending web push on ticket status change: ' . $e->getMessage());
+                Log::warning('Error sending web push on ticket status change: ' . $e->getMessage());
             }
         });
     }
@@ -108,166 +109,10 @@ class Ticket extends Model
         return $this->hasMany(TicketAttachment::class);
     }
 
-    public function bsreDetail(): HasOne
-    {
-        return $this->hasOne(TicketBsreDetail::class, 'ticket_id');
-    }
-
-    public function zoomDetail(): HasOne
-    {
-        return $this->hasOne(TicketZoomDetail::class, 'ticket_id');
-    }
-
-    public function kegiatanDetail(): HasOne
-    {
-        return $this->hasOne(TicketKegiatanDetail::class, 'ticket_id');
-    }
-
-    public function windowsDetail(): HasOne
-    {
-        return $this->hasOne(TicketWindowsDetail::class, 'ticket_id');
-    }
-
-    public function officeDetail(): HasOne
-    {
-        return $this->hasOne(TicketOfficeDetail::class, 'ticket_id');
-    }
-
-    public function lainnyaDetail(): HasOne
-    {
-        return $this->hasOne(TicketLainnyaDetail::class, 'ticket_id');
-    }
-
-    public function getSubjectAttribute($value): string
-    {
-        return preg_replace('/^\[[^\]]+\]\s*/', '', (string)$value);
-    }
-
-    public function getStatusLabelAttribute(): string
-    {
-        return match ($this->status) {
-            'pending' => 'Pending',
-            'diproses' => 'Diproses',
-            'selesai' => 'Selesai',
-            'ditolak' => 'Ditolak',
-            default => ucfirst($this->status),
-        };
-    }
-
-    public function getStatusColorAttribute(): string
-    {
-        return match ($this->status) {
-            'pending' => 'warning',
-            'diproses' => 'info',
-            'selesai' => 'success',
-            'ditolak' => 'danger',
-            default => 'gray',
-        };
-    }
-
-    public function getServiceKeyResolvedAttribute(): ?string
-    {
-        if (!empty($this->service_key)) {
-            return $this->service_key;
-        }
-
-        if ($this->relationLoaded('bsreDetail') ? $this->bsreDetail : $this->bsreDetail()->exists()) {
-            return 'sertifikat_bse';
-        }
-        if ($this->relationLoaded('zoomDetail') ? $this->zoomDetail : $this->zoomDetail()->exists()) {
-            return 'zoom';
-        }
-        if ($this->relationLoaded('kegiatanDetail') ? $this->kegiatanDetail : $this->kegiatanDetail()->exists()) {
-            return 'formulir_kegiatan';
-        }
-        if ($this->relationLoaded('windowsDetail') ? $this->windowsDetail : $this->windowsDetail()->exists()) {
-            return 'install_windows';
-        }
-        if ($this->relationLoaded('officeDetail') ? $this->officeDetail : $this->officeDetail()->exists()) {
-            return 'lisensi_office';
-        }
-        if ($this->relationLoaded('lainnyaDetail') ? $this->lainnyaDetail : $this->lainnyaDetail()->exists()) {
-            return 'lainnya';
-        }
-
-        if ($this->category) {
-            $slug = str_replace('-', '_', $this->category->slug);
-            if ($slug === 'sertifikat_bsre') {
-                return 'sertifikat_bse';
-            }
-            return $slug;
-        }
-
-        return null;
-    }
-
-    public function getServiceNameAttribute(): string
-    {
-        $resolvedKey = $this->service_key_resolved;
-        if ($resolvedKey) {
-            $services = config('services_gateway.services', []);
-            if (isset($services[$resolvedKey]['name'])) {
-                return $services[$resolvedKey]['name'];
-            }
-        }
-
-        return $this->category?->name ?? 'Layanan TIK';
-    }
-
-    public function hasSubDetail(): bool
-    {
-        return (bool) (
-            $this->bsreDetail
-            || $this->zoomDetail
-            || $this->kegiatanDetail
-            || $this->windowsDetail
-            || $this->officeDetail
-            || $this->lainnyaDetail
-        );
-    }
-
-    public function getSubcategoryLabelAttribute(): ?string
-    {
-        if ($this->bsreDetail) return $this->bsreDetail->sub_category_label;
-        if ($this->zoomDetail) return $this->zoomDetail->sub_category_label;
-        if ($this->kegiatanDetail) return $this->kegiatanDetail->sub_category_label;
-        if ($this->windowsDetail) return $this->windowsDetail->sub_category_label;
-        if ($this->officeDetail) return $this->officeDetail->sub_category_label;
-        if ($this->lainnyaDetail) return 'Layanan Umum';
-
-        if ($this->subcategory) {
-            $services = config('services_gateway.services', []);
-            $resolvedKey = $this->service_key_resolved;
-            if ($resolvedKey && isset($services[$resolvedKey]['subcategories'][$this->subcategory])) {
-                return $services[$resolvedKey]['subcategories'][$this->subcategory];
-            }
-            return ucwords(str_replace('_', ' ', $this->subcategory));
-        }
-
-        return null;
-    }
-
-    public function getServiceIconAttribute(): string
-    {
-        $key = $this->service_key_resolved;
-        if ($key) {
-            $services = config('services_gateway.services', []);
-            if (isset($services[$key]['icon'])) {
-                return $services[$key]['icon'];
-            }
-        }
-        return 'ri-file-list-3-line';
-    }
-
-    public function getServiceBadgeAttribute(): ?string
-    {
-        $key = $this->service_key_resolved;
-        if ($key) {
-            $services = config('services_gateway.services', []);
-            if (isset($services[$key]['badge'])) {
-                return $services[$key]['badge'];
-            }
-        }
-        return 'Katalog Layanan TIK';
-    }
+    public function bsreDetail(): HasOne { return $this->hasOne(TicketBsreDetail::class, 'ticket_id'); }
+    public function zoomDetail(): HasOne { return $this->hasOne(TicketZoomDetail::class, 'ticket_id'); }
+    public function kegiatanDetail(): HasOne { return $this->hasOne(TicketKegiatanDetail::class, 'ticket_id'); }
+    public function windowsDetail(): HasOne { return $this->hasOne(TicketWindowsDetail::class, 'ticket_id'); }
+    public function officeDetail(): HasOne { return $this->hasOne(TicketOfficeDetail::class, 'ticket_id'); }
+    public function lainnyaDetail(): HasOne { return $this->hasOne(TicketLainnyaDetail::class, 'ticket_id'); }
 }

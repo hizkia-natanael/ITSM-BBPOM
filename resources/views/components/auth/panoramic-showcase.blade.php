@@ -3,6 +3,8 @@
     <img
         src="{{ asset('images/kantor-bbpom-semarang.jpg') }}"
         alt="Gedung Kantor Balai Besar POM di Semarang"
+        loading="lazy"
+        decoding="async"
         class="absolute inset-0 w-full h-full object-cover object-center scale-105 brightness-[0.82] contrast-[1.05]"
     >
     <!-- Cinematic Dark & Emerald Gradients -->
@@ -12,7 +14,7 @@
     <!-- Top Brand Bar -->
     <div class="relative z-10 flex items-center gap-3">
         <div class="p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
-            <img src="{{ asset('images/logo-bpom.png') }}" alt="Logo BPOM" class="h-8 w-auto">
+            <img src="{{ asset('images/logo-bpom.png') }}" alt="Logo BPOM" decoding="async" class="h-8 w-auto">
         </div>
         <div>
             <p class="text-sm font-bold tracking-tight text-white">Balai Besar POM di Semarang</p>

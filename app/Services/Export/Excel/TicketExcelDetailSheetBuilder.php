@@ -19,16 +19,13 @@ class TicketExcelDetailSheetBuilder
     {
         $sheet->setTitle('Rekapitulasi Aduan');
         $sheet->setShowGridLines(true);
-
         $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(0);
-
         $sheet->getHeaderFooter()
             ->setOddHeader('&C&B&10BALAI BESAR PENGAWAS OBAT DAN MAKANAN DI SEMARANG')
             ->setOddFooter('&L&8Dokumen Rekapitulasi ITSM BBPOM Semarang&R&8Halaman &P dari &N');
-
         TicketExcelHeaderStyler::buildKop($sheet);
         TicketExcelHeaderStyler::buildMetaAndKpi($sheet, $summary);
 
