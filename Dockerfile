@@ -62,6 +62,7 @@ COPY . .
 COPY --from=frontend-builder /app/public/build ./public/build
 
 RUN composer dump-autoload --optimize --no-dev --no-interaction \
+    && php artisan filament:assets --no-interaction \
     && cp -r /var/www/html/public /opt/public-dist \
     && mkdir -p storage/app/private/attachments \
         storage/app/private/ticket-responses \

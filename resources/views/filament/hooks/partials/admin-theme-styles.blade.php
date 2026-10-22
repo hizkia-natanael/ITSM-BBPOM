@@ -11,7 +11,7 @@ body{background-color: #f8fafc !important;color: #1e293b !important;}.fi-main-ct
 .fi-topbar-item-btn:hover{background-color: #ecfdf5 !important;color: #047857 !important;}
 .fi-topbar-item.fi-active .fi-topbar-item-btn{background-color: #ecfdf5 !important;color: #065f46 !important;font-weight: 700 !important;}
 .fi-topbar-item.fi-active .fi-topbar-item-label{color: #065f46 !important;font-weight: 700 !important;}.fi-topbar-item.fi-active .fi-icon{color: #059669 !important;}
-.fi-topbar-end{display: flex !important;align-items: center !important;gap: 0.75rem !important;margin-left: auto !important;}.fi-body-has-top-navigation .fi-sidebar{display: none !important;}
+.fi-topbar-end{display: flex !important;align-items: center !important;gap: 0.75rem !important;margin-left: auto !important;}.fi-body-has-top-navigation .fi-sidebar,.fi-sidebar,#fi-main-sidebar,.fi-main-sidebar,.fi-sidebar-close-overlay,.fi-topbar-open-sidebar-btn,.fi-topbar-close-sidebar-btn{display: none !important;}
 .fi-body-has-top-navigation .fi-main-ctn{margin-left: 0 !important;padding: 1.75rem 1.5rem !important;max-width: 90rem !important;margin: 0 auto !important;}
 .fi-section{border-color: rgba(226,232,240,0.85) !important;box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04),0 1px 2px -1px rgba(0,0,0,0.04) !important;border-radius: 1rem !important;}
 .fi-wi-stats-overview-stat{border-radius: 1rem !important;border-color: rgba(226,232,240,0.85) !important;box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04) !important;transition: transform 0.2s ease,box-shadow 0.2s ease !important;}

@@ -36,9 +36,8 @@ fi
 
 php artisan storage:link --force --no-interaction || true
 php artisan filament:assets --no-interaction || true
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+chmod -R 755 /var/www/html/public
+php artisan optimize:clear
 
 echo "[BBPOM-Docker] Aplikasi siap dijalankan!"
 exec "$@"
