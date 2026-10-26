@@ -37,10 +37,6 @@
             <div class="bg-white py-8 px-6 shadow-sm border border-gray-100 sm:rounded-2xl sm:px-10">
                 {{ $slot }}
             </div>
-
-            <div class="mt-6 text-center text-xs text-gray-400">
-                &copy; {{ date('Y') }} BBPOM Semarang. All rights reserved.
-            </div>
         </div>
     </body>
 </html>

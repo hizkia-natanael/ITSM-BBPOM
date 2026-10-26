@@ -28,12 +28,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (! $this->app->runningInConsole()) {
-            if (request()->getPort() === 8085) {
+            $appUrl = (string) config('app.url');
+            $isDirectPort = in_array(request()->getPort(), [8000, 8085], true) || PHP_SAPI === 'cli-server';
+            $isHelpdeskSubpath = str_contains($appUrl, '/helpdesk')
+                || str_starts_with((string) request()->server('REQUEST_URI', ''), '/helpdesk');
+
+            if ($isDirectPort || ! $isHelpdeskSubpath) {
                 \Illuminate\Support\Facades\URL::useAssetOrigin(null);
             } else {
                 $origin = in_array(request()->getHost(), ['192.168.1.254', '127.0.0.1', 'localhost'], true)
                     ? 'http://' . request()->getHttpHost() . '/helpdesk'
-                    : (string) config('app.url');
+                    : $appUrl;
 
                 \Illuminate\Support\Facades\URL::useOrigin($origin);
                 \Illuminate\Support\Facades\URL::useAssetOrigin($origin);

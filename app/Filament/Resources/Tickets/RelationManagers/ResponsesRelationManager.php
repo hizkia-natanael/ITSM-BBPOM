@@ -45,7 +45,7 @@ class ResponsesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('response_text')
             ->heading('Riwayat Tanggapan & Diskusi')
-            ->description('Percakapan antara pelapor dan tim teknisi IT BBPOM Semarang.')
+            ->description('Percakapan antara pelapor dan tim layanan IT BBPOM Semarang.')
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Pengirim')

@@ -43,12 +43,15 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-1 sm:gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2.5">
+                <!-- Realtime Online Visitor Counter Pill (Next to Bell) -->
+                <x-ui.online-visitor-counter variant="navbar" />
+
                 <!-- Notification Bell (balasan tim IT) -->
                 <x-user-reply-notification-bell />
 
                 <!-- Settings Dropdown -->
-                <div class="hidden sm:flex sm:items-center sm:ms-2">
+                <div class="hidden sm:flex sm:items-center sm:ms-1">
                     <x-user-profile-menu />
                 </div>
 
@@ -68,23 +71,14 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden !bg-white border-t border-slate-200">
         <div class="pt-2 pb-3 space-y-1 !bg-white">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.index')">
-                {{ __('Daftar Pengaduan') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tickets.create')" :active="request()->routeIs('tickets.create')">
-                {{ __('Katalog Layanan') }}
-            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('Dashboard') }}</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.index')">{{ __('Daftar Pengaduan') }}</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('tickets.create')" :active="request()->routeIs('tickets.create')">{{ __('Katalog Layanan') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('guide.index')" :active="request()->routeIs('guide.index')">
-                <i class="ri-book-read-line me-1.5 text-slate-400"></i>
-                {{ __('Buku Panduan') }}
+                <i class="ri-book-read-line me-1.5 text-slate-400"></i>{{ __('Buku Panduan') }}
             </x-responsive-nav-link>
             @if(Auth::user()->isAdmin())
-                <x-responsive-nav-link :href="url('/admin')">
-                    {{ __('Panel Admin (Filament)') }}
-                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="url('/admin')">{{ __('Panel Admin (Filament)') }}</x-responsive-nav-link>
             @endif
         </div>
 
@@ -103,24 +97,16 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="font-bold text-sm text-slate-900 truncate">{{ $mobileUser->name }}</div>
-                    <div class="text-xs text-slate-500 font-mono truncate mt-0.5">
-                        {{ $mobileUser->nip ? 'NIP. ' . $mobileUser->nip : 'Pegawai BBPOM' }}
-                    </div>
+                    <div class="text-xs text-slate-500 font-mono truncate mt-0.5">{{ $mobileUser->nip ? 'NIP. ' . $mobileUser->nip : 'Pegawai BBPOM' }}</div>
                 </div>
             </div>
 
             <div class="mt-3 space-y-1 !bg-white">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    <i class="ri-user-line me-1.5 text-slate-400"></i>
-                    {{ __('Profil') }}
-                </x-responsive-nav-link>
-
+                <x-responsive-nav-link :href="route('profile.edit')"><i class="ri-user-line me-1.5 text-slate-400"></i>{{ __('Profil') }}</x-responsive-nav-link>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault(); this.closest('form').submit();" class="!text-rose-600">
-                        <i class="ri-logout-box-r-line me-1.5 text-rose-500"></i>
-                        {{ __('Log Out') }}
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="!text-rose-600">
+                        <i class="ri-logout-box-r-line me-1.5 text-rose-500"></i>{{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

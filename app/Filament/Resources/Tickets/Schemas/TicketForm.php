@@ -24,7 +24,7 @@ class TicketForm
             ->columns(1)
             ->components([
                 Section::make('Status Penanganan Layanan')
-                    ->description('Kelola progres penanganan tiket ITSM oleh tim teknisi IT BBPOM Semarang.')
+                    ->description('Kelola progres penanganan tiket ITSM oleh tim layanan IT BBPOM Semarang.')
                     ->extraAttributes(['class' => 'ticket-master-card'])
                     ->schema([
                         self::statusAndHandlerGrid(),

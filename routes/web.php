@@ -16,6 +16,10 @@ Route::get('/', function () {
 
 Route::get('/admin/login', fn () => redirect()->route('login'));
 
+Route::get('/presence/online', [\App\Http\Controllers\OnlinePresenceController::class, 'status'])
+    ->middleware('throttle:60,1')
+    ->name('presence.online');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // User Portal Dashboard
     Route::get('/dashboard', [TicketController::class, 'dashboard'])->name('dashboard');

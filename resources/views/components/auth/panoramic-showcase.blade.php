@@ -12,21 +12,24 @@
     <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/20 to-transparent"></div>
 
     <!-- Top Brand Bar -->
-    <div class="relative z-10 flex items-center gap-3">
-        <div class="p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
-            <img src="{{ asset('images/logo-bpom.png') }}" alt="Logo BPOM" decoding="async" class="h-8 w-auto">
+    <div class="relative z-10 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
+                <img src="{{ asset('images/logo-bpom.png') }}" alt="Logo BPOM" decoding="async" class="h-8 w-auto">
+            </div>
+            <div>
+                <p class="text-sm font-bold tracking-tight text-white">Balai Besar POM di Semarang</p>
+                <p class="text-[11px] text-emerald-300 font-medium">Pusat Layanan Teknologi Informasi & Komunikasi</p>
+            </div>
         </div>
-        <div>
-            <p class="text-sm font-bold tracking-tight text-white">Balai Besar POM di Semarang</p>
-            <p class="text-[11px] text-emerald-300 font-medium">Pusat Layanan Teknologi Informasi & Komunikasi</p>
-        </div>
+        <x-ui.online-visitor-counter variant="dark" />
     </div>
 
     <!-- Center Manifesto -->
     <div class="relative z-10 my-auto py-8 max-w-lg">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-5 backdrop-blur-md">
             <i class="ri-pulse-fill text-emerald-400"></i>
-            <span>Inovasi Tata Kelola TI</span>
+            <span>Inovasi Tata Kelola Layanan TI</span>
         </div>
         <h1 class="text-4xl xl:text-5xl font-black text-white leading-tight tracking-tight">
             Melayani dengan Integritas, Kecepatan, dan Akuntabilitas.
