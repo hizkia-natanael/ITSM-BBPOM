@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\SiteVisitor;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,24 +14,27 @@ class OnlinePresenceAndUiRevisionsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_online_presence_endpoint_returns_realtime_visitor_count(): void
+    public function test_online_presence_endpoint_returns_persistent_visitor_count(): void
     {
-        Cache::forget('bbpom_online_visitors_registry');
+        Cache::flush();
 
         $response = $this->getJson(route('presence.online'));
 
         $response->assertOk()
             ->assertJsonStructure([
+                'total_visitors',
                 'online_count',
+                'total_visits',
                 'authenticated_count',
                 'guest_count',
                 'timestamp',
             ]);
 
-        $this->assertGreaterThanOrEqual(1, $response->json('online_count'));
+        $this->assertGreaterThanOrEqual(1, $response->json('total_visitors'));
+        $this->assertDatabaseCount('site_visitors', 1);
     }
 
-    public function test_login_page_shows_inovasi_tata_kelola_layanan_ti_and_whatsapp_contact_center_and_online_counter(): void
+    public function test_login_page_shows_inovasi_tata_kelola_layanan_ti_and_whatsapp_and_total_pengunjung(): void
     {
         $response = $this->get('/login');
 
@@ -38,18 +42,18 @@ class OnlinePresenceAndUiRevisionsTest extends TestCase
             ->assertSee('Inovasi Tata Kelola Layanan TI')
             ->assertSee('Contact Center : Windi (083866277489)')
             ->assertSee('ri-whatsapp-fill', false)
-            ->assertSee('Pengunjung Online');
+            ->assertSee('Total Pengunjung');
     }
 
-    public function test_user_dashboard_shows_navbar_online_counter_and_home_whatsapp_contact_center_without_footer(): void
+    public function test_user_dashboard_shows_navbar_counter_and_stats_card(): void
     {
         $user = User::factory()->create(['role' => 'user']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk()
-            ->assertSee('Pengunjung Online')
-            ->assertSee('Aktif secara realtime')
+            ->assertSee('Total Pengunjung')
+            ->assertSee('Tercatat di sistem')
             ->assertSee('Contact Center : Windi (083866277489)')
             ->assertSee('ri-whatsapp-fill', false)
             ->assertDontSee('<footer', false);

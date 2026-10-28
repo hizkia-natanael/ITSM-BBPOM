@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SecurityTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * Test Item #5: Security Headers
      */

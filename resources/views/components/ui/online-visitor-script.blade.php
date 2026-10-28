@@ -20,7 +20,7 @@
                     this.stopPolling();
                     this.timer = setInterval(() => {
                         this.refreshCount();
-                    }, 15000);
+                    }, 30000);
                 },
                 stopPolling() {
                     if (this.timer) {
@@ -37,7 +37,7 @@
                         if (!res.ok) return;
                         const data = await res.json();
                         if (data) {
-                            const nextCount = Number(data.online_count);
+                            const nextCount = Number(data.total_visitors ?? data.online_count);
                             if (nextCount) {
                                 this.onlineCount = nextCount;
                             }

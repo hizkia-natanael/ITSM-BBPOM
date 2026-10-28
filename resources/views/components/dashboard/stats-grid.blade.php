@@ -49,6 +49,6 @@
         </div>
     </div>
 
-    <!-- Card 5: Pengunjung Online (Realtime Telemetry) -->
+    <!-- Card 5: Total Pengunjung (Database Persistent Counter) -->
     <x-ui.online-visitor-counter variant="stat" />
 </div>

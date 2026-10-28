@@ -2,79 +2,102 @@
 
 namespace App\Services\Presence;
 
+use App\Models\SiteVisitor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class OnlineVisitorService
 {
-    private const CACHE_KEY = 'bbpom_online_visitors_registry';
-    private const ACTIVE_WINDOW_SECONDS = 300; // 5 minutes
+    private const CACHE_TOTAL_KEY = 'bbpom_total_visitors_count';
+    private const CACHE_TOUCH_PREFIX = 'bbpom_visitor_touch_';
 
     /**
-     * Record the current visitor's heartbeat and compute realtime online counts.
+     * Record visitor presence into persistent storage and return cumulative stats.
      *
-     * @return array{online_count: int, authenticated_count: int, guest_count: int, timestamp: string}
+     * @return array{total_visitors: int, online_count: int, total_visits: int, authenticated_count: int, guest_count: int, timestamp: string}
      */
     public function recordAndCount(?Request $request = null): array
     {
         $request = $request ?? request();
-        $now = Carbon::now()->getTimestamp();
-        $cutoff = $now - self::ACTIVE_WINDOW_SECONDS;
+        $this->recordVisitor($request);
 
-        $visitorKey = $this->resolveVisitorKey($request);
-        $userId = Auth::id();
-
-        $registry = Cache::get(self::CACHE_KEY, []);
-        if (! is_array($registry)) {
-            $registry = [];
-        }
-
-        // Prune expired entries outside the 5-minute active window
-        foreach ($registry as $key => $meta) {
-            if (! is_array($meta) || (($meta['last_activity'] ?? 0) < $cutoff)) {
-                unset($registry[$key]);
-            }
-        }
-
-        // Register / refresh current visitor
-        $registry[$visitorKey] = [
-            'user_id' => $userId,
-            'last_activity' => $now,
-        ];
-
-        // Merge active sessions from database session driver when available
-        $this->mergeDatabaseSessions($registry, $cutoff);
-
-        Cache::put(self::CACHE_KEY, $registry, now()->addMinutes(10));
-
-        $authenticatedUsers = [];
-        $guestSessions = 0;
-
-        foreach ($registry as $meta) {
-            if (! empty($meta['user_id'])) {
-                $authenticatedUsers[(string) $meta['user_id']] = true;
-            } else {
-                $guestSessions++;
-            }
-        }
-
-        $authenticatedCount = count($authenticatedUsers);
-        $totalOnline = max(1, $authenticatedCount + $guestSessions);
+        $totalVisitors = $this->resolveTotalVisitors();
+        $authenticatedCount = SiteVisitor::whereNotNull('user_id')->count();
+        $guestCount = max(0, $totalVisitors - $authenticatedCount);
 
         return [
-            'online_count' => $totalOnline,
+            'total_visitors' => $totalVisitors,
+            'online_count' => $totalVisitors,
+            'total_visits' => (int) SiteVisitor::sum('visits_count'),
             'authenticated_count' => $authenticatedCount,
-            'guest_count' => $guestSessions,
+            'guest_count' => $guestCount,
             'timestamp' => Carbon::now()->format('H:i') . ' WIB',
         ];
     }
 
-    private function resolveVisitorKey(Request $request): string
+    private function recordVisitor(Request $request): void
     {
+        $visitorKey = $this->resolveVisitorKey($request);
+        $touchKey = self::CACHE_TOUCH_PREFIX . $visitorKey;
+
+        if (Cache::has($touchKey)) {
+            return;
+        }
+
+        $userId = Auth::id();
+        $ip = (string) $request->ip();
+        $ua = substr((string) $request->userAgent(), 0, 255);
+        $now = now();
+
+        if ($userId && $request->hasSession() && $request->session()->getId()) {
+            $guestKey = 'sess_' . $request->session()->getId();
+            $guestRecord = SiteVisitor::where('visitor_key', $guestKey)->whereNull('user_id')->first();
+            if ($guestRecord) {
+                $guestRecord->update(['visitor_key' => $visitorKey, 'user_id' => $userId]);
+            }
+        }
+
+        $visitor = SiteVisitor::where('visitor_key', $visitorKey)->first();
+
+        if ($visitor) {
+            $visitor->update([
+                'user_id' => $userId ?? $visitor->user_id,
+                'ip_address' => $ip,
+                'user_agent' => $ua,
+                'visits_count' => $visitor->visits_count + 1,
+                'last_visited_at' => $now,
+            ]);
+        } else {
+            SiteVisitor::create([
+                'visitor_key' => $visitorKey,
+                'user_id' => $userId,
+                'ip_address' => $ip,
+                'user_agent' => $ua,
+                'visits_count' => 1,
+                'first_visited_at' => $now,
+                'last_visited_at' => $now,
+            ]);
+            Cache::forget(self::CACHE_TOTAL_KEY);
+        }
+
+        Cache::put($touchKey, true, now()->addMinutes(5));
+    }
+
+    public function resolveTotalVisitors(): int
+    {
+        return (int) Cache::remember(self::CACHE_TOTAL_KEY, 300, function () {
+            return max(1, SiteVisitor::count());
+        });
+    }
+
+    public function resolveVisitorKey(Request $request): string
+    {
+        if (Auth::check()) {
+            return 'usr_' . Auth::id();
+        }
+
         if ($request->hasSession() && $request->session()->getId()) {
             return 'sess_' . $request->session()->getId();
         }
@@ -83,33 +106,5 @@ class OnlineVisitorService
         $ua = substr((string) $request->userAgent(), 0, 120);
 
         return 'fp_' . sha1($ip . '|' . $ua);
-    }
-
-    /**
-     * @param array<string, array{user_id: int|string|null, last_activity: int}> $registry
-     */
-    private function mergeDatabaseSessions(array &$registry, int $cutoff): void
-    {
-        try {
-            if (! Schema::hasTable('sessions')) {
-                return;
-            }
-
-            $rows = DB::table('sessions')
-                ->select(['id', 'user_id', 'last_activity'])
-                ->where('last_activity', '>=', $cutoff)
-                ->limit(500)
-                ->get();
-
-            foreach ($rows as $row) {
-                $key = 'sess_' . $row->id;
-                $registry[$key] = [
-                    'user_id' => $row->user_id,
-                    'last_activity' => max((int) $row->last_activity, $registry[$key]['last_activity'] ?? 0),
-                ];
-            }
-        } catch (\Throwable) {
-            // Gracefully fallback to cache registry if database sessions table is unavailable
-        }
     }
 }
