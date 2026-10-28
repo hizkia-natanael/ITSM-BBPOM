@@ -16,9 +16,9 @@ COPY public ./public
 RUN npm run build
 
 # ==============================================================================
-# Stage 2: PHP-FPM 8.3 Application Runtime
+# Stage 2: PHP-FPM 8.4 Application Runtime
 # ==============================================================================
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
