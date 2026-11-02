@@ -753,9 +753,10 @@ class HelpdeskTest extends TestCase
         $response->assertSee('BBPOM Di Semarang');
         $response->assertSee('Keluar');
         $response->assertSee('admin/logout');
-        $response->assertSee('Pengaduan (Tickets)');
-        $response->assertSee('Kategori Layanan');
-        $response->assertSee('Data Pegawai');
+        $response->assertSee('Pengaduan');
+        $response->assertSee('Kategori');
+        $response->assertSee('Pegawai');
+        $response->assertSee('Survei Kepuasan');
         $response->assertDontSee('fi-global-search-ctn');
 
         // Verify /admin/login redirects to /login and admin logout redirects to /login

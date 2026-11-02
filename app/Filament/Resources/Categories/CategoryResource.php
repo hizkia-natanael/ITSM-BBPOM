@@ -21,7 +21,7 @@ class CategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;
 
-    protected static ?string $navigationLabel = 'Kategori Layanan';
+    protected static ?string $navigationLabel = 'Kategori';
 
     protected static ?string $modelLabel = 'Kategori Layanan';
 

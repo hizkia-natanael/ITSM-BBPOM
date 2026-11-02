@@ -20,11 +20,11 @@ class TicketResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
 
-    protected static ?string $navigationLabel = 'Pengaduan (Tickets)';
+    protected static ?string $navigationLabel = 'Pengaduan';
 
     protected static ?string $modelLabel = 'Pengaduan';
 
-    protected static ?string $pluralModelLabel = 'Pengaduan (Tickets)';
+    protected static ?string $pluralModelLabel = 'Pengaduan';
 
     protected static ?string $recordTitleAttribute = 'ticket_number';
 

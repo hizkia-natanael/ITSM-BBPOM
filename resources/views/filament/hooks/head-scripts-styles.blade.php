@@ -2299,4 +2299,32 @@
                             object-fit: contain !important;
                             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
                         }
+
+                        /* Guarantee Filament Top Navigation stays strictly on 1 single line */
+                        nav.fi-topbar-nav,
+                        .fi-topbar-nav-groups,
+                        .fi-topbar-nav ul {
+                            display: flex !important;
+                            flex-wrap: nowrap !important;
+                            align-items: center !important;
+                            overflow-x: auto !important;
+                            scrollbar-width: none !important;
+                            -ms-overflow-style: none !important;
+                        }
+                        nav.fi-topbar-nav::-webkit-scrollbar,
+                        .fi-topbar-nav ul::-webkit-scrollbar {
+                            display: none !important;
+                        }
+                        .fi-topbar-nav-item,
+                        .fi-topbar-item {
+                            flex-shrink: 0 !important;
+                            white-space: nowrap !important;
+                        }
+                        .fi-topbar-item-btn,
+                        .fi-topbar-item-button,
+                        .fi-topbar-item a {
+                            white-space: nowrap !important;
+                            padding-left: 0.625rem !important;
+                            padding-right: 0.625rem !important;
+                        }
                     </style>

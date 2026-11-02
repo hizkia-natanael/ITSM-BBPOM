@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Filament\Widgets\SatisfactionSurveysWidget;
 use App\Filament\Widgets\TicketStatsOverview;
 use App\Filament\Widgets\TicketTrendChart;
 use App\Filament\Widgets\UnhandledTicketsAlertWidget;
@@ -69,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
                 TicketStatsOverview::class,
                 TicketTrendChart::class,
                 UnhandledTicketsAlertWidget::class,
+                SatisfactionSurveysWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
