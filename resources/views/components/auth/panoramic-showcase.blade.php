@@ -1,3 +1,7 @@
+@php
+    $satisfactionIndex = app(\App\Services\Satisfaction\SatisfactionSurveyService::class)->getSatisfactionIndex();
+@endphp
+
 <div class="hidden lg:flex lg:col-span-6 relative overflow-hidden flex-col justify-between p-8 xl:p-12 text-white min-h-screen bg-slate-950">
     <!-- Full Height Background Image: Lobby & Tulisan BALAI BESAR POM SEMARANG Terhighlight Penuh -->
     <img
@@ -52,8 +56,13 @@
                 <p class="text-[10px] text-slate-300 mt-0.5 font-medium">Kategori Layanan TI</p>
             </div>
             <div>
-                <p class="text-xl font-black text-teal-300 drop-shadow-sm">4.9 / 5</p>
-                <p class="text-[10px] text-slate-300 mt-0.5 font-medium">Indeks Kepuasan</p>
+                <p class="text-xl font-black text-teal-300 drop-shadow-sm">{{ $satisfactionIndex['formatted'] }}</p>
+                <p class="text-[10px] text-slate-300 mt-0.5 font-medium">
+                    Indeks Kepuasan
+                    @if(!empty($satisfactionIndex['total_surveys']))
+                        <span class="block text-[9px] text-teal-200/80 font-normal">({{ $satisfactionIndex['total_surveys'] }} ulasan)</span>
+                    @endif
+                </p>
             </div>
             <div>
                 <p class="text-xl font-black text-cyan-300 drop-shadow-sm">100%</p>

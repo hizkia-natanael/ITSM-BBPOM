@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Ticket extends Model
 {
@@ -75,5 +76,26 @@ class Ticket extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(TicketAttachment::class);
+    }
+
+    public function satisfactionSurvey(): HasOne
+    {
+        return $this->hasOne(TicketSatisfactionSurvey::class);
+    }
+
+    public function isRated(): bool
+    {
+        return $this->satisfactionSurvey !== null;
+    }
+
+    public function canBeRatedByUser(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $this->status === 'selesai'
+            && (int) $this->user_id === (int) $user->id
+            && !$this->isRated();
     }
 }
