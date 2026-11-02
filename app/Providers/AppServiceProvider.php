@@ -27,6 +27,37 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! $this->app->runningInConsole()) {
+            $appUrl = (string) config('app.url');
+            $isDirectPort = in_array(request()->getPort(), [8000, 8085], true) || PHP_SAPI === 'cli-server';
+            $isHelpdeskSubpath = str_contains($appUrl, '/helpdesk')
+                || str_starts_with((string) request()->server('REQUEST_URI', ''), '/helpdesk');
+
+            if ($isDirectPort || ! $isHelpdeskSubpath) {
+                \Illuminate\Support\Facades\URL::useAssetOrigin(null);
+            } else {
+                $origin = in_array(request()->getHost(), ['192.168.1.254', '127.0.0.1', 'localhost'], true)
+                    ? 'http://' . request()->getHttpHost() . '/helpdesk'
+                    : $appUrl;
+
+                \Illuminate\Support\Facades\URL::useOrigin($origin);
+                \Illuminate\Support\Facades\URL::useAssetOrigin($origin);
+
+                if (str_starts_with($origin, 'https://')) {
+                    \Illuminate\Support\Facades\URL::forceScheme('https');
+                }
+
+                $basePath = rtrim((string) parse_url($origin, PHP_URL_PATH), '/');
+                if ($basePath !== '') {
+                    \Illuminate\Support\Facades\URL::formatPathUsing(
+                        fn (string $path) => ($path === $basePath || str_starts_with($path, $basePath . '/'))
+                            ? (substr($path, strlen($basePath)) ?: '/')
+                            : $path
+                    );
+                }
+            }
+        }
+
         config(['app.timezone' => 'Asia/Jakarta']);
         date_default_timezone_set('Asia/Jakarta');
         \Carbon\Carbon::setLocale('id');

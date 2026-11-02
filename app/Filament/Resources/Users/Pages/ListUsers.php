@@ -16,6 +16,7 @@ class ListUsers extends ListRecords
             CreateAction::make()
                 ->label('Tambah Pegawai')
                 ->icon('heroicon-o-plus')
+                ->visible(fn () => auth()->user()?->isAdmin() ?? false)
                 ->extraAttributes([
                     'class' => 'bbpom-header-create-btn',
                 ]),

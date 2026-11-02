@@ -16,10 +16,18 @@ class TicketPdfExportService
         $logoPath = public_path('images/logo-bpom.png');
         $logoBase64 = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : '';
 
+        $kopHeaderPath = public_path('images/kop-bbpom-semarang.png');
+        $kopHeaderBase64 = file_exists($kopHeaderPath) ? base64_encode(file_get_contents($kopHeaderPath)) : '';
+
+        $kopFooterPath = public_path('images/footer-bbpom-semarang.jpg');
+        $kopFooterBase64 = file_exists($kopFooterPath) ? base64_encode(file_get_contents($kopFooterPath)) : '';
+
         $pdf = Pdf::loadView('exports.tickets-pdf', [
             'tickets' => $tickets,
             'summary' => $summary,
             'logoBase64' => $logoBase64,
+            'kopHeaderBase64' => $kopHeaderBase64,
+            'kopFooterBase64' => $kopFooterBase64,
         ]);
 
         $pdf->setPaper('a4', 'landscape');
@@ -30,11 +38,11 @@ class TicketPdfExportService
             'dpi' => 110,
         ]);
 
-        // Add page numbering via DomPDF Canvas
+        // Add page numbering via DomPDF Canvas (above the footer wave)
         $pdf->render();
         $canvas = $pdf->getCanvas();
         $font = $pdf->getDomPDF()->getFontMetrics()->get_font("Helvetica", "normal");
-        $canvas->page_text(745, 560, "Halaman {PAGE_NUM} dari {PAGE_COUNT}", $font, 7.5, [0.45, 0.45, 0.45]);
+        $canvas->page_text(740, 545, "Halaman {PAGE_NUM} dari {PAGE_COUNT}", $font, 7.5, [0.35, 0.35, 0.35]);
 
         return $pdf;
     }

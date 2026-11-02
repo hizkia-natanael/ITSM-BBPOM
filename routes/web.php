@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return auth()->user()->isAdmin()
+        return (auth()->user()->isAdmin() || auth()->user()->isKetuaTim())
             ? redirect('/admin')
             : redirect()->route('dashboard');
     }
@@ -14,7 +14,11 @@ Route::get('/', function () {
     return view('auth.login', compact('users'));
 })->name('home');
 
-Route::redirect('/admin/login', '/login');
+Route::get('/admin/login', fn () => redirect()->route('login'));
+
+Route::get('/presence/online', [\App\Http\Controllers\OnlinePresenceController::class, 'status'])
+    ->middleware('throttle:60,1')
+    ->name('presence.online');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // User Portal Dashboard
@@ -51,6 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Buku Panduan Interaktif ITSM BBPOM
+    Route::get('/panduan', [\App\Http\Controllers\GuideBookController::class, 'index'])->name('guide.index');
+    Route::get('/guide-book', fn () => redirect()->route('guide.index'));
 });
 
 // Admin Web Push Notifications & Realtime Aduan Status

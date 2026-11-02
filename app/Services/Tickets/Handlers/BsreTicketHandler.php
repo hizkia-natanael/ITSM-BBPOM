@@ -19,7 +19,6 @@ class BsreTicketHandler
     {
         $subCategory = $request->input('subcategory', 'reset_password');
         $category = Category::resolveForService('sertifikat_bse');
-
         if (in_array($subCategory, ['reset_password', 'permintaan_otp'])) {
             $validated = $request->validate([
                 'tanggal_pengajuan' => ['required', 'date'],
@@ -36,7 +35,6 @@ class BsreTicketHandler
                 'email.required' => 'Alamat email aktif wajib diisi.',
                 'nomor_telepon.required' => 'Nomor telepon / WhatsApp wajib diisi.',
             ]);
-
             $subLabel = $subCategory === 'reset_password' ? 'Reset Password BSRE' : 'Permintaan OTP';
             $subject = "{$subLabel} - {$validated['nama']}";
             $description = "Permohonan Layanan Sertifikat BSrE: {$subLabel}\n\n"
@@ -46,7 +44,6 @@ class BsreTicketHandler
                 . "• NIK: {$validated['nik']}\n"
                 . "• Email: {$validated['email']}\n"
                 . "• Nomor Telepon/WA: {$validated['nomor_telepon']}";
-
             $ticket = Ticket::create([
                 'user_id' => $request->user()->id,
                 'category_id' => $category->id,
@@ -56,7 +53,6 @@ class BsreTicketHandler
                 'description' => $description,
                 'status' => 'pending',
             ]);
-
             $ticket->bsreDetail()->create([
                 'sub_category' => $subCategory,
                 'tanggal_pengajuan' => $validated['tanggal_pengajuan'],

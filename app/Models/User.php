@@ -54,16 +54,21 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Authorize panel access (Only admin can access Filament Panel)
+     * Authorize panel access (Admin dan Ketua Tim dapat mengakses Filament Panel)
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'ketua_tim'], true);
     }
 
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isKetuaTim(): bool
+    {
+        return $this->role === 'ketua_tim';
     }
 
     public function isUser(): bool
@@ -84,6 +89,21 @@ class User extends Authenticatable implements FilamentUser
     public function handledTickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'handled_by_id');
+    }
+
+    public function acceptedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'accepted_by_id');
+    }
+
+    public function processedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'processed_by_id');
+    }
+
+    public function resolvedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'resolved_by_id');
     }
 
     public function pushSubscriptions(): HasMany

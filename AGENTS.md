@@ -41,3 +41,12 @@ npm run build
 php artisan test
 ```
 All tests must pass (100%), assets must build without errors, and no git diff should contain unescaped emojis or leaked script tags.
+
+---
+
+## 6. Strict Modular Architecture & Code Limits
+- **Batas Maksimal Baris:** 100 - 120 baris per file.
+- **Tindakan Wajib:** Jika file/komponen berpotensi melebihi 120 baris, **JANGAN** satukan dalam satu file. Wajib dipecah/di-refactor otomatis menjadi sub-komponen, utilitas, atau action/service classes terpisah.
+- **Single Responsibility Principle (SRP):** Satu file hanya menangani satu tugas/blok UI spesifik.
+- **Pemisahan Folder Terstruktur:** Komponen atomik di `resources/views/components/` (sub-folder `ui/`, `layout/`, atau domain fitur), business logic di `app/Services/` atau `app/Actions/`, dan thin controllers di `app/Http/Controllers/`.
+

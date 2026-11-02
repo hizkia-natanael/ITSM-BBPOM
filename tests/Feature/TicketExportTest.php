@@ -452,4 +452,91 @@ class TicketExportTest extends TestCase
                 'description' => \App\Services\Export\TicketQueryBuilder::stripMarkdown($rawDescription),
             ]);
     }
+
+    public function test_excel_and_pdf_export_structure_and_styling(): void
+    {
+        $ticket = Ticket::create([
+            'user_id' => $this->regularUser->id,
+            'service_key' => 'srikandi',
+            'category_id' => 2,
+            'subject' => 'Kendala Registrasi Naskah',
+            'description' => 'Penomoran surat tidak muncul di Srikandi.',
+            'status' => 'selesai',
+        ]);
+
+        $queryBuilder = app(\App\Services\Export\TicketQueryBuilder::class);
+        $result = $queryBuilder->build(['category' => 'all', 'period_type' => 'all']);
+
+        // 1. PDF assertions
+        $pdfView = view('exports.tickets-pdf', [
+            'tickets' => $result['tickets'],
+            'summary' => $result['summary'],
+            'logoBase64' => '',
+            'kopFooterBase64' => '',
+        ])->render();
+
+        $this->assertStringContainsString('#014282', $pdfView);
+        $this->assertStringContainsString('#04A651', $pdfView);
+        $this->assertStringContainsString('#1261B0', $pdfView);
+        $this->assertStringContainsString('BALAI BESAR', $pdfView);
+        $this->assertStringContainsString('PENGAWAS OBAT DAN MAKANAN DI SEMARANG', $pdfView);
+        $this->assertStringContainsString('Trebuchet MS', $pdfView);
+        $this->assertStringContainsString('Arial Narrow', $pdfView);
+
+        // Ensure removed items are NOT present in PDF
+        $this->assertStringNotContainsString('Laporan Rekapitulasi Pengaduan &amp; Layanan TI (ITSM)', $pdfView);
+        $this->assertStringNotContainsString('Laporan Rekapitulasi Pengaduan & Layanan TI (ITSM)', $pdfView);
+        $this->assertStringNotContainsString('Standar Audit Kinerja Sistem Layanan Helpdesk Teknologi Informasi & Komunikasi BBPOM Semarang', $pdfView);
+        $this->assertStringNotContainsString('Kode Audit ISO:', $pdfView);
+        $this->assertStringNotContainsString('SLA Resolution Rate', $pdfView);
+        $this->assertStringNotContainsString('Audit ID:', $pdfView);
+
+        // 2. Excel assertions
+        $excelService = app(\App\Services\Export\TicketExcelExportService::class);
+        $spreadsheet = $excelService->generate($result['tickets'], $result['summary']);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Merged header in B1:M3
+        $this->assertTrue($sheet->getCell('B1')->isMergeRangeValueCell());
+        $this->assertArrayHasKey('B1:M3', $sheet->getMergeCells());
+
+        // Header text check
+        $headerValue = (string) $sheet->getCell('B1')->getValue();
+        $this->assertStringContainsString('BALAI BESAR', $headerValue);
+        $this->assertStringContainsString('PENGAWAS OBAT DAN MAKANAN DI SEMARANG', $headerValue);
+        $this->assertStringContainsString('Banyumanik Semarang', $headerValue);
+
+        // Header font check (Trebuchet MS & Arial Narrow compatible fonts)
+        $richText = $sheet->getCell('B1')->getValue();
+        $this->assertInstanceOf(\PhpOffice\PhpSpreadsheet\RichText\RichText::class, $richText);
+        $elements = $richText->getRichTextElements();
+        $this->assertSame('Trebuchet MS', $elements[0]->getFont()->getName());
+        $this->assertSame('Trebuchet MS', $elements[1]->getFont()->getName());
+        $this->assertSame('Arial Narrow', $elements[2]->getFont()->getName());
+        $this->assertSame('Arial Narrow', $elements[3]->getFont()->getName());
+        $this->assertSame('Arial Narrow', $elements[4]->getFont()->getName());
+
+        // Ensure removed items are NOT present in Sheet 1
+        $allCellValues = [];
+        foreach ($sheet->getRowIterator(1, 10) as $row) {
+            foreach ($row->getCellIterator('A', 'M') as $cell) {
+                $allCellValues[] = (string) $cell->getValue();
+            }
+        }
+        $combinedText = implode(' ', $allCellValues);
+        $this->assertStringNotContainsString('LAPORAN REKAPITULASI PENGADUAN & LAYANAN TEKNOLOGI INFORMASI (ITSM)', $combinedText);
+        $this->assertStringNotContainsString('Standar Audit Kinerja Sistem Layanan Helpdesk Teknologi Informasi & Komunikasi BBPOM Semarang', $combinedText);
+        $this->assertStringNotContainsString('Kode Audit ISO:', $combinedText);
+        $this->assertStringNotContainsString('SLA Resolusi:', $combinedText);
+
+        // Ensure table header is on row 10
+        $this->assertSame('No', $sheet->getCell('A10')->getValue());
+        $this->assertSame('No. Tiket', $sheet->getCell('B10')->getValue());
+        $this->assertSame('Status Aduan', $sheet->getCell('L10')->getValue());
+
+        // Ensure data starts on row 11
+        $this->assertSame(1, $sheet->getCell('A11')->getValue());
+        $this->assertSame($ticket->ticket_number, $sheet->getCell('B11')->getValue());
+    }
 }
+

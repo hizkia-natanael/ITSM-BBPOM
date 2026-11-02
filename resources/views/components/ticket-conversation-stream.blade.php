@@ -1524,6 +1524,12 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
             </template>
         </div>
 
+        @if(auth()->user()?->isKetuaTim())
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center text-xs text-slate-500 font-medium shadow-2xs">
+                <i class="ri-shield-user-line text-emerald-700 text-sm align-middle mr-1.5"></i>
+                <span>Akses Ketua Tim: Hanya melihat &amp; memantau riwayat pengaduan.</span>
+            </div>
+        @else
         <!-- Input Baris Chat & Tombol Lampiran -->
         <div class="flex items-center gap-2.5" style="display: flex; align-items: center; gap: 0.625rem;">
             <!-- Label Klip Lampiran Berkas (Memicu File Chooser secara Native & Handled) -->
@@ -1566,6 +1572,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 <i x-show="isSubmitting" class="ri-loader-4-line text-lg bbpom-spinner-rotate" style="font-size: 1.125rem; color: #ffffff !important; line-height: 1; display: inline-flex; align-items: center; justify-content: center;"></i>
             </button>
         </div>
+        @endif
 
         <!-- Notifikasi Error Validasi / Pengiriman -->
         <div x-show="hasErrorMessage()" class="mt-2 text-xs text-rose-600 font-medium flex items-center gap-1.5" style="color: #e11d48; font-size: 0.75rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.375rem;">

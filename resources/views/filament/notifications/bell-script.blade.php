@@ -171,7 +171,7 @@ window.bbpomNotificationBell = function bbpomNotificationBell(config) {
             this.claimToast = '';
 
             try {
-                const res = await fetch('/admin/tickets/' + ticketId + '/claim', {
+                const res = await fetch('{{ url('/admin/tickets') }}/' + ticketId + '/claim', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -202,13 +202,13 @@ window.bbpomNotificationBell = function bbpomNotificationBell(config) {
         async registerServiceWorkerGlobal() {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
             try {
-                const reg = await navigator.serviceWorker.register('/sw.js');
+                const reg = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
                 await navigator.serviceWorker.ready;
                 if (('Notification' in window) && Notification.permission === 'granted') {
                     const sub = await reg.pushManager.getSubscription();
                     if (sub) {
                         const subData = JSON.parse(JSON.stringify(sub));
-                        await fetch('/admin/push/subscribe', {
+                        await fetch('{{ url('/admin/push/subscribe') }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

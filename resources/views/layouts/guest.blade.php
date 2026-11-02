@@ -7,7 +7,7 @@
 
         <link rel="icon" type="image/png" href="{{ asset('images/logo-bpom.png') }}">
 
-        <title>{{ config('app.name', 'Layanan TIK BBPOM di Semarang') }}</title>
+        <title>{{ config('app.name', 'ELITE - E-Layanan IT Terintegrasi') }} | BBPOM di Semarang</title>
 
         <!-- Fonts (Inter) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,24 +22,20 @@
     </head>
     <body class="font-sans text-gray-900 antialiased bg-slate-50 min-h-full flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-            <a href="/" class="inline-flex justify-center">
+            <a href="{{ url('/') }}" class="inline-flex justify-center">
                 <x-application-logo class="w-auto h-12" />
             </a>
-            <h2 class="mt-4 text-center text-xl font-bold tracking-tight text-gray-900">
-                Layanan TIK BBPOM di Semarang
+            <h2 class="mt-4 text-center text-xl font-black tracking-tight text-gray-900">
+                ELITE
             </h2>
-            <p class="mt-1 text-center text-xs text-gray-500">
-                Balai Besar Pengawas Obat dan Makanan di Semarang
+            <p class="mt-1 text-center text-xs font-semibold text-emerald-700">
+                E-Layanan IT Terintegrasi &bull; BBPOM di Semarang
             </p>
         </div>
 
         <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-white py-8 px-6 shadow-sm border border-gray-100 sm:rounded-2xl sm:px-10">
                 {{ $slot }}
-            </div>
-
-            <div class="mt-6 text-center text-xs text-gray-400">
-                &copy; {{ date('Y') }} BBPOM Semarang. All rights reserved.
             </div>
         </div>
     </body>

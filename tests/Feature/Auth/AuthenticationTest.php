@@ -17,6 +17,16 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_login_screen_can_be_rendered_without_emojis(): void
+    {
+        $response = $this->get('/login');
+        $response->assertStatus(200);
+
+        $content = $response->getContent();
+        $hasEmoji = preg_match('/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26BF}]/u', $content);
+        $this->assertSame(0, $hasEmoji, 'Raw emojis found in /login');
+    }
+
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
@@ -123,5 +133,27 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->get('/login');
 
         $response->assertRedirect('/dashboard');
+    }
+
+    public function test_ketua_tim_is_redirected_directly_to_admin_panel_upon_login(): void
+    {
+        $ketua = User::factory()->create(['role' => 'ketua_tim']);
+
+        $response = $this->post('/login', [
+            'email' => $ketua->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect('/admin');
+    }
+
+    public function test_authenticated_ketua_tim_visiting_login_is_redirected_to_admin(): void
+    {
+        $ketua = User::factory()->create(['role' => 'ketua_tim']);
+
+        $response = $this->actingAs($ketua)->get('/login');
+
+        $response->assertRedirect('/admin');
     }
 }

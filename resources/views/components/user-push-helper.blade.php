@@ -58,7 +58,7 @@ window.bbpomUserPush = window.bbpomUserPush || {
         if (!this.supported()) return 'unsupported';
         if (Notification.permission === 'denied') return 'denied';
         try {
-            const reg = await navigator.serviceWorker.register('/sw.js');
+            const reg = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
             await navigator.serviceWorker.ready;
             const sub = await reg.pushManager.getSubscription();
             if (sub && Notification.permission === 'granted') {
@@ -81,7 +81,7 @@ window.bbpomUserPush = window.bbpomUserPush || {
         const configRes = await fetch(this.configUrl, { headers: { 'Accept': 'application/json' } });
         const config = await configRes.json();
 
-        await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.register('{{ asset('sw.js') }}');
         const reg = await navigator.serviceWorker.ready;
 
         let sub = await reg.pushManager.getSubscription();
@@ -96,8 +96,8 @@ window.bbpomUserPush = window.bbpomUserPush || {
         if (reg.showNotification) {
             reg.showNotification('Notifikasi Balasan Aktif', {
                 body: 'Anda akan diberi tahu saat tim IT membalas pengaduan Anda.',
-                icon: '/images/logo-bpom.png',
-                badge: '/images/logo-bpom.png',
+                icon: '{{ asset('images/logo-bpom.png') }}',
+                badge: '{{ asset('images/logo-bpom.png') }}',
                 tag: 'user-push-enabled',
                 data: { url: window.location.href }
             });

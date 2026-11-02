@@ -29,6 +29,7 @@ class UserForm
                     ->label('Role Akses')
                     ->options([
                         'admin' => 'Admin (Pengelola ITSM)',
+                        'ketua_tim' => 'Ketua Tim (Monitoring & Pengawasan TIK)',
                         'user' => 'User (Pegawai BBPOM)',
                     ])
                     ->required()

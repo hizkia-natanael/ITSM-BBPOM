@@ -1,3 +1,5 @@
+import { formatBytes, getFileMeta } from './utils/file-utils.js';
+
 export function fileDropzoneUploader(config) {
     return {
         inputId: config.inputId,
@@ -63,21 +65,13 @@ export function fileDropzoneUploader(config) {
                     return;
                 }
 
-                // Cek duplikasi nama dan ukuran
-                var isDuplicate = false;
-                for (var j = 0; j < this.fileList.length; j++) {
-                    if (this.fileList[j].name === file.name && this.fileList[j].raw.size === file.size) {
-                        isDuplicate = true;
-                        break;
-                    }
-                }
-
+                var isDuplicate = this.fileList.some(item => item.name === file.name && item.raw.size === file.size);
                 if (!isDuplicate) {
-                    var meta = this.getFileMeta(file);
+                    var meta = getFileMeta(file);
                     this.fileList.push({
                         id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                         name: file.name,
-                        size: this.formatBytes(file.size),
+                        size: formatBytes(file.size),
                         iconClass: meta.iconClass,
                         iconBg: meta.iconBg,
                         raw: file
@@ -108,50 +102,6 @@ export function fileDropzoneUploader(config) {
             if (this.$refs && this.$refs.fileInput) {
                 this.$refs.fileInput.files = dataTransfer.files;
             }
-        },
-
-        formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            var k = 1024;
-            var sizes = ['B', 'KB', 'MB', 'GB'];
-            var i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        },
-
-        getFileMeta(file) {
-            var ext = file.name.split('.').pop().toLowerCase();
-            if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
-                return {
-                    iconClass: 'ri-image-2-line text-emerald-700',
-                    iconBg: 'bg-emerald-50'
-                };
-            }
-            if (ext === 'pdf') {
-                return {
-                    iconClass: 'ri-file-pdf-2-line text-rose-700',
-                    iconBg: 'bg-rose-50'
-                };
-            }
-            if (['doc', 'docx'].includes(ext)) {
-                return {
-                    iconClass: 'ri-file-word-2-line text-blue-700',
-                    iconBg: 'bg-blue-50'
-                };
-            }
-            if (['zip', 'rar', '7z'].includes(ext)) {
-                return {
-                    iconClass: 'ri-file-zip-line text-amber-700',
-                    iconBg: 'bg-amber-50'
-                };
-            }
-            return {
-                iconClass: 'ri-file-text-line text-slate-700',
-                iconBg: 'bg-slate-100'
-            };
         }
     };
-}
-
-if (typeof window !== 'undefined') {
-    window.fileDropzoneUploader = fileDropzoneUploader;
 }
