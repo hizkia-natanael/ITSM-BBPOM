@@ -16,11 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 class TicketController extends Controller
 {
-    public function __construct(
-        protected TicketCreationService $creationService,
-        protected TicketAttachmentService $attachmentService,
-        protected TicketChatService $chatService,
-    ) {}
+    public function __construct(protected TicketCreationService $creationService, protected TicketAttachmentService $attachmentService, protected TicketChatService $chatService) {}
 
     public function dashboard(Request $request): View
     {
@@ -28,6 +24,7 @@ class TicketController extends Controller
         $stats = [
             'total' => $user->tickets()->count(),
             'pending' => $user->tickets()->where('status', 'pending')->count(),
+            'diterima' => $user->tickets()->where('status', 'diterima')->count(),
             'diproses' => $user->tickets()->where('status', 'diproses')->count(),
             'selesai' => $user->tickets()->where('status', 'selesai')->count(),
             'ditolak' => $user->tickets()->where('status', 'ditolak')->count(),
@@ -60,6 +57,7 @@ class TicketController extends Controller
 
     public function create(Request $request): View
     {
+        abort_if($request->user()?->isKetuaTim(), 403, 'Akses ditolak: Ketua Tim hanya memiliki wewenang pemantauan.');
         $services = config('services_gateway.services', []);
         foreach ($services as $key => &$service) {
             $catId = Category::resolveForService($key)?->id;
@@ -81,13 +79,19 @@ class TicketController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_if($request->user()?->isKetuaTim(), 403, 'Akses ditolak: Ketua Tim hanya memiliki wewenang pemantauan.');
         return $this->creationService->store($request);
     }
 
     public function show(Ticket $ticket): View
     {
-        abort_if($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin(), 403, 'Anda tidak memiliki hak akses untuk melihat tiket ini.');
-        $ticket->load(['attachments', 'category', 'user', 'handledBy', 'responses.user', 'responses.attachments', 'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail']);
+        $user = auth()->user();
+        abort_if($ticket->user_id !== $user->id && !$user->isAdmin() && !$user->isKetuaTim(), 403, 'Anda tidak memiliki hak akses untuk melihat tiket ini.');
+        $ticket->load([
+            'attachments', 'category', 'user', 'handledBy', 'acceptedBy', 'processedBy', 'resolvedBy',
+            'events.actor', 'responses.user', 'responses.attachments',
+            'bsreDetail', 'zoomDetail', 'kegiatanDetail', 'windowsDetail', 'officeDetail', 'lainnyaDetail'
+        ]);
         return view('tickets.show', compact('ticket'));
     }
 
@@ -101,18 +105,15 @@ class TicketController extends Controller
         return $this->chatService->chatSync($request, $ticket);
     }
 
-    public function downloadResponseAttachment(Request $request, Ticket $ticket, TicketResponseAttachment $attachment)
-    {
+    public function downloadResponseAttachment(Request $request, Ticket $ticket, TicketResponseAttachment $attachment) {
         return $this->attachmentService->downloadResponseAttachment($request, $ticket, $attachment);
     }
 
-    public function downloadAttachment(Request $request, Ticket $ticket, ?string $type = null)
-    {
+    public function downloadAttachment(Request $request, Ticket $ticket, ?string $type = null) {
         return $this->attachmentService->downloadAttachment($request, $ticket, $type);
     }
 
-    public function downloadAttachmentItem(Request $request, Ticket $ticket, TicketAttachment $attachment)
-    {
+    public function downloadAttachmentItem(Request $request, Ticket $ticket, TicketAttachment $attachment) {
         return $this->attachmentService->downloadAttachmentItem($request, $ticket, $attachment);
     }
 }

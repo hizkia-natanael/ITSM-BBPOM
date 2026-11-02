@@ -16,6 +16,7 @@ class ListCategories extends ListRecords
             CreateAction::make()
                 ->label('Tambah Kategori Layanan')
                 ->icon('heroicon-o-plus')
+                ->visible(fn () => auth()->user()?->isAdmin() ?? false)
                 ->extraAttributes([
                     'class' => 'bbpom-header-create-btn',
                 ]),

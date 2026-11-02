@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Admin Layanan TIK BBPOM Di Semarang')
+            ->brandName('ELITE - E-Layanan IT Terintegrasi BBPOM Semarang')
             ->brandLogo(fn () => view('components.admin-brand-logo'))
             ->brandLogoHeight('2.5rem')
             ->topNavigation()

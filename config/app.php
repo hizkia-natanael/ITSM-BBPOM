@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Layanan TIK BBPOM di Semarang'),
+    'name' => env('APP_NAME', 'ELITE - E-Layanan IT Terintegrasi'),
 
     /*
     |--------------------------------------------------------------------------

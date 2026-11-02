@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" type="image/png" href="{{ asset('images/logo-bpom.png') }}">
-        <title>Helpdesk & Layanan TI | BBPOM di Semarang</title>
+        <title>ELITE - E-Layanan IT Terintegrasi | BBPOM di Semarang</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,9 +26,9 @@
                     </div>
                     @if (Route::has('login'))
                         @auth
-                            @if(Auth::user()->isAdmin())
+                            @if(Auth::user()->isAdmin() || Auth::user()->isKetuaTim())
                                 <a href="{{ url('/admin') }}" class="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">
-                                    Panel Admin
+                                    {{ Auth::user()->isKetuaTim() ? 'Panel Pengawasan' : 'Panel Admin' }}
                                 </a>
                             @else
                                 <a href="{{ route('dashboard') }}" class="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition shadow-sm">
@@ -57,7 +57,7 @@
                     <div class="text-center max-w-3xl mx-auto">
                         <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 mb-6">
                             <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                            IT Service Management (ITSM) BBPOM di Semarang
+                            ELITE &bull; E-Layanan IT Terintegrasi BBPOM di Semarang
                         </span>
                         <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
                             Solusi Cepat Kendala TI & Layanan Helpdesk Terpadu

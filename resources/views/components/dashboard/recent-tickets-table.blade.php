@@ -89,12 +89,14 @@
             <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
                 Anda belum pernah membuat tiket pengaduan kendala TI. Jika membutuhkan bantuan teknisi, silakan klik tombol di bawah.
             </p>
+            @if(!Auth::user()?->isKetuaTim())
             <div class="mt-4">
                 <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition">
                     <i class="ri-add-line text-base"></i>
                     <span>Buat Pengaduan Pertama Anda</span>
                 </a>
             </div>
+            @endif
         </div>
     @endif
 </div>

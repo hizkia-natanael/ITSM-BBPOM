@@ -2,9 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\SiteVisitor;
 use App\Models\Ticket;
-use App\Services\Presence\OnlineVisitorService;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -31,7 +29,6 @@ class TicketStatsOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $onlineStats = app(OnlineVisitorService::class)->recordAndCount(request());
         $trends = $this->buildMonthlyTrends();
 
         return [
@@ -46,6 +43,12 @@ class TicketStatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->chart($trends['pending'])
                 ->color('warning'),
+
+            Stat::make('Tiket Diterima', Ticket::where('status', 'diterima')->count())
+                ->description('Disetujui & masuk antrean')
+                ->descriptionIcon('heroicon-m-inbox-arrow-down')
+                ->chart($trends['diterima'])
+                ->color('primary'),
 
             Stat::make('Tiket Diproses', Ticket::where('status', 'diproses')->count())
                 ->description('Sedang ditangani teknisi')
@@ -64,12 +67,6 @@ class TicketStatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->chart($trends['ditolak'])
                 ->color('danger'),
-
-            Stat::make('Total Pengunjung', $onlineStats['total_visitors'] ?? $onlineStats['online_count'])
-                ->description('Tercatat di sistem')
-                ->descriptionIcon('heroicon-m-user-group')
-                ->chart($trends['visitors'])
-                ->color('success'),
         ];
     }
 
@@ -78,20 +75,16 @@ class TicketStatsOverview extends StatsOverviewWidget
      */
     private function buildMonthlyTrends(): array
     {
-        $trends = ['total' => [], 'pending' => [], 'diproses' => [], 'selesai' => [], 'ditolak' => [], 'visitors' => []];
+        $trends = ['total' => [], 'pending' => [], 'diterima' => [], 'diproses' => [], 'selesai' => [], 'ditolak' => []];
 
         for ($i = 5; $i >= 0; $i--) {
             $month = Carbon::now()->subMonths($i);
             $base = Ticket::whereYear('created_at', $month->year)->whereMonth('created_at', $month->month);
 
             $trends['total'][] = (clone $base)->count();
-            foreach (['pending', 'diproses', 'selesai', 'ditolak'] as $status) {
+            foreach (['pending', 'diterima', 'diproses', 'selesai', 'ditolak'] as $status) {
                 $trends[$status][] = (clone $base)->where('status', $status)->count();
             }
-
-            $trends['visitors'][] = SiteVisitor::whereYear('first_visited_at', $month->year)
-                ->whereMonth('first_visited_at', $month->month)
-                ->count();
         }
 
         return $trends;

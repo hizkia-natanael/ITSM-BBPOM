@@ -43,6 +43,11 @@ class UnhandledTicketsAlertWidget extends Widget
 
     public function claimTicket(int $ticketId): void
     {
+        if (auth()->user()?->isKetuaTim()) {
+            Notification::make()->title('Akses Monitoring')->body('Ketua Tim hanya memiliki hak akses pemantauan.')->warning()->send();
+            return;
+        }
+
         $ticket = Ticket::whereNull('handled_by_id')
             ->where('status', 'pending')
             ->find($ticketId);
@@ -60,5 +65,36 @@ class UnhandledTicketsAlertWidget extends Widget
 
             $this->redirect(url("/admin/tickets/{$ticket->id}/edit"));
         }
+    }
+
+    public function remindItTeam(?int $ticketId = null): void
+    {
+        $unhandledCount = $this->getUnhandledCount();
+        if ($unhandledCount === 0) {
+            Notification::make()->title('Semua Aduan Terkendali')->body('Tidak ada aduan pending yang memerlukan pengingat.')->info()->send();
+            return;
+        }
+
+        $ticket = $ticketId ? Ticket::find($ticketId) : null;
+        $ketuaName = auth()->user()?->name ?? 'Ketua Tim';
+        $title = 'Pengingat dari Ketua Tim TI';
+        $body = $ticket
+            ? "[{$ticket->ticket_number}] {$ketuaName} mengingatkan: Aduan '{$ticket->subject}' belum ditangani!"
+            : "{$ketuaName} mengingatkan: Masih ada {$unhandledCount} aduan pending yang belum ditangani.";
+        $url = $ticket ? url("/admin/tickets/{$ticket->id}/edit") : url('/admin/tickets');
+
+        try {
+            app(\App\Services\WebPushService::class)->sendToAdmins($title, $body, $url, [
+                'tag' => 'ketua-tim-reminder-' . ($ticket ? $ticket->id : 'all'),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Error webpush reminder: ' . $e->getMessage());
+        }
+
+        Notification::make()
+            ->title('Pengingat Terkirim ke Tim TI')
+            ->body($ticket ? "Aduan {$ticket->ticket_number} berhasil diingatkan ke seluruh Admin IT." : "Notifikasi pengingat {$unhandledCount} aduan telah disiarkan ke seluruh Admin IT.")
+            ->success()
+            ->send();
     }
 }

@@ -40,6 +40,7 @@ class WebPushService
     public function sendStatusNotification(Ticket $ticket, TicketEvent $event): int
     {
         [$title, $message] = match ($event->status) {
+            'diterima' => ['Tiket Diterima', 'Pengaduan Anda telah diterima oleh petugas Helpdesk IT.'],
             'diproses' => ['Tiket Sedang Diproses', 'Tim IT mulai menangani pengaduan Anda.'],
             'selesai' => ['Tiket Selesai', 'Pengaduan Anda telah diselesaikan oleh tim IT.'],
             'ditolak' => ['Tiket Ditolak', 'Pengaduan Anda tidak dapat ditindaklanjuti. Buka tiket untuk melihat alasannya.'],
@@ -105,11 +106,9 @@ class WebPushService
             return 0;
         }
         return $this->dispatchNotifications(
-            $subscriptions,
-            'Notifikasi Desktop BBPOM Aktif',
+            $subscriptions, 'Notifikasi Desktop BBPOM Aktif',
             'Sistem Web Push berhasil terhubung! Anda akan menerima pop-up desktop saat ada aduan baru.',
-            url('/admin'),
-            ['tag' => 'test-notification']
+            url('/admin'), ['tag' => 'test-notification']
         );
     }
 

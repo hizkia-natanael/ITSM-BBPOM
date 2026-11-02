@@ -28,6 +28,13 @@ class UserSeeder extends Seeder
                 'password' => $hashedAdminPassword,
             ],
             [
+                'nip' => 'ketuatim',
+                'name' => 'Ketua Tim Layanan TIK',
+                'email' => 'ketuatim@bbpom.go.id',
+                'role' => 'ketua_tim',
+                'password' => $hashedAdminPassword,
+            ],
+            [
                 'nip' => '199412192024212011',
                 'name' => 'Diah Suwanti, S.T.P',
                 'email' => 'diah.s@bbpom.go.id',

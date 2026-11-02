@@ -13,6 +13,7 @@ trait HasTicketServiceAttributes
     {
         return match ($this->status) {
             'pending' => 'Pending',
+            'diterima' => 'Diterima',
             'diproses' => 'Diproses',
             'selesai' => 'Selesai',
             'ditolak' => 'Ditolak',
@@ -24,6 +25,7 @@ trait HasTicketServiceAttributes
     {
         return match ($this->status) {
             'pending' => 'warning',
+            'diterima' => 'primary',
             'diproses' => 'info',
             'selesai' => 'success',
             'ditolak' => 'danger',

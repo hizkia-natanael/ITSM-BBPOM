@@ -9,6 +9,7 @@
 
     $classes = match($status) {
         'pending' => 'bg-amber-50 text-amber-800 border-amber-300 ring-amber-500/20',
+        'diterima' => 'bg-teal-50 text-teal-800 border-teal-300 ring-teal-500/20',
         'diproses' => 'bg-blue-50 text-blue-800 border-blue-300 ring-blue-500/20',
         'selesai' => 'bg-emerald-50 text-emerald-800 border-emerald-300 ring-emerald-500/20',
         'ditolak' => 'bg-rose-50 text-rose-800 border-rose-300 ring-rose-500/20',
@@ -17,6 +18,7 @@
 
     $dotClasses = match($status) {
         'pending' => 'bg-amber-500',
+        'diterima' => 'bg-teal-600',
         'diproses' => 'bg-blue-600',
         'selesai' => 'bg-emerald-600',
         'ditolak' => 'bg-rose-600',
@@ -25,6 +27,7 @@
 
     $fullLabel = match($status) {
         'pending' => 'Menunggu (Pending)',
+        'diterima' => $handlerName ? "Diterima oleh {$handlerName}" : 'Diterima Admin',
         'diproses' => $handlerName ? "Sedang diproses oleh {$handlerName}" : 'Sedang Diproses',
         'selesai' => $handlerName ? "Selesai ditangani oleh {$handlerName}" : 'Selesai',
         'ditolak' => 'Ditolak',
@@ -33,6 +36,7 @@
 
     $compactLabel = match($status) {
         'pending' => 'Menunggu',
+        'diterima' => 'Diterima',
         'diproses' => 'Sedang Diproses',
         'selesai' => 'Selesai',
         'ditolak' => 'Ditolak',
@@ -46,7 +50,7 @@
     <div class="flex flex-col items-start gap-1">
         <span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shadow-2xs {$classes}"]) }} title="{{ $fullLabel }}">
             <span class="relative flex h-1.5 w-1.5 shrink-0">
-                @if(in_array($status, ['pending', 'diproses']))
+                @if(in_array($status, ['pending', 'diterima', 'diproses']))
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 {{ $dotClasses }}"></span>
                 @endif
                 <span class="relative inline-flex rounded-full h-1.5 w-1.5 {{ $dotClasses }}"></span>

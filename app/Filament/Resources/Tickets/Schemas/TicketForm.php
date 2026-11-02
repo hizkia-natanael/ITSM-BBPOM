@@ -28,7 +28,7 @@ class TicketForm
                     ->extraAttributes(['class' => 'ticket-master-card'])
                     ->schema([
                         self::statusAndHandlerGrid(),
-                        self::identityGrid(),
+                        TicketFormIdentitySection::make(),
 
                         TextInput::make('subject')
                             ->label('Subjek / Judul Kendala')
@@ -54,8 +54,16 @@ class TicketForm
                             ->columnSpanFull(),
 
                         Actions::make([
-                            Action::make('save')->label('Simpan Perubahan')->submit('save')->color('primary')->keyBindings(['mod+s']),
-                            Action::make('cancel')->label('Batal')->color('gray')->url(fn () => TicketResource::getUrl('index')),
+                            Action::make('save')
+                                ->label('Simpan Perubahan')
+                                ->submit('save')
+                                ->color('primary')
+                                ->visible(fn () => auth()->user()?->isAdmin() ?? false)
+                                ->keyBindings(['mod+s']),
+                            Action::make('cancel')
+                                ->label(fn () => (auth()->user()?->isKetuaTim() ?? false) ? 'Kembali' : 'Batal')
+                                ->color('gray')
+                                ->url(fn () => TicketResource::getUrl('index')),
                         ])
                         ->columnSpanFull()
                         ->alignment(Alignment::Start)
@@ -75,38 +83,32 @@ class TicketForm
                     ->label('Status Pengaduan')
                     ->options([
                         'pending' => 'Pending (Menunggu Antrian IT)',
+                        'diterima' => 'Diterima (Disetujui / Terverifikasi)',
                         'diproses' => 'Diproses (Sedang Ditangani Teknisi)',
                         'selesai' => 'Selesai (Kendala Tuntas Diperbaiki)',
-                        'ditolak' => 'Ditolak (Dibatalkan / Di Luar Wewenang)',
+                        'ditolak' => 'Ditolak (Dibatalkan / Tidak Sesuai)',
                     ])
                     ->required()->native(false)->position('bottom')->selectablePlaceholder(false)
-                    ->helperText('Perbarui status tiket ini agar pelapor dapat melihat progres langsung di dashboard.'),
+                    ->disabled(fn () => auth()->user()?->isKetuaTim() ?? false)
+                    ->helperText('Tahapan status tiket: Pending -> Diterima -> Diproses -> Selesai / Ditolak.'),
 
                 TextInput::make('handled_by_display')
-                    ->label('Penanggung Jawab (Teknisi IT)')
+                    ->label('Penanggung Jawab (Alur Admin)')
                     ->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn ($record) => $record?->handledBy?->name ?? ((auth()->user()?->name ?? 'Admin') . ' (Otomatis akun login)'))
+                    ->formatStateUsing(function ($record) {
+                        if (!$record) return (auth()->user()?->name ?? 'Admin') . ' (Otomatis)';
+                        $parts = [];
+                        if ($record->acceptedBy) $parts[] = 'Diterima: ' . $record->acceptedBy->name;
+                        if ($record->processedBy) $parts[] = 'Diproses: ' . $record->processedBy->name;
+                        if ($record->resolvedBy) $parts[] = 'Selesai/Tolak: ' . $record->resolvedBy->name;
+                        return !empty($parts) ? implode(' | ', $parts) : ($record->handledBy?->name ?? 'Belum Ditugaskan');
+                    })
                     ->helperText(function ($record) {
                         $curr = auth()->user()?->name ?? 'Admin';
-                        return ($record?->handledBy && $record->handledBy->id !== auth()->id())
-                            ? "Saat ini: {$record->handledBy->name}. Akan otomatis berganti ke {$curr} jika Anda memperbarui status."
-                            : "Otomatis terisi akun login Anda ({$curr}) saat mengubah status tiket.";
+                        return (auth()->user()?->isKetuaTim() ?? false)
+                            ? 'Mode monitoring: Anda melihat riwayat admin penanggung jawab di setiap status.'
+                            : "Akun login Anda ({$curr}) otomatis dicatat saat mengubah status tiket.";
                     }),
-            ])
-            ->columnSpanFull();
-    }
-
-    private static function identityGrid(): Grid
-    {
-        return Grid::make(['default' => 1, 'sm' => 2, 'lg' => 4])
-            ->schema([
-                TextInput::make('ticket_number')->label('Nomor Tiket')->disabled()->dehydrated(false),
-                TextInput::make('created_at')->label('Waktu Pengajuan')->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->translatedFormat('d F Y, H:i') . ' WIB' : '-'),
-                TextInput::make('user.name')->label('Nama Pemohon (Pelapor)')->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn ($record) => $record?->user?->name ?? '-'),
-                TextInput::make('category.name')->label('Kategori Layanan')->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn ($record) => $record?->service_name ?? '-'),
             ])
             ->columnSpanFull();
     }

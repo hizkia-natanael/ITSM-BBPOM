@@ -22,29 +22,14 @@
                 });
             },
 
-            get adminUsers() {
-                return this.filteredUsers.filter(function(u) { return u.role === 'admin'; });
-            },
-
-            get pegawaiUsers() {
-                return this.filteredUsers.filter(function(u) { return u.role !== 'admin'; });
-            },
-
-            get isResultsEmpty() {
-                return this.filteredUsers.length === 0;
-            },
-
-            get hasResults() {
-                return this.filteredUsers.length > 0;
-            },
-
-            get hasAdminUsers() {
-                return this.adminUsers.length > 0;
-            },
-
-            get hasPegawaiUsers() {
-                return this.pegawaiUsers.length > 0;
-            },
+            get adminUsers() { return this.filteredUsers.filter(function(u) { return u.role === 'admin'; }); },
+            get ketuaTimUsers() { return this.filteredUsers.filter(function(u) { return u.role === 'ketua_tim'; }); },
+            get pegawaiUsers() { return this.filteredUsers.filter(function(u) { return u.role !== 'admin' && u.role !== 'ketua_tim'; }); },
+            get isResultsEmpty() { return this.filteredUsers.length === 0; },
+            get hasResults() { return this.filteredUsers.length > 0; },
+            get hasAdminUsers() { return this.adminUsers.length > 0; },
+            get hasKetuaTimUsers() { return this.ketuaTimUsers.length > 0; },
+            get hasPegawaiUsers() { return this.pegawaiUsers.length > 0; },
 
             closeSoon: function() {
                 var self = this;

@@ -30,13 +30,12 @@
         x-data="bbpomOnlineCounter({{ $initialCount }}, '{{ $endpointUrl }}')"
         class="inline-flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 rounded-xl bg-emerald-50/75 hover:bg-emerald-50 border border-emerald-200/80 text-xs text-slate-700 shadow-2xs transition-all select-none"
         style="display: inline-flex; align-items: center; gap: 0.45rem; height: 2.35rem; padding: 0 0.7rem; border-radius: 0.75rem; background-color: rgba(236, 253, 245, 0.85); border: 1px solid rgba(167, 243, 208, 0.85); font-size: 0.75rem; color: #334155; box-shadow: 0 1px 2px rgba(5, 150, 105, 0.06);"
-        title="Total pengunjung yang pernah mengakses sistem"
+        title="Total pengunjung yang pernah mengakses sistem (Tercatat di sistem)"
     >
         <span class="flex h-2 w-2 rounded-full bg-emerald-500 shrink-0" style="display: inline-flex; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background-color: #059669; flex-shrink: 0;"></span>
         <i class="ri-group-line text-emerald-700 text-sm" style="color: #047857; font-size: 0.875rem; line-height: 1;"></i>
         <span class="font-extrabold text-emerald-950 tabular-nums" style="font-weight: 800; color: #022c22; font-variant-numeric: tabular-nums;" x-text="onlineCount">{{ $initialCount }}</span>
-        <span class="hidden md:inline text-slate-600 font-semibold" style="color: #475569; font-weight: 600;">Total Pengunjung</span>
-        <span class="md:hidden text-slate-600 font-semibold" style="color: #475569; font-weight: 600;">Pengunjung</span>
+        <span class="text-slate-600 font-semibold" style="color: #475569; font-weight: 600; white-space: nowrap;">Total Pengunjung</span>
     </div>
 @elseif ($variant === 'dark')
     <div

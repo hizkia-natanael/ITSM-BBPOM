@@ -33,11 +33,13 @@ class UsersTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
+                        'ketua_tim' => 'warning',
                         'user' => 'success',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'admin' => 'Admin (IT)',
+                        'ketua_tim' => 'Ketua Tim',
                         'user' => 'Pegawai (User)',
                         default => ucfirst($state),
                     }),
@@ -58,18 +60,19 @@ class UsersTable
                 SelectFilter::make('role')
                     ->label('Filter Role')
                     ->options([
-                        'admin' => 'Admin',
+                        'admin' => 'Admin (IT)',
+                        'ketua_tim' => 'Ketua Tim',
                         'user' => 'Pegawai (User)',
                     ]),
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()->visible(fn () => auth()->user()?->isAdmin()),
+                DeleteAction::make()->visible(fn () => auth()->user()?->isAdmin()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->visible(fn () => auth()->user()?->isAdmin()),
                 ]),
             ]);
     }

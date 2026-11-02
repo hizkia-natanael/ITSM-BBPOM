@@ -21,6 +21,7 @@ class TicketExportSummaryBuilder
 
         $total = $tickets->count();
         $pending = $tickets->where('status', 'pending')->count();
+        $diterima = $tickets->where('status', 'diterima')->count();
         $diproses = $tickets->where('status', 'diproses')->count();
         $selesai = $tickets->where('status', 'selesai')->count();
         $ditolak = $tickets->where('status', 'ditolak')->count();
@@ -38,6 +39,7 @@ class TicketExportSummaryBuilder
         $statusLabels = [
             'all' => 'Semua Status Aduan',
             'pending' => 'Pending (Menunggu Antrian)',
+            'diterima' => 'Diterima (Disetujui Admin)',
             'diproses' => 'Diproses (Sedang Ditangani)',
             'selesai' => 'Selesai (Tuntas)',
             'ditolak' => 'Ditolak',
@@ -52,6 +54,7 @@ class TicketExportSummaryBuilder
         return [
             'total' => $total,
             'pending' => $pending,
+            'diterima' => $diterima,
             'diproses' => $diproses,
             'selesai' => $selesai,
             'ditolak' => $ditolak,

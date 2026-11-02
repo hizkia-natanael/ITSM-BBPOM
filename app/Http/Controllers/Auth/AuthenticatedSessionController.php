@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->flash('welcome_toast', $userName);
 
-        if ($user && $user->isAdmin()) {
+        if ($user && ($user->isAdmin() || $user->isKetuaTim())) {
             if (class_exists(\Filament\Notifications\Notification::class)) {
                 \Filament\Notifications\Notification::make()
                     ->title('Selamat Datang')

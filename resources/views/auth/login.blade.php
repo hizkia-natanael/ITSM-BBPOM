@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-bpom.png') }}">
-    <title>TIK BBPOM di Semarang - Portal Masuk</title>
+    <title>ELITE - E-Layanan IT Terintegrasi | BBPOM di Semarang</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -23,7 +23,8 @@
                 <!-- Mobile Header Logo -->
                 <div class="lg:hidden text-center mb-6">
                     <img src="{{ asset('images/logo-bpom.png') }}" alt="Logo Badan POM" class="h-14 w-auto mx-auto object-contain mb-3">
-                    <h2 class="text-xl font-black text-slate-900">TIK BBPOM di Semarang</h2>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight">ELITE</h2>
+                    <p class="text-xs font-semibold text-emerald-700">E-Layanan IT Terintegrasi</p>
                     <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-800">
                             <i class="ri-pulse-fill text-emerald-600"></i>

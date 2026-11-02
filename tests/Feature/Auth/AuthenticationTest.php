@@ -134,4 +134,26 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/dashboard');
     }
+
+    public function test_ketua_tim_is_redirected_directly_to_admin_panel_upon_login(): void
+    {
+        $ketua = User::factory()->create(['role' => 'ketua_tim']);
+
+        $response = $this->post('/login', [
+            'email' => $ketua->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect('/admin');
+    }
+
+    public function test_authenticated_ketua_tim_visiting_login_is_redirected_to_admin(): void
+    {
+        $ketua = User::factory()->create(['role' => 'ketua_tim']);
+
+        $response = $this->actingAs($ketua)->get('/login');
+
+        $response->assertRedirect('/admin');
+    }
 }

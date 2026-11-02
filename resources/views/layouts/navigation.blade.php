@@ -22,21 +22,23 @@
                         {{ __('Daftar Pengaduan') }}
                     </x-nav-link>
 
+                    @if(!Auth::user()->isKetuaTim())
                     <x-nav-link :href="route('tickets.create')" :active="request()->routeIs('tickets.create')" class="inline-flex items-center px-3 py-2 text-sm font-medium transition duration-150 {{ request()->routeIs('tickets.create') ? 'text-emerald-800 border-b-2 border-emerald-600 font-semibold' : 'text-slate-600 hover:text-emerald-700' }}">
                         <i class="ri-apps-2-line text-base me-1.5"></i>
                         {{ __('Katalog Layanan') }}
                     </x-nav-link>
+                    @endif
 
                     <x-nav-link :href="route('guide.index')" :active="request()->routeIs('guide.index')" class="inline-flex items-center px-3 py-2 text-sm font-medium transition duration-150 {{ request()->routeIs('guide.index') ? 'text-emerald-800 border-b-2 border-emerald-600 font-semibold' : 'text-slate-600 hover:text-emerald-700' }}">
                         <i class="ri-book-read-line text-base me-1.5"></i>
                         {{ __('Buku Panduan') }}
                     </x-nav-link>
 
-                    @if(Auth::user()->isAdmin())
+                    @if(Auth::user()->isAdmin() || Auth::user()->isKetuaTim())
                         <a href="{{ url('/admin') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-emerald-800 hover:text-emerald-950 transition duration-150 my-auto">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                <i class="ri-shield-keyhole-line text-sm"></i>
-                                Panel Admin (Filament)
+                                <i class="{{ Auth::user()->isKetuaTim() ? 'ri-shield-user-line' : 'ri-shield-keyhole-line' }} text-sm"></i>
+                                {{ Auth::user()->isKetuaTim() ? 'Panel Pengawasan' : 'Panel Admin (Filament)' }}
                             </span>
                         </a>
                     @endif
@@ -73,12 +75,14 @@
         <div class="pt-2 pb-3 space-y-1 !bg-white">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('Dashboard') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.index')">{{ __('Daftar Pengaduan') }}</x-responsive-nav-link>
+            @if(!Auth::user()->isKetuaTim())
             <x-responsive-nav-link :href="route('tickets.create')" :active="request()->routeIs('tickets.create')">{{ __('Katalog Layanan') }}</x-responsive-nav-link>
+            @endif
             <x-responsive-nav-link :href="route('guide.index')" :active="request()->routeIs('guide.index')">
                 <i class="ri-book-read-line me-1.5 text-slate-400"></i>{{ __('Buku Panduan') }}
             </x-responsive-nav-link>
-            @if(Auth::user()->isAdmin())
-                <x-responsive-nav-link :href="url('/admin')">{{ __('Panel Admin (Filament)') }}</x-responsive-nav-link>
+            @if(Auth::user()->isAdmin() || Auth::user()->isKetuaTim())
+                <x-responsive-nav-link :href="url('/admin')">{{ Auth::user()->isKetuaTim() ? __('Panel Pengawasan (Monitoring)') : __('Panel Admin (Filament)') }}</x-responsive-nav-link>
             @endif
         </div>
 

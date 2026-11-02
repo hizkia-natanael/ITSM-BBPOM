@@ -2,23 +2,33 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTicketLifecycleEvents;
 use App\Models\Concerns\HasTicketServiceAttributes;
-use App\Services\WebPushService;
+use App\Models\Concerns\HasTicketSubdetailRelations;
+use App\Models\Concerns\HasTicketWorkflowAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Log;
 
 class Ticket extends Model
 {
-    use HasFactory, HasTicketServiceAttributes;
+    use HasFactory;
+    use HasTicketServiceAttributes;
+    use HasTicketWorkflowAttributes;
+    use HasTicketSubdetailRelations;
+    use HasTicketLifecycleEvents;
 
     protected $fillable = [
         'ticket_number',
         'user_id',
         'handled_by_id',
+        'accepted_by_id',
+        'accepted_at',
+        'processed_by_id',
+        'processed_at',
+        'resolved_by_id',
+        'resolved_at',
         'category_id',
         'service_key',
         'subcategory',
@@ -28,55 +38,13 @@ class Ticket extends Model
         'attachment',
     ];
 
-    protected static function boot()
+    protected function casts(): array
     {
-        parent::boot();
-
-        static::creating(function ($ticket) {
-            if (empty($ticket->ticket_number)) {
-                $lastTicket = static::latest('id')->first();
-                $nextId = $lastTicket ? ($lastTicket->id + 1) : 1;
-                $ticket->ticket_number = 'TIK-BBPOM-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-
-                while (static::where('ticket_number', $ticket->ticket_number)->exists()) {
-                    $nextId++;
-                    $ticket->ticket_number = 'TIK-BBPOM-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-                }
-            }
-        });
-
-        static::created(function ($ticket) {
-            if ($ticket->status === 'pending' && is_null($ticket->handled_by_id)) {
-                try {
-                    app(WebPushService::class)->sendTicketNotification($ticket);
-                } catch (\Throwable $e) {
-                    Log::warning('Error sending web push on ticket created: ' . $e->getMessage());
-                }
-            }
-        });
-
-        static::updated(function ($ticket) {
-            if (!$ticket->wasChanged('status') || !in_array($ticket->status, TicketEvent::NOTIFIABLE_STATUSES, true)) {
-                return;
-            }
-
-            $actorId = auth()->id();
-            if ($actorId !== null && $actorId === $ticket->user_id) {
-                return;
-            }
-
-            $event = $ticket->events()->create([
-                'actor_id' => $actorId,
-                'type' => 'status',
-                'status' => $ticket->status,
-            ]);
-
-            try {
-                app(WebPushService::class)->sendStatusNotification($ticket, $event);
-            } catch (\Throwable $e) {
-                Log::warning('Error sending web push on ticket status change: ' . $e->getMessage());
-            }
-        });
+        return [
+            'accepted_at' => 'datetime',
+            'processed_at' => 'datetime',
+            'resolved_at' => 'datetime',
+        ];
     }
 
     public function events(): HasMany
@@ -108,11 +76,4 @@ class Ticket extends Model
     {
         return $this->hasMany(TicketAttachment::class);
     }
-
-    public function bsreDetail(): HasOne { return $this->hasOne(TicketBsreDetail::class, 'ticket_id'); }
-    public function zoomDetail(): HasOne { return $this->hasOne(TicketZoomDetail::class, 'ticket_id'); }
-    public function kegiatanDetail(): HasOne { return $this->hasOne(TicketKegiatanDetail::class, 'ticket_id'); }
-    public function windowsDetail(): HasOne { return $this->hasOne(TicketWindowsDetail::class, 'ticket_id'); }
-    public function officeDetail(): HasOne { return $this->hasOne(TicketOfficeDetail::class, 'ticket_id'); }
-    public function lainnyaDetail(): HasOne { return $this->hasOne(TicketLainnyaDetail::class, 'ticket_id'); }
 }

@@ -34,10 +34,30 @@ class EditTicket extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        // Otomatis mencatat akun admin yang sedang login (Admin 1 / Admin 2) saat mengubah status
-        if (in_array($data['status'] ?? '', ['diproses', 'selesai', 'ditolak'])) {
-            $data['handled_by_id'] = auth()->id();
-        } elseif (($data['status'] ?? '') === 'pending') {
+        if (auth()->user()?->isKetuaTim()) {
+            abort(403, 'Akses ditolak: Ketua Tim hanya memiliki wewenang monitoring.');
+        }
+
+        $status = $data['status'] ?? '';
+        $actorId = auth()->id();
+
+        if ($status === 'diterima') {
+            $data['accepted_by_id'] = $this->record->accepted_by_id ?: $actorId;
+            $data['accepted_at'] = $this->record->accepted_at ?: now();
+            $data['handled_by_id'] = $actorId;
+        } elseif ($status === 'diproses') {
+            $data['processed_by_id'] = $actorId;
+            $data['processed_at'] = now();
+            $data['handled_by_id'] = $actorId;
+            if (!$this->record->accepted_at) {
+                $data['accepted_by_id'] = $this->record->accepted_by_id ?: $actorId;
+                $data['accepted_at'] = now();
+            }
+        } elseif (in_array($status, ['selesai', 'ditolak'], true)) {
+            $data['resolved_by_id'] = $actorId;
+            $data['resolved_at'] = now();
+            $data['handled_by_id'] = $actorId;
+        } elseif ($status === 'pending') {
             $data['handled_by_id'] = null;
         }
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TicketEvent extends Model
 {
     /** Status yang menghasilkan notifikasi ke pelapor. */
-    public const NOTIFIABLE_STATUSES = ['diproses', 'selesai', 'ditolak'];
+    public const NOTIFIABLE_STATUSES = ['diterima', 'diproses', 'selesai', 'ditolak'];
 
     protected $fillable = [
         'ticket_id',

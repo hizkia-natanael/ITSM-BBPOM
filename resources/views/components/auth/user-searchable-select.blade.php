@@ -68,16 +68,9 @@
         <div x-show="hasResults" class="max-h-60 overflow-y-auto divide-y divide-slate-100">
             <template x-if="hasAdminUsers">
                 <div>
-                    <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                        Administrator TI
-                    </div>
+                    <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">Administrator TI</div>
                     <template x-for="user in adminUsers" :key="'admin-' + user.id">
-                        <div
-                            @mousedown.prevent="selectUser(user)"
-                            @mouseenter="highlightedId = user.id"
-                            :class="highlightedId === user.id ? 'bg-emerald-50 text-emerald-900' : 'hover:bg-slate-50'"
-                            class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors"
-                        >
+                        <div @mousedown.prevent="selectUser(user)" @mouseenter="highlightedId = user.id" :class="highlightedId === user.id ? 'bg-emerald-50 text-emerald-900' : 'hover:bg-slate-50'" class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors">
                             <span class="text-xs font-semibold text-slate-800 truncate" x-text="user.name"></span>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Admin</span>
                         </div>
@@ -85,18 +78,23 @@
                 </div>
             </template>
 
+            <template x-if="hasKetuaTimUsers">
+                <div>
+                    <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-indigo-600">Ketua Tim Pemantauan</div>
+                    <template x-for="user in ketuaTimUsers" :key="'ketua-' + user.id">
+                        <div @mousedown.prevent="selectUser(user)" @mouseenter="highlightedId = user.id" :class="highlightedId === user.id ? 'bg-indigo-50 text-indigo-900' : 'hover:bg-slate-50'" class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors">
+                            <span class="text-xs font-semibold text-slate-800 truncate" x-text="user.name"></span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Ketua Tim</span>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
             <template x-if="hasPegawaiUsers">
                 <div>
-                    <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                        Pegawai
-                    </div>
+                    <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">Pegawai</div>
                     <template x-for="user in pegawaiUsers" :key="'pegawai-' + user.id">
-                        <div
-                            @mousedown.prevent="selectUser(user)"
-                            @mouseenter="highlightedId = user.id"
-                            :class="highlightedId === user.id ? 'bg-emerald-50 text-emerald-900' : 'hover:bg-slate-50'"
-                            class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors"
-                        >
+                        <div @mousedown.prevent="selectUser(user)" @mouseenter="highlightedId = user.id" :class="highlightedId === user.id ? 'bg-emerald-50 text-emerald-900' : 'hover:bg-slate-50'" class="flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer transition-colors">
                             <span class="text-xs font-semibold text-slate-800 truncate" x-text="user.name"></span>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Pegawai</span>
                         </div>

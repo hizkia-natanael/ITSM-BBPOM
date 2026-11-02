@@ -20,6 +20,10 @@ class ZipBundleCompressor
         $zipFileName = "arsip_lampiran_{$count}_berkas_" . date('Ymd_His') . '.zip';
         $tmpZipPath = tempnam(sys_get_temp_dir(), 'bbpom_multi_zip_') . '.zip';
 
+        if (!class_exists('ZipArchive')) {
+            return null;
+        }
+
         $zip = new ZipArchive();
         if ($zip->open($tmpZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             return null;
@@ -69,6 +73,10 @@ class ZipBundleCompressor
     {
         $originalSize = (int) $file->getSize();
         $tmpZipPath = tempnam(sys_get_temp_dir(), 'bbpom_zip_') . '.zip';
+
+        if (!class_exists('ZipArchive')) {
+            return null;
+        }
 
         $zip = new ZipArchive();
         if ($zip->open($tmpZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {

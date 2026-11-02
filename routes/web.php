@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return auth()->user()->isAdmin()
+        return (auth()->user()->isAdmin() || auth()->user()->isKetuaTim())
             ? redirect('/admin')
             : redirect()->route('dashboard');
     }

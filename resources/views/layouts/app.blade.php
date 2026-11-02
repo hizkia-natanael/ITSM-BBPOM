@@ -7,7 +7,7 @@
 
         <link rel="icon" type="image/png" href="{{ asset('images/logo-bpom.png') }}">
 
-        <title>{{ config('app.name', 'Layanan TIK BBPOM di Semarang') }}</title>
+        <title>{{ config('app.name', 'ELITE - E-Layanan IT Terintegrasi') }} | BBPOM di Semarang</title>
 
         <!-- Fonts (Inter) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

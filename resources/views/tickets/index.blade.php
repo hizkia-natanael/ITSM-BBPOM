@@ -13,12 +13,14 @@
                     Daftar seluruh tiket pengaduan layanan TI yang telah Anda ajukan ke Helpdesk BBPOM di Semarang
                 </p>
             </div>
+            @if(!Auth::user()?->isKetuaTim())
             <div class="shrink-0">
                 <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all">
                     <i class="ri-add-circle-line text-base"></i>
                     <span>Buat Pengaduan Baru</span>
                 </a>
             </div>
+            @endif
         </div>
     </x-slot>
 

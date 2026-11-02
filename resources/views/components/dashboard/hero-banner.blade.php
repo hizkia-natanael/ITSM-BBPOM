@@ -14,10 +14,12 @@
                 Mengalami kendala koneksi jaringan, sertifikat BSrE, akun Zoom, perangkat PC/laptop, permohonan lisensi software, atau aplikasi dinas? Ajukan permohonan sekarang dan tim TIK BBPOM akan segera menanganinya.
             </p>
             <div class="mt-5 inline-grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-fit">
+                @if(!Auth::user()?->isKetuaTim())
                 <a href="{{ route('tickets.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-md shadow-emerald-900/30 transition-all duration-150 active:scale-[0.99] w-full">
                     <i class="ri-add-circle-line text-base"></i>
                     <span>Laporkan Kendala TI</span>
                 </a>
+                @endif
                 <a href="{{ route('tickets.index') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold transition-all duration-150 w-full">
                     <i class="ri-history-line text-base"></i>
                     <span>Lihat Riwayat Tiket</span>

@@ -16,9 +16,11 @@
                 Hapus Filter
             </a>
         @endif
+        @if(!Auth::user()?->isKetuaTim())
         <a href="{{ route('tickets.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-sm transition">
             <i class="ri-add-line text-base"></i>
             <span>Buat Pengaduan Baru</span>
         </a>
+        @endif
     </div>
 </div>

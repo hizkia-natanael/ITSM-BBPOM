@@ -51,6 +51,7 @@ class TicketsTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
+                        'diterima' => 'primary',
                         'diproses' => 'info',
                         'selesai' => 'success',
                         'ditolak' => 'danger',
@@ -58,6 +59,7 @@ class TicketsTable
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'Pending',
+                        'diterima' => 'Diterima',
                         'diproses' => 'Diproses',
                         'selesai' => 'Selesai',
                         'ditolak' => 'Ditolak',
@@ -89,13 +91,14 @@ class TicketsTable
                     ->label('Status Kendala')
                     ->options([
                         'pending' => 'Pending',
+                        'diterima' => 'Diterima',
                         'diproses' => 'Diproses',
                         'selesai' => 'Selesai',
                         'ditolak' => 'Ditolak',
                     ]),
 
                 SelectFilter::make('handled_by_id')
-                    ->relationship('handledBy', 'name', fn ($query) => $query->where('role', 'admin'))
+                    ->relationship('handledBy', 'name', fn ($query) => $query->whereIn('role', ['admin', 'ketua_tim']))
                     ->label('Petugas IT (Admin)'),
 
                 SelectFilter::make('category_id')
@@ -104,13 +107,13 @@ class TicketsTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('Tindak Lanjut & Balas')
-                    ->icon('heroicon-m-pencil-square'),
-                DeleteAction::make(),
+                    ->label(fn () => (auth()->user()?->isKetuaTim() ?? false) ? 'Pantau Rincian' : 'Tindak Lanjut & Balas')
+                    ->icon(fn () => (auth()->user()?->isKetuaTim() ?? false) ? 'heroicon-m-eye' : 'heroicon-m-pencil-square'),
+                DeleteAction::make()->visible(fn () => auth()->user()?->isAdmin() ?? false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->visible(fn () => auth()->user()?->isAdmin() ?? false),
                 ]),
             ]);
     }

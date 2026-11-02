@@ -18,6 +18,10 @@
                class="px-3 py-1.5 rounded-lg text-xs font-medium transition {{ $selectedStatus === 'pending' ? 'bg-amber-500 text-white font-semibold shadow-xs' : 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100' }}">
                 Menunggu (Pending)
             </a>
+            <a href="{{ route('tickets.index', array_merge(request()->except(['page']), ['status' => 'diterima'])) }}" 
+               class="px-3 py-1.5 rounded-lg text-xs font-medium transition {{ $selectedStatus === 'diterima' ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'bg-teal-50 text-teal-800 border border-teal-200 hover:bg-teal-100' }}">
+                Diterima
+            </a>
             <a href="{{ route('tickets.index', array_merge(request()->except(['page']), ['status' => 'diproses'])) }}" 
                class="px-3 py-1.5 rounded-lg text-xs font-medium transition {{ $selectedStatus === 'diproses' ? 'bg-blue-600 text-white font-semibold shadow-xs' : 'bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100' }}">
                 Sedang Diproses
