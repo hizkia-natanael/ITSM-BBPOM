@@ -1,72 +1,59 @@
 @props(['metrics'])
 
-<div class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white shadow-md border border-slate-700/60 flex flex-col justify-between h-full space-y-5">
+<div class="bbpom-survey-summary-card">
     <div>
-        <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                <i class="ri-shield-star-line text-xs"></i>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <span class="bbpom-survey-badge-kpi">
+                <i class="ri-shield-star-line" style="font-size: 0.75rem;"></i>
                 <span>Indeks Kepuasan Pengguna</span>
             </span>
-            <span class="text-[10px] text-slate-400 font-medium">Skala 1 - 5</span>
+            <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 600;">Skala 1 - 5</span>
         </div>
 
-        <div class="flex items-baseline gap-2.5">
-            <span class="text-4xl font-black tracking-tight text-white drop-shadow-sm">
+        <div class="bbpom-survey-score-display">
+            <span class="bbpom-survey-score-value">
                 {{ number_format($metrics['score'], 1, '.', '') }}
             </span>
-            <span class="text-base font-semibold text-emerald-400">/ 5.0</span>
+            <span class="bbpom-survey-score-max">/ 5.0</span>
         </div>
 
-        <div class="flex items-center gap-1 mt-1.5">
+        <div class="bbpom-survey-stars-row">
             @for ($i = 1; $i <= 5; $i++)
-                <i class="ri-star-fill text-sm {{ $i <= round($metrics['score']) ? 'text-amber-400' : 'text-slate-600' }}"></i>
+                <i class="ri-star-fill {{ $i <= round($metrics['score']) ? 'bbpom-survey-star-active' : 'bbpom-survey-star-inactive' }}"></i>
             @endfor
-            <span class="ml-2 text-[11px] text-slate-300 font-medium">
+            <span class="bbpom-survey-count-pill">
                 {{ $metrics['total_surveys'] > 0 ? "Berdasarkan {$metrics['total_surveys']} ulasan pegawai" : 'Belum ada responden' }}
             </span>
         </div>
     </div>
 
-    <!-- 4 Indikator Mutu Progress Bars -->
-    <div class="space-y-2.5 pt-3 border-t border-slate-700/60">
-        <div class="space-y-1">
-            <div class="flex justify-between text-[11px]">
-                <span class="text-slate-300 flex items-center gap-1"><i class="ri-flashlight-line text-emerald-400"></i> Kecepatan</span>
-                <span class="font-bold text-emerald-300">{{ number_format($metrics['breakdown']['speed'], 1) }}/5</span>
-            </div>
-            <div class="w-full bg-slate-700/60 rounded-full h-1.5 overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1.5 rounded-full" style="width: {{ ($metrics['breakdown']['speed'] / 5) * 100 }}%"></div>
-            </div>
-        </div>
+    <div class="bbpom-survey-metrics-list">
+        @php
+            $indicators = [
+                ['key' => 'speed', 'label' => 'Kecepatan', 'icon' => 'ri-flashlight-line'],
+                ['key' => 'quality', 'label' => 'Kualitas Solusi', 'icon' => 'ri-shield-check-line'],
+                ['key' => 'communication', 'label' => 'Komunikasi', 'icon' => 'ri-customer-service-2-line'],
+                ['key' => 'system', 'label' => 'Sistem ELITE', 'icon' => 'ri-device-line'],
+            ];
+        @endphp
 
-        <div class="space-y-1">
-            <div class="flex justify-between text-[11px]">
-                <span class="text-slate-300 flex items-center gap-1"><i class="ri-shield-check-line text-emerald-400"></i> Kualitas Solusi</span>
-                <span class="font-bold text-emerald-300">{{ number_format($metrics['breakdown']['quality'], 1) }}/5</span>
+        @foreach($indicators as $ind)
+            @php
+                $val = (float) ($metrics['breakdown'][$ind['key']] ?? 0);
+                $pct = min(100, max(0, ($val / 5) * 100));
+            @endphp
+            <div class="bbpom-survey-metric-row">
+                <div class="bbpom-survey-metric-header">
+                    <span class="bbpom-survey-metric-label">
+                        <i class="{{ $ind['icon'] }}"></i>
+                        <span>{{ $ind['label'] }}</span>
+                    </span>
+                    <span class="bbpom-survey-metric-val">{{ number_format($val, 1) }}/5</span>
+                </div>
+                <div class="bbpom-survey-progress-track">
+                    <div class="bbpom-survey-progress-fill" style="width: {{ $pct }}%;"></div>
+                </div>
             </div>
-            <div class="w-full bg-slate-700/60 rounded-full h-1.5 overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1.5 rounded-full" style="width: {{ ($metrics['breakdown']['quality'] / 5) * 100 }}%"></div>
-            </div>
-        </div>
-
-        <div class="space-y-1">
-            <div class="flex justify-between text-[11px]">
-                <span class="text-slate-300 flex items-center gap-1"><i class="ri-customer-service-2-line text-emerald-400"></i> Komunikasi</span>
-                <span class="font-bold text-emerald-300">{{ number_format($metrics['breakdown']['communication'], 1) }}/5</span>
-            </div>
-            <div class="w-full bg-slate-700/60 rounded-full h-1.5 overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1.5 rounded-full" style="width: {{ ($metrics['breakdown']['communication'] / 5) * 100 }}%"></div>
-            </div>
-        </div>
-
-        <div class="space-y-1">
-            <div class="flex justify-between text-[11px]">
-                <span class="text-slate-300 flex items-center gap-1"><i class="ri-device-line text-emerald-400"></i> Sistem ELITE</span>
-                <span class="font-bold text-emerald-300">{{ number_format($metrics['breakdown']['system'], 1) }}/5</span>
-            </div>
-            <div class="w-full bg-slate-700/60 rounded-full h-1.5 overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1.5 rounded-full" style="width: {{ ($metrics['breakdown']['system'] / 5) * 100 }}%"></div>
-            </div>
-        </div>
+        @endforeach
     </div>
 </div>
