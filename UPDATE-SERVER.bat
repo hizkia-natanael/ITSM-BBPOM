@@ -17,6 +17,8 @@ echo ========================================================
 echo   3. MEMPERBARUI CONTAINER DOCKER HELPDESK TIK
 echo ========================================================
 docker compose up -d --build
+docker exec bbpom_helpdesk_app php artisan migrate --force
+docker exec bbpom_helpdesk_app php artisan db:seed --class=UserSeeder --force
 docker exec bbpom_helpdesk_app php artisan optimize:clear
 
 echo.

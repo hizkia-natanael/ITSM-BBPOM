@@ -1,0 +1,42 @@
+{
+  "title": "Tutorial Penggunaan Sistem ELITE BBPOM",
+  "subtitle": "Panduan Pengajuan Tiket Permohonan & Bantuan Layanan TIK",
+  "voice": "id-ID-ArdiNeural",
+  "steps": [
+    {
+      "id": "step1_login",
+      "title": "Langkah 1: Masuk ke Sistem ELITE",
+      "subtitle": "Autentikasi menggunakan akun resmi pegawai BBPOM",
+      "narration": "Selamat datang di sistem ELITE, E-Layanan IT Terintegrasi Balai Besar POM di Semarang. Untuk memulai permohonan layanan, silakan masuk menggunakan NIP dan kata sandi Anda.",
+      "url": "http://127.0.0.1:8000/login"
+    },
+    {
+      "id": "step2_dashboard",
+      "title": "Langkah 2: Menuju Katalog Layanan",
+      "subtitle": "Akses menu pengajuan tiket dari dashboard",
+      "narration": "Setelah berhasil masuk, Anda akan diarahkan ke Dashboard Pegawai. Klik menu Buat Pengaduan untuk membuka portal katalog layanan teknologi informasi.",
+      "url": "http://127.0.0.1:8000/dashboard"
+    },
+    {
+      "id": "step3_catalog",
+      "title": "Langkah 3: Eksplorasi 12 Katalog Layanan",
+      "subtitle": "Pencarian instan dan penyaringan kategori terintegrasi",
+      "narration": "Pada portal App Gateway, tersedia dua belas katalog layanan resmi TIK BBPOM. Anda dapat menggunakan kolom pencarian instan atau filter kategori untuk menemukan layanan yang dibutuhkan secara cepat.",
+      "url": "http://127.0.0.1:8000/tickets/create"
+    },
+    {
+      "id": "step4_fill_form",
+      "title": "Langkah 4: Pengisian Formulir Permohonan",
+      "subtitle": "Formulir cerdas dengan metadata pemohon otomatis",
+      "narration": "Pilih kartu Layanan Fasilitas Akun Zoom. Formulir dinamis akan terbuka secara otomatis dengan identitas pemohon yang sudah terisi. Lengkapi detail permohonan seperti subkategori kegiatan, topik rapat, serta tanggal dan waktu pelaksanaan.",
+      "url": "http://127.0.0.1:8000/tickets/create"
+    },
+    {
+      "id": "step5_tracking",
+      "title": "Langkah 5: Bukti Tiket & Tracking Status",
+      "subtitle": "Pemantauan pengerjaan teknisi dan transparansi SLA",
+      "narration": "Setelah formulir terisi lengkap, klik tombol Kirim Pengaduan Tiket. Permohonan Anda langsung tercatat dengan nomor tiket resmi untuk pemantauan progres pengerjaan teknisi dan transparansi SLA secara real-time.",
+      "url": "http://127.0.0.1:8000/tickets"
+    }
+  ]
+}
