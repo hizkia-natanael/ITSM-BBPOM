@@ -25,7 +25,7 @@ class AdminSatisfactionSurveysTest extends TestCase
         $this->category = Category::create(['name' => 'Aplikasi & Sistem', 'slug' => 'aplikasi']);
     }
 
-    public function test_admin_dashboard_renders_satisfaction_surveys_widget_and_navbar(): void
+    public function test_admin_dashboard_navbar_has_satisfaction_surveys_and_dashboard_omits_surveys_widget(): void
     {
         $ticket = Ticket::create([
             'ticket_number' => 'TIK-SURV-100',
@@ -50,9 +50,7 @@ class AdminSatisfactionSurveysTest extends TestCase
         $response = $this->actingAs($this->admin)->get('/admin');
         $response->assertOk();
         $response->assertSee('Survei Kepuasan');
-        $response->assertSee('Evaluasi &amp; Ulasan Kepuasan Layanan TI', false);
-        $response->assertSee('Bagus sekali layanannya');
-        $response->assertSee('5.0');
+        $response->assertDontSee('Evaluasi &amp; Ulasan Kepuasan Layanan TI', false);
     }
 
     public function test_admin_can_access_satisfaction_surveys_resource_table(): void
