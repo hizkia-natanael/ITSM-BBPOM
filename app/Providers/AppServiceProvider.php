@@ -30,14 +30,20 @@ class AppServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             $appUrl = (string) config('app.url');
             $isDirectPort = in_array(request()->getPort(), [8000, 8085], true) || PHP_SAPI === 'cli-server';
-            $isHelpdeskSubpath = str_contains($appUrl, '/helpdesk')
-                || str_starts_with((string) request()->server('REQUEST_URI', ''), '/helpdesk');
+            $subPath = rtrim((string) parse_url($appUrl, PHP_URL_PATH), '/');
+            $hasSubPath = $subPath !== '' && $subPath !== '/';
 
-            if ($isDirectPort || ! $isHelpdeskSubpath) {
+            $requestUri = (string) request()->server('REQUEST_URI', '');
+            $isSubpathMatch = $hasSubPath && (
+                str_starts_with(strtolower($requestUri), strtolower($subPath))
+                || str_contains($appUrl, $subPath)
+            );
+
+            if ($isDirectPort || ! $hasSubPath || ! $isSubpathMatch) {
                 \Illuminate\Support\Facades\URL::useAssetOrigin(null);
             } else {
                 $origin = in_array(request()->getHost(), ['192.168.1.254', '127.0.0.1', 'localhost'], true)
-                    ? 'http://' . request()->getHttpHost() . '/helpdesk'
+                    ? 'http://' . request()->getHttpHost() . $subPath
                     : $appUrl;
 
                 \Illuminate\Support\Facades\URL::useOrigin($origin);
@@ -47,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
                     \Illuminate\Support\Facades\URL::forceScheme('https');
                 }
 
-                $basePath = rtrim((string) parse_url($origin, PHP_URL_PATH), '/');
+                $basePath = $subPath;
                 if ($basePath !== '') {
                     \Illuminate\Support\Facades\URL::formatPathUsing(
                         fn (string $path) => ($path === $basePath || str_starts_with($path, $basePath . '/'))
