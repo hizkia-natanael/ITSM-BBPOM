@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $envFile = Join-Path $projectRoot ".env"
 
-Write-Host "[1/3] Mengatur APP_URL, ASSET_URL, dan APP_PORT ke 8090 di file .env..." -ForegroundColor Cyan
+Write-Host "[1/3] Mengatur APP_URL dan ASSET_URL ke /elite di file .env..." -ForegroundColor Cyan
 if (Test-Path $envFile) {
     $envContent = [System.IO.File]::ReadAllText($envFile)
     if ($envContent -match "(?m)^APP_URL=.*$") {
@@ -18,15 +18,9 @@ if (Test-Path $envFile) {
         $envContent += "`r`nASSET_URL=https://lawangsewu.bbpomsemarang.id/elite`r`n"
     }
 
-    if ($envContent -match "(?m)^APP_PORT=.*$") {
-        $envContent = [regex]::Replace($envContent, "(?m)^APP_PORT=.*$", "APP_PORT=8090")
-    } else {
-        $envContent += "`r`nAPP_PORT=8090`r`n"
-    }
-
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($envFile, $envContent, $utf8NoBom)
-    Write-Host "      -> .env berhasil diatur ke port 8090 dan https://lawangsewu.bbpomsemarang.id/elite" -ForegroundColor Green
+    Write-Host "      -> .env berhasil diatur ke https://lawangsewu.bbpomsemarang.id/elite" -ForegroundColor Green
 }
 
 $vhostFile = "C:\xampp\apache\conf\extra\httpd-vhosts.conf"
@@ -35,7 +29,7 @@ if (Test-Path $vhostFile) {
     $vhostContent = [System.IO.File]::ReadAllText($vhostFile)
     $needsUpdate = $false
 
-    if ($vhostContent -notmatch ':8090' -or $vhostContent -notmatch 'X-Forwarded-Proto' -or $vhostContent -notmatch '<Location\s+"/elite">') {
+    if ($vhostContent -notmatch 'X-Forwarded-Proto' -or $vhostContent -notmatch '<Location\s+"/elite">') {
         $needsUpdate = $true
     }
 
@@ -43,24 +37,24 @@ if (Test-Path $vhostFile) {
         Copy-Item $vhostFile "$vhostFile.bak" -Force
         $proxyBlock = @"
 
-    # Aturan: Semua akses ke /ELITE, /elite, dan /helpdesk dikirim ke Docker Port 8090 dengan SSL Header
+    # Aturan: Semua akses ke /ELITE, /elite, dan /helpdesk dikirim ke Docker Port 8085 dengan SSL Header
     <Location "/ELITE">
-        ProxyPass http://127.0.0.1:8090
-        ProxyPassReverse http://127.0.0.1:8090
+        ProxyPass http://127.0.0.1:8085
+        ProxyPassReverse http://127.0.0.1:8085
         ProxyPreserveHost On
         RequestHeader set X-Forwarded-Proto "https"
         RequestHeader set X-Forwarded-Port "443"
     </Location>
     <Location "/elite">
-        ProxyPass http://127.0.0.1:8090
-        ProxyPassReverse http://127.0.0.1:8090
+        ProxyPass http://127.0.0.1:8085
+        ProxyPassReverse http://127.0.0.1:8085
         ProxyPreserveHost On
         RequestHeader set X-Forwarded-Proto "https"
         RequestHeader set X-Forwarded-Port "443"
     </Location>
     <Location "/helpdesk">
-        ProxyPass http://127.0.0.1:8090
-        ProxyPassReverse http://127.0.0.1:8090
+        ProxyPass http://127.0.0.1:8085
+        ProxyPassReverse http://127.0.0.1:8085
         ProxyPreserveHost On
         RequestHeader set X-Forwarded-Proto "https"
         RequestHeader set X-Forwarded-Port "443"
@@ -71,7 +65,7 @@ if (Test-Path $vhostFile) {
         $vhostContent = $vhostContent -replace "</VirtualHost>", $proxyBlock
         $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
         [System.IO.File]::WriteAllText($vhostFile, $vhostContent, $utf8NoBom)
-        Write-Host "      -> Blok Apache reverse proxy ke port 8090 berhasil diperbarui!" -ForegroundColor Green
+        Write-Host "      -> Blok Apache reverse proxy dengan HTTPS headers berhasil diperbarui!" -ForegroundColor Green
 
         Write-Host "[3/3] Me-restart Apache XAMPP agar konfigurasi aktif..." -ForegroundColor Cyan
         $svc = Get-Service -Name "Apache2.4" -ErrorAction SilentlyContinue
@@ -85,7 +79,7 @@ if (Test-Path $vhostFile) {
         }
         Write-Host "      -> Apache XAMPP berhasil di-restart!" -ForegroundColor Green
     } else {
-        Write-Host "      -> Konfigurasi reverse proxy Apache (port 8090) sudah lengkap dan terdaftar." -ForegroundColor Green
+        Write-Host "      -> Konfigurasi reverse proxy Apache sudah lengkap dan terdaftar." -ForegroundColor Green
     }
 } else {
     Write-Host "      -> File $vhostFile tidak ditemukan di PC ini (dilewati)." -ForegroundColor Yellow
