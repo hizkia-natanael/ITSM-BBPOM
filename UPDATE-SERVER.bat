@@ -24,7 +24,7 @@ docker exec bbpom_helpdesk_app php artisan optimize:clear
 echo.
 echo ========================================================
 echo [SELESAI] Aplikasi siap diakses dari jaringan mana saja:
-echo   - Domain Publik : https://lawangsewu.bbpomsemarang.id/ELITE
+echo   - Domain Publik : https://lawangsewu.bbpomsemarang.id/elite
 echo   - IP Lokal      : http://192.168.1.254:8085
 echo ========================================================
 pause
