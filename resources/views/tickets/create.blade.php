@@ -220,9 +220,6 @@
                             Sub kategori aktif: <strong class="text-emerald-800" x-text="currentService && currentService.subcategories ? (currentService.subcategories[selectedSubcategory] || 'Umum') : 'Umum'"></strong>
                         </div>
                     </div>
-
-                    <!-- SLA & Rules (Atomic Component) -->
-                    <x-sla-info-card />
                 </div>
 
             </div>
@@ -326,8 +323,34 @@
                     return nameMatch || longNameMatch || descMatch || badgeMatch;
                 },
 
+                isHardwareMatch() {
+                    const q = (this.search || '').toLowerCase().trim();
+                    const hwKeywords = [
+                        'hardware', 'perangkat keras', 'bmn', 'simpel', 'simpelbmn',
+                        'printer', 'scanner', 'laptop', 'pc', 'komputer', 'proyektor',
+                        'monitor', 'rusak', 'fisik', 'sarpras', 'inventaris'
+                    ];
+
+                    if (this.activeGroup !== 'all' && this.activeGroup !== 'infrastruktur') {
+                        if (q.length > 0) {
+                            return hwKeywords.some(kw => kw.includes(q) || q.includes(kw));
+                        }
+                        return false;
+                    }
+
+                    if (q.length === 0) {
+                        return true;
+                    }
+
+                    return hwKeywords.some(kw => kw.includes(q) || q.includes(kw));
+                },
+
                 get visibleCount() {
                     return Object.keys(this.services).filter(key => this.isMatch(key)).length;
+                },
+
+                get isEmptyCatalog() {
+                    return this.visibleCount === 0 && !this.isHardwareMatch();
                 },
 
                 isDirty() {

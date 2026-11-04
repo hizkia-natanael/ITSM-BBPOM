@@ -65,11 +65,14 @@
         </div>
     </div>
 
-    <!-- 12 Service Cards Grid -->
+    <!-- 12 Service Cards Grid + Hardware BMN Card -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         @foreach($services as $key => $svc)
             <x-ticket-gateway-card :svc-key="$key" :svc="$svc" />
         @endforeach
+
+        <!-- Hardware & BMN Sister Gateway Card -->
+        <x-hardware-bmn-card />
     </div>
 
     <!-- Zero Search Results State -->

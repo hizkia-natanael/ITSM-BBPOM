@@ -1,4 +1,4 @@
-<div x-show="visibleCount === 0" class="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+<div x-show="isEmptyCatalog" class="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
     <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
         <i class="ri-error-warning-line text-2xl"></i>
     </div>
