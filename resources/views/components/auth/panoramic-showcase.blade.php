@@ -36,15 +36,25 @@
     <!-- Bottom Content: Manifesto & Stats bertumpu rapi di area bawah (lantai) -->
     <div class="relative z-10 mt-auto space-y-3.5 max-w-xl">
         <!-- Card Manifesto -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-slate-900/75 backdrop-blur-md border border-white/20 shadow-2xl space-y-2.5">
-            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/40 text-emerald-300 text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm">
-                <i class="ri-pulse-fill text-emerald-400"></i>
-                <span>ELITE &bull; Inovasi Tata Kelola Layanan TI Terintegrasi</span>
+        <div class="p-5 sm:p-6 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-emerald-500/25 shadow-2xl space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-semibold tracking-wide backdrop-blur-sm">
+                <i class="ri-shield-check-line text-emerald-400"></i>
+                <span>Melayani dengan Integritas, Kecepatan, dan Akuntabilitas</span>
             </div>
-            <h1 class="text-xl xl:text-2xl font-black text-white leading-snug tracking-tight drop-shadow-md">
-                Melayani dengan Integritas, Kecepatan, dan Akuntabilitas.
-            </h1>
-            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h1 class="text-2xl xl:text-3xl font-black text-white tracking-tight drop-shadow-md">
+                        ELITE
+                    </h1>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-400/30 text-emerald-300 text-xs font-semibold tracking-normal backdrop-blur-sm">
+                        E-Layanan IT Terintegrasi
+                    </span>
+                </div>
+                <p class="text-base xl:text-lg font-bold text-emerald-400 leading-snug tracking-tight drop-shadow-sm">
+                    Inovasi Tata Kelola Layanan TI Terintegrasi
+                </p>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                 Portal terpadu untuk pencatatan tiket gangguan, permohonan fasilitas TI, serta monitoring berkala seluruh infrastruktur teknologi BBPOM di Semarang.
             </p>
         </div>

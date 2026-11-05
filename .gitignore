@@ -26,4 +26,17 @@ yarn-error.log
 /.zed
 *.docx
 /tools
+/tools/
+tools/
+
+# Video & Large Media Files
+*.mp4
+*.webm
+*.mov
+*.avi
+*.mkv
+*.flv
+*.wmv
+*.m4v
+*.3gp
 

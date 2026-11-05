@@ -28,7 +28,7 @@
                     <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-800">
                             <i class="ri-pulse-fill text-emerald-600"></i>
-                            <span>Inovasi Tata Kelola Layanan TI</span>
+                            <span>Inovasi Tata Kelola Layanan TI Terintegrasi</span>
                         </span>
                         <x-ui.online-visitor-counter variant="navbar" />
                     </div>

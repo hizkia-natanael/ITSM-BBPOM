@@ -1,5 +1,7 @@
 @echo off
 setlocal
+cd /d "%~dp0"
+
 where php >nul 2>&1
 if %ERRORLEVEL% equ 0 (
     set "PHP_BIN=php"
@@ -10,5 +12,11 @@ if %ERRORLEVEL% equ 0 (
 ) else (
     set "PHP_BIN=php"
 )
+
+echo [1/2] Menjalankan migrasi database...
+"%PHP_BIN%" "%~dp0artisan" migrate --force
+
+echo.
+echo [2/2] Memulai server aplikasi Helpdesk BBPOM...
 "%PHP_BIN%" "%~dp0artisan" serve %*
 endlocal
