@@ -24,7 +24,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+*.doc
 *.docx
+*.ppt
+*.pptx
+/storage/mockups/
 /tools
 /tools/
 tools/

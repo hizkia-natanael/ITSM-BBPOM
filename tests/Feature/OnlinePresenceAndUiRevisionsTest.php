@@ -83,4 +83,20 @@ class OnlinePresenceAndUiRevisionsTest extends TestCase
             ->assertSee('Kelola progres penanganan tiket ITSM oleh tim layanan IT BBPOM Semarang.')
             ->assertDontSee('Kelola progres penanganan tiket ITSM oleh tim teknisi IT BBPOM Semarang.');
     }
+
+    public function test_user_dashboard_renders_youtube_video_tutorial_card_without_raw_emojis(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk()
+            ->assertSee('https://www.youtube-nocookie.com/embed/Y-f6RuxzaGo', false)
+            ->assertSee('Video Panduan', false);
+
+        // Verify zero raw emojis in the rendered HTML
+        $content = $response->getContent();
+        $emojiPattern = '/[\x{1F300}-\x{1F9FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]/u';
+        $this->assertSame(0, preg_match($emojiPattern, $content), 'Dashboard should not contain raw emojis.');
+    }
 }

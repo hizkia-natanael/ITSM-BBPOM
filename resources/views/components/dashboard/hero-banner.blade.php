@@ -28,21 +28,52 @@
             </div>
         </div>
 
-        <!-- Illustrated Official BPOM Card Badge -->
-        <div class="hidden lg:flex items-center justify-center shrink-0">
-            <div class="relative bg-white rounded-2xl sm:rounded-3xl p-5 border border-slate-200 shadow-xl flex flex-col items-center justify-center transition-all duration-300 hover:-translate-y-0.5">
-                <div class="p-1.5 flex items-center justify-center">
-                    <img
-                        src="{{ asset('images/logo-bpom.png') }}"
-                        alt="Logo Resmi BPOM"
-                        class="h-16 sm:h-20 w-auto object-contain"
-                    >
-                </div>
+        <!-- Video Panduan Tutorial Player (Replacing static BPOM badge) -->
+        <div x-data="{ isPlaying: false }" class="w-full lg:w-[400px] xl:w-[460px] shrink-0">
+            <!-- Highlighted Label Placed ABOVE the Video -->
+            <div class="mb-2.5 flex items-center justify-between">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shadow-xs shadow-emerald-500/10">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <i class="ri-play-circle-fill text-emerald-400 text-sm"></i>
+                    Video Panduan
+                </span>
+                <span class="text-[11px] font-medium text-slate-400">
+                    BBPOM di Semarang
+                </span>
+            </div>
 
-                <div class="mt-2.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-200/80 flex items-center gap-1.5 shadow-2xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span class="text-[10px] font-bold tracking-wider text-slate-700 uppercase">BBPOM di Semarang</span>
-                </div>
+            <!-- Video Frame (Clean Poster Facade to Hide YouTube Native Title Bar) -->
+            <div class="relative w-full aspect-video rounded-2xl overflow-hidden border border-slate-700/80 shadow-2xl bg-black">
+                <template x-if="!isPlaying">
+                    <button
+                        type="button"
+                        x-on:click="isPlaying = true"
+                        class="absolute inset-0 w-full h-full group focus:outline-none focus:ring-2 focus:ring-emerald-500 block"
+                        aria-label="Putar Video Panduan"
+                    >
+                        <img
+                            src="{{ asset('images/tutorial-poster-dash.jpg') }}"
+                            alt="Poster Video Panduan"
+                            class="w-full h-full object-cover brightness-[0.9] group-hover:brightness-100 group-hover:scale-105 transition-all duration-300"
+                        >
+                        <div class="absolute inset-0 bg-slate-950/25 group-hover:bg-slate-950/10 transition-colors flex items-center justify-center">
+                            <div class="w-14 h-14 rounded-full bg-emerald-600 group-hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-950/50 group-hover:scale-110 active:scale-95 transition-all duration-200">
+                                <i class="ri-play-fill text-2xl ms-0.5"></i>
+                            </div>
+                        </div>
+                    </button>
+                </template>
+
+                <template x-if="isPlaying">
+                    <iframe
+                        class="w-full h-full"
+                        src="https://www.youtube-nocookie.com/embed/Y-f6RuxzaGo?autoplay=1&rel=0&modestbranding=1"
+                        title="Video Panduan ELITE BBPOM Semarang"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                    ></iframe>
+                </template>
             </div>
         </div>
     </div>
