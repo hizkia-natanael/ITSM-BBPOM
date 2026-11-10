@@ -28,9 +28,16 @@ docker exec bbpom_helpdesk_app php artisan db:seed --class=UserSeeder --force 2>
 
 echo.
 echo ========================================================
-echo   4. MEMBERSIHKAN & MENGOPTIMALKAN CACHE APLIKASI
+echo   4. MEMBERSIHKAN SELURUH CACHE APLIKASI & SERVER
 echo ========================================================
-docker exec bbpom_helpdesk_app php artisan optimize:clear 2>nul || call "%~dp0artisan.bat" optimize:clear
+echo Membersihkan cache bootstrap, view, route, config, & application data...
+docker exec bbpom_helpdesk_app php artisan optimize:clear
+docker exec bbpom_helpdesk_app php artisan cache:clear
+if %ERRORLEVEL% neq 0 (
+    echo [INFO] Docker container tidak terdeteksi, membersihkan cache via PHP lokal...
+    call "%~dp0artisan.bat" optimize:clear
+    call "%~dp0artisan.bat" cache:clear
+)
 
 echo.
 echo ========================================================

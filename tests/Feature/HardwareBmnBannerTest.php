@@ -17,7 +17,7 @@ class HardwareBmnBannerTest extends TestCase
         $response = $this->actingAs($user)->get(route('tickets.create'));
 
         $response->assertStatus(200);
-        $response->assertSee('https://sites.google.com/view/simpelbmn', false);
+        $response->assertSee('https://simpel.bbpomsemarang.id/', false);
         $response->assertSee('Hardware & BMN', false);
         $response->assertSee('SIMPEL BMN BBPOM', false);
         $response->assertSee('ri-hard-drive-3-line', false);

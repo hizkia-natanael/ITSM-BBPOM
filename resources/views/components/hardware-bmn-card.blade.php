@@ -1,5 +1,5 @@
 <a 
-    href="https://sites.google.com/view/simpelbmn" 
+    href="https://simpel.bbpomsemarang.id/" 
     target="_blank" 
     rel="noopener noreferrer"
     x-show="isHardwareMatch()"
