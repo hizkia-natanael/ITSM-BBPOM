@@ -30,15 +30,23 @@ class AppServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             $appUrl = (string) config('app.url');
             $isDirectPort = in_array(request()->getPort(), [8000, 8085], true) || PHP_SAPI === 'cli-server';
-            $isHelpdeskSubpath = str_contains($appUrl, '/helpdesk')
-                || str_starts_with((string) request()->server('REQUEST_URI', ''), '/helpdesk');
+            $parsedPath = rtrim((string) parse_url($appUrl, PHP_URL_PATH), '/');
+            $subPath = $parsedPath !== '' ? $parsedPath : '';
 
-            if ($isDirectPort || ! $isHelpdeskSubpath) {
+            $requestUri = (string) request()->server('REQUEST_URI', '');
+            $isSubpathMatch = ($subPath !== '' && (
+                str_starts_with(strtolower($requestUri), strtolower($subPath))
+                || str_contains($appUrl, $subPath)
+            )) || str_starts_with(strtolower($requestUri), '/helpdesk')
+               || str_starts_with(strtolower($requestUri), '/elite');
+
+            if ($isDirectPort || ! $isSubpathMatch) {
                 \Illuminate\Support\Facades\URL::useAssetOrigin(null);
             } else {
+                $matchedPrefix = str_starts_with(strtolower($requestUri), '/elite') ? '/elite' : ($subPath ?: '/helpdesk');
                 $origin = in_array(request()->getHost(), ['192.168.1.254', '127.0.0.1', 'localhost'], true)
-                    ? 'http://' . request()->getHttpHost() . '/helpdesk'
-                    : $appUrl;
+                    ? 'http://' . request()->getHttpHost() . $matchedPrefix
+                    : ($subPath ? $appUrl : rtrim($appUrl, '/') . $matchedPrefix);
 
                 \Illuminate\Support\Facades\URL::useOrigin($origin);
                 \Illuminate\Support\Facades\URL::useAssetOrigin($origin);
