@@ -16,6 +16,10 @@ Route::get('/', function () {
 
 Route::get('/admin/login', fn () => redirect()->route('login'));
 
+Route::redirect('/elite', '/');
+Route::redirect('/ELITE', '/');
+Route::redirect('/helpdesk', '/');
+
 Route::get('/presence/online', [\App\Http\Controllers\OnlinePresenceController::class, 'status'])
     ->middleware('throttle:60,1')
     ->name('presence.online');
