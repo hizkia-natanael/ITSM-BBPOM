@@ -68,7 +68,7 @@
                             @if($att->is_image)
                                 <button 
                                     type="button" 
-                                    @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
+                                    @click.stop="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
                                     class="bbpom-att-icon-box bbpom-att-type-{{ $typeCategory }} w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-200/80 bg-white shadow-xs cursor-pointer"
                                     title="Pratinjau {{ $att->file_name }}"
                                 >
@@ -101,7 +101,7 @@
                                 @if($att->is_image)
                                     <button 
                                         type="button" 
-                                        @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
+                                        @click.stop="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
                                         class="bbpom-att-name font-bold text-xs text-slate-900 truncate text-left cursor-pointer hover:underline block w-full" 
                                         title="{{ $att->file_name }}"
                                     >
@@ -144,7 +144,7 @@
                             <div class="bbpom-att-thumb-wrap">
                                 <button 
                                     type="button" 
-                                    @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
+                                    @click.stop="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
                                     class="bbpom-att-thumb-btn group relative"
                                     title="Klik untuk memperbesar {{ $att->file_name }}"
                                 >
@@ -169,7 +169,7 @@
                             @if($att->is_image)
                                 <button 
                                     type="button" 
-                                    @click="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
+                                    @click.stop="openImage('{{ route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $att, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($att->file_name, ENT_QUOTES)) }}')"
                                     class="bbpom-att-btn-preview inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors shadow-xs cursor-pointer"
                                 >
                                     <i class="ri-eye-line text-xs"></i>
@@ -258,7 +258,7 @@
                             @if($isImage)
                                 <button 
                                     type="button" 
-                                    @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')"
+                                    @click.stop="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')"
                                     class="bbpom-att-icon-box bbpom-att-type-{{ $typeCategory }} w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-xs cursor-pointer"
                                     title="Pratinjau {{ $fileName }}"
                                 >
@@ -292,7 +292,7 @@
                                     @if($isImage)
                                         <button 
                                             type="button" 
-                                            @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')"
+                                            @click.stop="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')"
                                             class="bbpom-att-name font-bold text-xs sm:text-sm text-slate-900 truncate max-w-xs sm:max-w-md text-left cursor-pointer hover:underline" 
                                             title="{{ $fileName }}"
                                         >
@@ -334,7 +334,7 @@
                             @if($isImage)
                                 <button 
                                     type="button" 
-                                    @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')" 
+                                    @click.stop="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')" 
                                     class="bbpom-att-btn-preview inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors shadow-xs cursor-pointer"
                                 >
                                     <i class="ri-eye-line text-xs"></i>
@@ -389,7 +389,7 @@
                         <div class="bbpom-att-thumb-wrap mt-4" style="max-width: 20rem;">
                             <button 
                                 type="button" 
-                                @click="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')" 
+                                @click.stop="openImage('{{ route('tickets.attachment', ['ticket' => $ticket, 'inline' => 1]) }}', '{{ addslashes(htmlspecialchars($fileName, ENT_QUOTES)) }}')" 
                                 class="bbpom-att-thumb-btn group relative"
                                 title="Klik untuk memperbesar gambar"
                             >
@@ -420,12 +420,10 @@
                     :class="{ 'is-active': lightboxOpen }"
                     :style="lightboxOpen ? 'display: flex !important;' : 'display: none !important;'"
                     @keydown.escape.window="closeLightbox()"
+                    @click.self="closeLightbox()"
                     class="bbpom-att-modal-overlay"
                 >
-                    <div 
-                        @click.away="closeLightbox()" 
-                        class="bbpom-att-modal-dialog"
-                    >
+                    <div class="bbpom-att-modal-dialog">
                         <div class="bbpom-att-modal-header">
                             <div class="bbpom-att-modal-title">
                                 <i class="ri-image-2-line"></i>

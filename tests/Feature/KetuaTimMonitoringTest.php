@@ -90,4 +90,42 @@ class KetuaTimMonitoringTest extends TestCase
         $ticket->refresh();
         $this->assertNull($ticket->handled_by_id);
     }
+
+    public function test_ketua_tim_can_preview_ticket_attachments_while_unrelated_user_cannot(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+
+        $ketua = User::factory()->create(['role' => 'ketua_tim']);
+        $owner = User::factory()->create(['role' => 'user']);
+        $otherUser = User::factory()->create(['role' => 'user']);
+        $category = Category::firstOrCreate(['slug' => 'aplikasi'], ['name' => 'Aplikasi']);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('bukti.png');
+        $path = $file->store('attachments', 'local');
+
+        $ticket = Ticket::create([
+            'ticket_number' => 'TIK-ATT-KETUA-01',
+            'user_id' => $owner->id,
+            'category_id' => $category->id,
+            'subject' => 'Lampiran Uji',
+            'description' => 'Lampiran uji coba',
+            'status' => 'pending',
+            'attachment' => $path,
+        ]);
+
+        $attachment = $ticket->attachments()->create([
+            'file_path' => $path,
+            'file_name' => 'bukti.png',
+            'file_size' => 1024,
+            'mime_type' => 'image/png',
+        ]);
+
+        $this->actingAs($ketua)
+            ->get(route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $attachment, 'inline' => 1]))
+            ->assertOk();
+
+        $this->actingAs($otherUser)
+            ->get(route('tickets.attachments.item', ['ticket' => $ticket, 'attachment' => $attachment, 'inline' => 1]))
+            ->assertForbidden();
+    }
 }

@@ -76,7 +76,8 @@ class TicketAttachmentService
 
     private function authorizeTicketAccess(Ticket $ticket, string $message): void
     {
-        if ($ticket->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        $user = auth()->user();
+        if ($ticket->user_id !== auth()->id() && !$user?->isAdmin() && !$user?->isKetuaTim()) {
             abort(403, $message);
         }
     }
