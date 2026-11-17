@@ -43,6 +43,28 @@
                 <p class="text-[11px] text-slate-400 mt-1">NIP pegawai digunakan untuk verifikasi pemilik akun email resmi dinas.</p>
             </div>
             <div>
+                <x-input-label for="email_corporate" class="font-semibold text-xs text-slate-700">
+                    <span>Email Corporate</span> <span class="text-rose-500">*</span>
+                </x-input-label>
+                <div class="relative mt-1">
+                    <i class="ri-mail-line text-slate-400 text-sm absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <x-text-input 
+                        id="email_corporate" 
+                        name="email_corporate" 
+                        type="email" 
+                        class="block w-full rounded-xl text-xs sm:text-sm pl-9 pr-28" 
+                        value="{{ old('email_corporate', $user->email ?? '') }}" 
+                        placeholder="nama@bbpom.go.id" 
+                        required 
+                    />
+                    <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">
+                        Otomatis Akun
+                    </span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">Alamat email resmi pegawai yang akan direset password-nya (dapat diubah jika berbeda).</p>
+                <x-input-error class="mt-1" :messages="$errors->get('email_corporate')" />
+            </div>
+            <div>
                 <x-input-label for="email_new_password" :value="__('Request Password Baru')" class="font-semibold text-xs text-slate-700" />
                 <x-text-input id="email_new_password" name="email_password" type="text" class="mt-1 block w-full rounded-xl text-xs sm:text-sm font-mono" placeholder="Ketik usulan password baru..." required />
                 <p class="text-[11px] text-slate-400 mt-1">Gunakan kombinasi minimal 8 karakter dengan huruf kapital dan angka.</p>

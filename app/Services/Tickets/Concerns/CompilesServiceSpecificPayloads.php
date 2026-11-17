@@ -58,6 +58,9 @@ trait CompilesServiceSpecificPayloads
     {
         if ($sub === 'reset_password') {
             $lines[] = "* **NIP:** " . ($nip = $r->input('email_nip', '-'));
+            if ($email = trim((string) $r->input('email_corporate', ''))) {
+                $lines[] = "* **Email Corporate:** {$email}";
+            }
             if ($p = $r->input('email_password')) $lines[] = "* **Request Password Baru:** {$p}";
             return "Reset Password (NIP: {$nip})";
         }

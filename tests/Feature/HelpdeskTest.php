@@ -689,6 +689,7 @@ class HelpdeskTest extends TestCase
             'subcategory_key' => 'reset_password',
             'category_id' => $category->id,
             'email_nip' => '198501012010121001',
+            'email_corporate' => 'pegawai@bbpom.go.id',
             'email_password' => 'BbpomSemarang2026!',
         ]);
 
@@ -697,9 +698,15 @@ class HelpdeskTest extends TestCase
         $this->assertEquals($category->id, $ticket->category_id);
         $this->assertStringContainsString('Reset Password', $ticket->subject);
         $this->assertStringContainsString('198501012010121001', $ticket->description);
+        $this->assertStringContainsString('pegawai@bbpom.go.id', $ticket->description);
         $this->assertStringContainsString('BbpomSemarang2026!', $ticket->description);
 
         $response->assertRedirect(route('tickets.show', $ticket));
+
+        $showResponse = $this->actingAs($user)->get(route('tickets.show', $ticket));
+        $showResponse->assertSuccessful();
+        $showResponse->assertSee('Email Corporate');
+        $showResponse->assertSee('pegawai@bbpom.go.id');
 
         // Test fallback when category_id is invalid (e.g. legacy id 7 or 999)
         $responseFallback = $this->actingAs($user)->post('/tickets', [
