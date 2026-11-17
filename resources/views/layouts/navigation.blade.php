@@ -46,8 +46,9 @@
             </div>
 
             <div class="flex items-center gap-1.5 sm:gap-2.5">
-                <!-- Realtime Online Visitor Counter Pill (Next to Bell) -->
+                <!-- Realtime Online Visitor Counter Pill & System Realtime Clock -->
                 <x-ui.online-visitor-counter variant="navbar" />
+                <x-ui.system-realtime-clock />
 
                 <!-- Notification Bell (balasan tim IT) -->
                 <x-user-reply-notification-bell />

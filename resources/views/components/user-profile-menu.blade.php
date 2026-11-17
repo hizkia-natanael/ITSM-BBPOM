@@ -6,34 +6,18 @@
         : strtoupper(substr($user->name, 0, 2));
 @endphp
 
-<div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false" @keydown.escape.window="open = false">
-    <!-- Trigger Pill Button (Minimalist Glassmorphic) -->
+<div class="relative inline-flex items-center" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false" @keydown.escape.window="open = false">
+    <!-- Filament-Identical Avatar Circle Button (Zero Text on Navbar) -->
     <button 
         type="button"
         @click="open = ! open"
         :aria-expanded="open.toString()"
-        class="group relative inline-flex items-center gap-2.5 p-1 sm:pe-3 rounded-2xl bg-white/95 hover:bg-white border border-slate-200/90 hover:border-emerald-500/40 shadow-2xs hover:shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all duration-150 active:scale-[0.99]"
-        title="Menu Profil Pengguna"
+        class="group relative inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-emerald-600 via-emerald-700 to-slate-900 text-white font-bold text-xs sm:text-sm shadow-xs ring-2 ring-emerald-500/20 hover:ring-emerald-500/45 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all duration-150 active:scale-95 select-none"
+        title="{{ $user->name }} - Menu Profil Pengguna"
+        aria-label="Menu Profil Pengguna"
     >
-        <div class="relative shrink-0">
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-emerald-500/15 group-hover:ring-emerald-500/35 transition-all">
-                {{ $initials }}
-            </div>
-            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" title="Status: Online & Terverifikasi"></span>
-        </div>
-
-        <div class="text-start hidden sm:block max-w-[140px] md:max-w-[180px]">
-            <div class="font-bold text-xs text-slate-900 truncate leading-tight group-hover:text-emerald-950 transition-colors">
-                {{ $user->name }}
-            </div>
-            <div class="text-[10px] text-slate-500 font-mono truncate mt-0.5" title="NIP. {{ $user->nip ?: '-' }}">
-                {{ $user->nip ? 'NIP. ' . $user->nip : 'Pegawai BBPOM' }}
-            </div>
-        </div>
-
-        <div class="ms-0.5 text-slate-400 group-hover:text-emerald-700 transition-colors shrink-0">
-            <i class="ri-arrow-down-s-line text-base transition-transform duration-200" :class="{ 'rotate-180 text-emerald-700': open }"></i>
-        </div>
+        <span>{{ $initials }}</span>
+        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" title="Status: Online & Terverifikasi"></span>
     </button>
 
     <!-- Compact Dropdown Panel -->
@@ -45,7 +29,7 @@
         x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-        class="absolute z-50 mt-2 w-64 sm:w-72 end-0 rounded-2xl bg-white shadow-xl shadow-slate-950/15 border border-slate-200/90 ring-1 ring-black/5 overflow-hidden"
+        class="absolute z-50 mt-2 w-64 sm:w-72 end-0 top-full rounded-2xl bg-white shadow-xl shadow-slate-950/15 border border-slate-200/90 ring-1 ring-black/5 overflow-hidden"
         style="display: none;"
         @click="open = false"
     >
@@ -85,7 +69,7 @@
                 <i class="ri-arrow-right-s-line text-slate-300 group-hover:text-emerald-600 transition"></i>
             </a>
 
-            @if($user->isAdmin())
+            @if($user->isAdmin() || $user->isKetuaTim())
                 <a href="{{ url('/admin') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-emerald-900 bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-200/60 transition group">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs text-sm">
                         <i class="ri-shield-keyhole-line"></i>

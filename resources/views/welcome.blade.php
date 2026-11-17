@@ -21,8 +21,9 @@
                     <x-application-logo />
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="hidden sm:block">
+                    <div class="hidden sm:flex sm:items-center sm:gap-2">
                         <x-ui.online-visitor-counter variant="navbar" />
+                        <x-ui.system-realtime-clock />
                     </div>
                     @if (Route::has('login'))
                         @auth
