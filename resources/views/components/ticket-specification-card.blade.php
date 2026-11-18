@@ -95,7 +95,7 @@
 
     // Default Fallback
     if (empty($tanggalPengajuan)) {
-        $tanggalPengajuan = $ticket->created_at ? $ticket->created_at->translatedFormat('d F Y, H:i') . ' WIB' : '-';
+        $tanggalPengajuan = $ticket->created_at ? $ticket->created_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d F Y, H:i') . ' WIB' : '-';
     }
     if (empty($namaPemohon)) {
         $namaPemohon = $ticket->user ? $ticket->user->name : '-';

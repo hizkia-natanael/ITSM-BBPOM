@@ -798,9 +798,9 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
         style="background-color: rgba(248, 250, 252, 0.75); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1rem; padding: 1.25rem; min-height: 320px; max-height: 540px; overflow-y: auto;"
     >
         @php
-            $ticketDateKey = $ticket->created_at->format('Y-m-d');
+            $ticketDateKey = $ticket->created_at->copy()->timezone('Asia/Jakarta')->format('Y-m-d');
             $grouped = $responses->groupBy(function($item) {
-                return $item->created_at->format('Y-m-d');
+                return $item->created_at->copy()->timezone('Asia/Jakarta')->format('Y-m-d');
             });
 
             $allDateKeys = $grouped->keys()->all();
@@ -811,8 +811,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 
         @foreach($allDateKeys as $dateKey)
             @php
-                $today = now()->format('Y-m-d');
-                $yesterday = now()->subDay()->format('Y-m-d');
+                $today = now()->timezone('Asia/Jakarta')->format('Y-m-d');
+                $yesterday = now()->timezone('Asia/Jakarta')->subDay()->format('Y-m-d');
                 if ($dateKey === $today) {
                     $label = 'Hari Ini';
                 } elseif ($dateKey === $yesterday) {
@@ -848,7 +848,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                             Halo Bapak/Ibu <strong>{{ $ticket->user->name }}</strong>, pengaduan Anda terkait <em>"{{ $ticket->subject }}"</em> telah tercatat di sistem Helpdesk TIK BBPOM. Tim kami akan segera meninjau dan merespon pengaduan ini. Silakan sampaikan pesan tambahan atau bagikan file bila diperlukan di kolom chat ini.
                         </p>
                         <div class="text-[10px] text-slate-400 text-right mt-1 font-mono" style="font-size: 10px; color: #94a3b8; text-align: right; font-family: monospace;">
-                            {{ $ticket->created_at->format('H:i') }} WIB
+                            {{ $ticket->created_at->copy()->timezone('Asia/Jakarta')->format('H:i') }} WIB
                         </div>
                     </div>
                 </div>
@@ -979,7 +979,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                 @endif
 
                                 <div class="text-[10px] text-slate-500 text-right mt-1.5 font-mono flex items-center justify-end gap-1" style="font-size: 10px; color: #64748b; text-align: right; font-family: monospace; display: flex; align-items: center; justify-content: flex-end; gap: 0.25rem;">
-                                    <span>{{ $response->created_at->format('H:i') }} WIB</span>
+                                    <span>{{ $response->created_at->copy()->timezone('Asia/Jakarta')->format('H:i') }} WIB</span>
                                     <i class="ri-check-double-line text-emerald-600 text-xs" style="color: #059669; font-size: 0.75rem;"></i>
                                 </div>
                             </div>
@@ -1102,7 +1102,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                 @endif
 
                                 <div class="text-[10px] text-slate-400 text-right mt-1.5 font-mono" style="font-size: 10px; color: #94a3b8; text-align: right; font-family: monospace;">
-                                    {{ $response->created_at->format('H:i') }} WIB
+                                    {{ $response->created_at->copy()->timezone('Asia/Jakarta')->format('H:i') }} WIB
                                 </div>
                             </div>
 

@@ -35,7 +35,7 @@ class CategoriesTable
 
                 TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
-                    ->dateTime('d M Y, H:i')
+                    ->dateTime('d M Y, H:i', timezone: 'Asia/Jakarta')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

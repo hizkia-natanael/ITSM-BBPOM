@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Ulasan &amp; Penilaian Layanan</h4>
-                    <p class="text-[10px] text-slate-500">Dikirim pada {{ $survey->created_at->format('d/m/Y H:i') }} WIB</p>
+                    <p class="text-[10px] text-slate-500">Dikirim pada {{ $survey->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB</p>
                 </div>
             </div>
 

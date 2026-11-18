@@ -69,7 +69,7 @@ class TicketExportSummaryBuilder
             'status_label' => $statusLabel,
             'handled_by' => $handledBy,
             'handled_by_label' => $handledByLabel,
-            'generated_at' => now()->translatedFormat('d F Y, H:i') . ' WIB',
+            'generated_at' => now()->timezone('Asia/Jakarta')->translatedFormat('d F Y, H:i') . ' WIB',
             'generated_by' => $signatoryAdmin?->name ?? 'Administrator ITSM BBPOM',
             'generated_by_nip' => $signatoryAdmin?->nip ?? null,
             'audit_id' => 'ISO-ITSM-' . now()->format('Ymd-His'),

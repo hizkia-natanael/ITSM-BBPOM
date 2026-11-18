@@ -44,7 +44,7 @@
                 Waktu Pengajuan:
             </span>
             <span class="font-medium text-slate-800 text-right">
-                {{ $ticket->created_at->format('d/m/Y H:i') }} WIB
+                {{ $ticket->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
             </span>
         </div>
 

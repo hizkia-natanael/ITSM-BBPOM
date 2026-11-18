@@ -53,7 +53,7 @@ class UsersTable
 
                 TextColumn::make('created_at')
                     ->label('Terdaftar Sejak')
-                    ->dateTime('d M Y, H:i')
+                    ->dateTime('d M Y, H:i', timezone: 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->filters([

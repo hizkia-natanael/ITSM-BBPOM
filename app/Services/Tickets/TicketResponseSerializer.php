@@ -60,8 +60,8 @@ class TicketResponseSerializer
                 ? ($isSenderAdmin ? 'Petugas IT (Anda)' : 'Pemohon (Anda)')
                 : ($isSenderAdmin ? 'Petugas IT' : 'Pemohon'),
             'response_text' => $res->response_text,
-            'time' => $res->created_at->format('H:i') . ' WIB',
-            'date_key' => $res->created_at->format('Y-m-d'),
+            'time' => $res->created_at->copy()->timezone('Asia/Jakarta')->format('H:i') . ' WIB',
+            'date_key' => $res->created_at->copy()->timezone('Asia/Jakarta')->format('Y-m-d'),
             'attachments' => $attachments,
             'reply_to' => $replyToData,
         ];

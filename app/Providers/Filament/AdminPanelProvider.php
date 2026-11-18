@@ -85,4 +85,9 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
+    public function boot(): void
+    {
+        \Filament\Support\Facades\FilamentTimezone::set('Asia/Jakarta');
+    }
 }

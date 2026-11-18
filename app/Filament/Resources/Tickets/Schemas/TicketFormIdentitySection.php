@@ -14,7 +14,7 @@ class TicketFormIdentitySection
             ->schema([
                 TextInput::make('ticket_number')->label('Nomor Tiket')->disabled()->dehydrated(false),
                 TextInput::make('created_at')->label('Waktu Pengajuan')->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->translatedFormat('d F Y, H:i') . ' WIB' : '-'),
+                    ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y, H:i') . ' WIB' : '-'),
                 TextInput::make('user.name')->label('Nama Pemohon (Pelapor)')->disabled()->dehydrated(false)
                     ->formatStateUsing(fn ($record) => $record?->user?->name ?? '-'),
                 TextInput::make('category.name')->label('Kategori Layanan')->disabled()->dehydrated(false)

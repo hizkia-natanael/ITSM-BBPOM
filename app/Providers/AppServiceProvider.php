@@ -69,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
         config(['app.timezone' => 'Asia/Jakarta']);
         date_default_timezone_set('Asia/Jakarta');
         \Carbon\Carbon::setLocale('id');
+        \Filament\Support\Facades\FilamentTimezone::set('Asia/Jakarta');
 
         if (PHP_OS_FAMILY === 'Windows' && ! getenv('OPENSSL_CONF')) {
             $candidate = dirname(PHP_BINARY) . DIRECTORY_SEPARATOR . 'extras' . DIRECTORY_SEPARATOR . 'ssl' . DIRECTORY_SEPARATOR . 'openssl.cnf';

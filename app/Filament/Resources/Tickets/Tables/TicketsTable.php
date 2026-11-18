@@ -83,7 +83,7 @@ class TicketsTable
 
                 TextColumn::make('created_at')
                     ->label('Waktu Masuk')
-                    ->dateTime('d M Y, H:i')
+                    ->dateTime('d M Y, H:i', timezone: 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->filters([

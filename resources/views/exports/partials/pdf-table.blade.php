@@ -18,7 +18,7 @@
             <tr>
                 <td class="col-center">{{ $index + 1 }}</td>
                 <td class="col-ticket-no col-center">{{ $ticket->ticket_number }}</td>
-                <td class="col-center">{{ $ticket->created_at->format('d/m/Y H:i') }}</td>
+                <td class="col-center">{{ $ticket->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') }}</td>
                 <td>
                     <strong>{{ $ticket->user?->name ?? 'Anonim' }}</strong><br>
                     <span style="color: #64748b; font-size: 6.8pt;">{{ $ticket->user?->email ?? '-' }}</span>

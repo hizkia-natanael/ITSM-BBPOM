@@ -25,14 +25,14 @@
     x-data="eliteTicketFlowTracker({
         ticketId: {{ $ticket->id }},
         initialStatus: '{{ $status }}',
-        initialUpdatedAt: '{{ $ticket->updated_at->translatedFormat('d M Y, H:i') }} WIB'
+        initialUpdatedAt: '{{ $ticket->updated_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB'
     })"
     {{ $attributes->merge(['class' => 'bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-7 print:hidden']) }}
 >
     <x-tickets.tracker.tracker-header 
         :ticket="$ticket" 
         :status="$status" 
-        :updated-at-formatted="$ticket->updated_at->translatedFormat('d M Y, H:i') . ' WIB'" 
+        :updated-at-formatted="$ticket->updated_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') . ' WIB'" 
     />
 
     <!-- 4-Stage Horizontal Flow Matrix -->
@@ -57,7 +57,7 @@
                 icon="ri-file-text-line"
                 :actor-name="$ticket->user?->name ?? 'Pemohon'"
                 actor-role="Pelapor Layanan"
-                :timestamp="$ticket->created_at->format('d/m/Y H:i') . ' WIB'"
+                :timestamp="$ticket->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB'"
                 :is-done="true"
                 :is-active="$status === 'pending'"
             />
@@ -70,7 +70,7 @@
                 icon="ri-shield-check-line"
                 :actor-name="$acceptedActor?->name ?? ($status !== 'pending' ? ($ticket->handledBy?->name ?? 'Admin IT') : null)"
                 actor-role="Petugas Penerima"
-                :timestamp="$acceptedAt ? $acceptedAt->format('d/m/Y H:i') . ' WIB' : null"
+                :timestamp="$acceptedAt ? $acceptedAt->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB' : null"
                 :is-done="in_array($status, ['diterima', 'diproses', 'selesai'])"
                 :is-active="$status === 'diterima'"
             />
@@ -83,7 +83,7 @@
                 icon="ri-tools-line"
                 :actor-name="$processedActor?->name ?? (in_array($status, ['diproses', 'selesai']) ? ($ticket->handledBy?->name ?? 'Teknisi IT') : null)"
                 actor-role="Teknisi Pelaksana"
-                :timestamp="$processedAt ? $processedAt->format('d/m/Y H:i') . ' WIB' : null"
+                :timestamp="$processedAt ? $processedAt->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB' : null"
                 :is-done="in_array($status, ['diproses', 'selesai'])"
                 :is-active="$status === 'diproses'"
             />
@@ -96,7 +96,7 @@
                 icon="{{ $isDitolak ? 'ri-close-circle-line' : 'ri-checkbox-circle-line' }}"
                 :actor-name="$resolvedActor?->name ?? (in_array($status, ['selesai', 'ditolak']) ? ($ticket->handledBy?->name ?? 'Admin IT') : null)"
                 actor-role="{{ $isDitolak ? 'Penolak Aduan' : 'Petugas Penyelesai' }}"
-                :timestamp="$resolvedAt ? $resolvedAt->format('d/m/Y H:i') . ' WIB' : null"
+                :timestamp="$resolvedAt ? $resolvedAt->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB' : null"
                 :is-done="in_array($status, ['selesai', 'ditolak'])"
                 :is-active="in_array($status, ['selesai', 'ditolak'])"
                 :is-rejected="$isDitolak"

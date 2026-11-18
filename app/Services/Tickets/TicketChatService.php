@@ -102,7 +102,7 @@ class TicketChatService
             'ticket_status' => $ticket->status,
             'handled_by' => $ticket->handledBy ? ['id' => $ticket->handledBy->id, 'name' => $ticket->handledBy->name] : null,
             'has_admin_response' => $ticket->responses()->whereHas('user', fn ($q) => $q->where('role', 'admin'))->exists(),
-            'updated_at_formatted' => $ticket->updated_at->translatedFormat('d M Y, H:i') . ' WIB',
+            'updated_at_formatted' => $ticket->updated_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') . ' WIB',
             'responses' => $responses->map(fn (TicketResponse $res) => $this->serializer->format($res, $currentUserId)),
             'latest_id' => $responses->isNotEmpty() ? $responses->last()->id : $afterId,
         ]);

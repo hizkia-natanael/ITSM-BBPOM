@@ -65,7 +65,7 @@ class SatisfactionSurveysTable
 
                 TextColumn::make('created_at')
                     ->label('Tanggal Ulasan')
-                    ->dateTime('d/m/Y H:i')
+                    ->dateTime('d/m/Y H:i', timezone: 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')

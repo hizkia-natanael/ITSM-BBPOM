@@ -51,7 +51,7 @@
                         </span>
                     </td>
                     <td class="py-3 px-4 whitespace-nowrap text-xs text-slate-500">
-                        {{ $ticket->created_at->translatedFormat('d M Y, H:i') }} WIB
+                        {{ $ticket->created_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
                     </td>
                     <td class="py-3 px-4 sm:px-5 text-right whitespace-nowrap">
                         <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-emerald-600 text-slate-700 hover:text-white border border-slate-200 hover:border-emerald-600 shadow-2xs hover:shadow-xs transition-all duration-150">

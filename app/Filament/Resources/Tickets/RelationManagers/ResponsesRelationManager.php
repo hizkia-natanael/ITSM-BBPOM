@@ -60,7 +60,7 @@ class ResponsesRelationManager extends RelationManager
 
                 TextColumn::make('created_at')
                     ->label('Waktu Dikirim')
-                    ->dateTime('d M Y, H:i')
+                    ->dateTime('d M Y, H:i', timezone: 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->headerActions([

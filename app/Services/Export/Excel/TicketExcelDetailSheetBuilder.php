@@ -76,7 +76,7 @@ class TicketExcelDetailSheetBuilder
             $userNip = $t->user?->nip ? " (NIP: {$t->user->nip})" : '';
             $sheet->setCellValue("A{$row}", $idx + 1);
             $sheet->setCellValue("B{$row}", $t->ticket_number);
-            $sheet->setCellValue("C{$row}", $t->created_at->format('d/m/Y H:i'));
+            $sheet->setCellValue("C{$row}", $t->created_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i'));
             $sheet->setCellValue("D{$row}", $t->user?->name ?? 'Anonim');
             $sheet->setCellValue("E{$row}", ($t->user?->email ?? '-') . $userNip);
             $sheet->setCellValue("F{$row}", $t->service_name);
@@ -84,7 +84,7 @@ class TicketExcelDetailSheetBuilder
             $sheet->setCellValue("H{$row}", $t->clean_subject ?? TicketQueryBuilder::stripMarkdown($t->subject));
             $sheet->setCellValue("I{$row}", $t->clean_description ?? TicketQueryBuilder::stripMarkdown($t->description));
             $sheet->setCellValue("J{$row}", $t->handledBy?->name ?? 'Belum Ditugaskan');
-            $sheet->setCellValue("K{$row}", $t->updated_at->format('d/m/Y H:i'));
+            $sheet->setCellValue("K{$row}", $t->updated_at->copy()->timezone('Asia/Jakarta')->format('d/m/Y H:i'));
             $sheet->setCellValue("L{$row}", $t->status_label);
             $sheet->setCellValue("M{$row}", $t->responses->count());
 
