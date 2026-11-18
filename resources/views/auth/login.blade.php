@@ -93,6 +93,9 @@
                 <div class="mt-4">
                     <x-ui.whatsapp-contact-button variant="light" class="w-full py-3.5 sm:text-sm" />
                 </div>
+
+                <!-- Footer Copyright -->
+                <x-auth.login-footer />
             </div>
         </div>
     </div>
