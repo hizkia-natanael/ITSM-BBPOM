@@ -33,7 +33,13 @@
         $namaPemohon = $detail->nama;
         if (!empty($detail->sub_category_label)) $fields['Sub Kategori Kegiatan'] = $detail->sub_category_label;
         if (!empty($detail->nama_acara)) $fields['Nama Acara / Kegiatan'] = $detail->nama_acara;
-        if (!empty($detail->jam)) $fields['Jam Pelaksanaan'] = $detail->jam;
+        if (!empty($detail->tanggal_kegiatan) && !empty($detail->jam)) {
+            $fields['Jadwal Pelaksanaan'] = $detail->tanggal_kegiatan->translatedFormat('d F Y') . ' (' . $detail->jam . ')';
+        } elseif (!empty($detail->tanggal_kegiatan)) {
+            $fields['Tanggal Kegiatan'] = $detail->tanggal_kegiatan->translatedFormat('d F Y');
+        } elseif (!empty($detail->jam)) {
+            $fields['Jam Pelaksanaan'] = $detail->jam;
+        }
         if (!empty($detail->link_qrcode)) $qrLink = $detail->link_qrcode;
         if (!empty($detail->judul_survey)) $fields['Judul Survei'] = $detail->judul_survey;
         if (!empty($detail->judul_acara)) $fields['Judul Acara Evaluasi'] = $detail->judul_acara;

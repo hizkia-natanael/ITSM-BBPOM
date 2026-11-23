@@ -48,7 +48,7 @@
 
     <!-- A. Permintaan Daftar Hadir -->
     <template x-if="selectedSubcategory === 'permintaan_daftar_hadir'">
-        <div class="space-y-4 pt-4 border-t border-slate-100">
+        <div class="space-y-4 pt-4 border-t border-slate-100" x-data="presenceScheduleData()">
             <div>
                 <x-input-label for="kegiatan_nama_acara" :value="__('Nama Acara')" class="font-semibold text-xs text-slate-700" />
                 <x-text-input 
@@ -63,16 +63,48 @@
             </div>
 
             <div>
-                <x-input-label for="kegiatan_jam" :value="__('Jam / Waktu Pelaksanaan')" class="font-semibold text-xs text-slate-700" />
+                <x-input-label for="kegiatan_tanggal_kegiatan" :value="__('Tanggal Kegiatan')" class="font-semibold text-xs text-slate-700" />
                 <x-text-input 
-                    type="text" 
-                    id="kegiatan_jam" 
-                    name="jam" 
-                    value="{{ old('jam') }}" 
-                    placeholder="Contoh: 08:30 - 15:00 WIB..." 
+                    type="date" 
+                    id="kegiatan_tanggal_kegiatan" 
+                    name="tanggal_kegiatan" 
+                    value="{{ old('tanggal_kegiatan') }}" 
                     class="mt-1 block w-full rounded-xl text-xs sm:text-sm" 
                     required 
                 />
+            </div>
+
+            <div>
+                <x-input-label :value="__('Jam / Waktu Pelaksanaan')" class="font-semibold text-xs text-slate-700 mb-1" />
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <span class="block text-[11px] font-medium text-slate-500 mb-1">Jam Mulai</span>
+                        <x-text-input 
+                            type="time" 
+                            id="kegiatan_jam_mulai" 
+                            name="jam_mulai" 
+                            x-model="jamMulai" 
+                            class="block w-full rounded-xl text-xs sm:text-sm" 
+                            required 
+                        />
+                    </div>
+                    <div>
+                        <span class="block text-[11px] font-medium text-slate-500 mb-1">Jam Selesai</span>
+                        <x-text-input 
+                            type="time" 
+                            id="kegiatan_jam_selesai" 
+                            name="jam_selesai" 
+                            x-model="jamSelesai" 
+                            class="block w-full rounded-xl text-xs sm:text-sm" 
+                            required 
+                        />
+                    </div>
+                </div>
+                <input type="hidden" id="kegiatan_jam" name="jam" :value="jamFormatted">
+                <p class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                    <span>Otomatis tersambung:</span>
+                    <span class="font-semibold text-emerald-700" x-text="jamFormatted"></span>
+                </p>
             </div>
         </div>
     </template>
@@ -303,3 +335,27 @@
         </div>
     </template>
 </div>
+
+<script>
+    function presenceScheduleData() {
+        var defaultMulai = '08:30';
+        var defaultSelesai = '15:00';
+        var oldJam = @json(old('jam', ''));
+        if (oldJam && oldJam.indexOf('-') !== -1) {
+            var parts = oldJam.split('-');
+            var m = parts[0].replace(/[^0-9:]/g, '').trim();
+            var s = parts[1].replace(/[^0-9:]/g, '').trim();
+            if (m) { defaultMulai = m; }
+            if (s) { defaultSelesai = s; }
+        }
+        return {
+            jamMulai: @json(old('jam_mulai')) || defaultMulai,
+            jamSelesai: @json(old('jam_selesai')) || defaultSelesai,
+            get jamFormatted() {
+                var m = this.jamMulai || '--:--';
+                var s = this.jamSelesai || 'Selesai';
+                return m + ' - ' + s + ' WIB';
+            }
+        };
+    }
+</script>

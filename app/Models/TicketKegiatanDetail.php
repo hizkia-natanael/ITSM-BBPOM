@@ -18,6 +18,7 @@ class TicketKegiatanDetail extends Model
         'tanggal_pengajuan',
         'nama',
         'nama_acara',
+        'tanggal_kegiatan',
         'jam',
         'link_qrcode',
         'judul_survey',
@@ -32,6 +33,7 @@ class TicketKegiatanDetail extends Model
     {
         return [
             'tanggal_pengajuan' => 'date',
+            'tanggal_kegiatan' => 'date',
             'pertanyaan_data' => 'array',
         ];
     }

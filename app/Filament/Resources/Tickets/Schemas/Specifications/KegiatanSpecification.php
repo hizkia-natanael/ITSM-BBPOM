@@ -30,6 +30,13 @@ class KegiatanSpecification
                         ->disabled()
                         ->dehydrated(false),
 
+                    TextInput::make('kegiatan_tanggal_kegiatan')
+                        ->label('Tanggal Kegiatan')
+                        ->visible(fn ($record) => !empty($record?->kegiatanDetail?->tanggal_kegiatan))
+                        ->formatStateUsing(fn ($record) => $record?->kegiatanDetail?->tanggal_kegiatan ? \Carbon\Carbon::parse($record->kegiatanDetail->tanggal_kegiatan)->translatedFormat('d F Y') : '-')
+                        ->disabled()
+                        ->dehydrated(false),
+
                     TextInput::make('kegiatan_jam')
                         ->label('Jam / Waktu Pelaksanaan')
                         ->visible(fn ($record) => !empty($record?->kegiatanDetail?->jam))
