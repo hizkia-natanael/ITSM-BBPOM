@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class TicketResource extends Resource
 {
@@ -28,7 +29,28 @@ class TicketResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'ticket_number';
 
+    protected static string|UnitEnum|null $navigationGroup = 'Layanan & Aduan';
+
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::whereNull('handled_by_id')
+            ->where('status', 'pending')
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Tiket belum ditangani';
+    }
 
     public static function canCreate(): bool
     {

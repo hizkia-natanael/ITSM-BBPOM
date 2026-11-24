@@ -16,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class UserResource extends Resource
 {
@@ -25,13 +26,15 @@ class UserResource extends Resource
 
     protected static ?string $navigationLabel = 'Pegawai';
 
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Data';
+
     protected static ?string $modelLabel = 'Pegawai';
 
     protected static ?string $pluralModelLabel = 'Pegawai';
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function canCreate(): bool
     {

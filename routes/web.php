@@ -80,6 +80,17 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->pref
     Route::post('/notifications/read-all', [\App\Http\Controllers\Admin\PushNotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/tickets/{ticket}/claim', [\App\Http\Controllers\Admin\PushNotificationController::class, 'claimTicket'])->name('tickets.claim');
     Route::get('/tickets/export', [\App\Http\Controllers\Admin\TicketExportController::class, 'export'])->name('tickets.export');
+
+    // Fitur Khusus Admin: Backup Database & Google Drive
+    Route::get('/backup-hub', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup/run', [\App\Http\Controllers\Admin\BackupController::class, 'runManual'])->name('backup.run');
+    Route::post('/backup/env-download', [\App\Http\Controllers\Admin\BackupController::class, 'downloadEnv'])->name('backup.env-download');
+    Route::put('/backup/settings', [\App\Http\Controllers\Admin\BackupController::class, 'updateSettings'])->name('backup.settings.update');
+    Route::get('/backup/google/connect', [\App\Http\Controllers\Admin\BackupController::class, 'googleConnect'])->name('backup.google.connect');
+    Route::get('/backup/google/callback', [\App\Http\Controllers\Admin\BackupController::class, 'googleCallback'])->name('backup.google.callback');
+    Route::post('/backup/google/disconnect', [\App\Http\Controllers\Admin\BackupController::class, 'googleDisconnect'])->name('backup.google.disconnect');
+    Route::get('/backup/{backup}/download', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backup.download');
+    Route::delete('/backup/{backup}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('backup.destroy');
 });
 
 require __DIR__.'/auth.php';

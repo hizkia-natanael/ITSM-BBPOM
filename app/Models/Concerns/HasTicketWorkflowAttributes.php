@@ -47,6 +47,10 @@ trait HasTicketWorkflowAttributes
         } elseif (in_array($status, ['selesai', 'ditolak'], true)) {
             $this->resolved_by_id = $actorId ?: $this->handled_by_id;
             $this->resolved_at = now();
+            if ($status === 'selesai' && !$this->processed_at) {
+                $this->processed_at = $this->resolved_at;
+                $this->processed_by_id = $this->processed_by_id ?: $this->resolved_by_id;
+            }
             if ($actorId) $this->handled_by_id = $actorId;
         } elseif ($status === 'pending') {
             $this->handled_by_id = null;
@@ -83,6 +87,10 @@ trait HasTicketWorkflowAttributes
                 } elseif (in_array($status, ['selesai', 'ditolak'], true)) {
                     $ticket->resolved_by_id = $ticket->resolved_by_id ?: ($actorId ?: $ticket->handled_by_id);
                     $ticket->resolved_at = $ticket->resolved_at ?: now();
+                    if ($status === 'selesai' && !$ticket->processed_at) {
+                        $ticket->processed_at = $ticket->resolved_at;
+                        $ticket->processed_by_id = $ticket->processed_by_id ?: $ticket->resolved_by_id;
+                    }
                     if ($actorId && !$ticket->isDirty('handled_by_id')) {
                         $ticket->handled_by_id = $actorId;
                     }

@@ -736,10 +736,11 @@ class HelpdeskTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        // Verify Fixed Light Mode, Top Navigation, and Global Search configuration
+        // Verify Fixed Light Mode, Sidebar Navigation, and Global Search configuration
         $panel = \Filament\Facades\Filament::getPanel('admin');
         $this->assertFalse($panel->hasDarkMode());
-        $this->assertTrue($panel->hasTopNavigation());
+        $this->assertFalse($panel->hasTopNavigation());
+        $this->assertTrue($panel->isSidebarCollapsibleOnDesktop());
         $this->assertNull($panel->getGlobalSearchProvider());
 
         // Verify widget data contracts

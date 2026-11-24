@@ -13,6 +13,15 @@
     $resolvedActor = $ticket->resolvedBy ?? ($ticket->events->whereIn('status', ['selesai', 'ditolak'])->first()?->actor ?? null);
     $resolvedAt = $ticket->resolved_at ?? ($ticket->events->whereIn('status', ['selesai', 'ditolak'])->first()?->created_at ?? null);
 
+    if ($status === 'selesai' && ! $resolvedAt) {
+        $resolvedAt = $ticket->updated_at;
+    }
+
+    if ($status === 'selesai' && ! $processedAt) {
+        $processedAt = $resolvedAt;
+        $processedActor = $processedActor ?? ($resolvedActor ?? $ticket->handledBy);
+    }
+
     $progressPercent = match($status) {
         'selesai' => 100,
         'diproses' => 66.66,

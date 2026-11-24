@@ -1106,9 +1106,6 @@
                             .fi-topbar-start {
                                 display: flex !important;
                                 align-items: center !important;
-                                border-right: 1px solid rgba(226, 232, 240, 0.85) !important;
-                                padding-right: 1.25rem !important;
-                                margin-right: 0.75rem !important;
                             }
                         }
                         .fi-topbar-nav-groups {
@@ -2327,4 +2324,6 @@
                             padding-left: 0.625rem !important;
                             padding-right: 0.625rem !important;
                         }
+
                     </style>
+                    <x-theme.admin-theme-styles />

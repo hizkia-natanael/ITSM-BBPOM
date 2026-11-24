@@ -27,6 +27,23 @@ class EliteBrandingAndWorkflowTest extends TestCase
             ->assertOk()
             ->assertSee('ELITE')
             ->assertSee('E-Layanan IT Terintegrasi');
+
+        $regularUser = User::factory()->create(['role' => 'user']);
+        $this->actingAs($regularUser)->get('/dashboard')
+            ->assertOk()
+            ->assertSee('ELITE')
+            ->assertSee('User')
+            ->assertSee('E-Layanan IT Terintegrasi');
+
+        $adminUser = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($adminUser)->get('/admin')
+            ->assertOk()
+            ->assertSee('bbpom-brand-wrapper')
+            ->assertSee('bbpom-brand-text')
+            ->assertSee('ELITE')
+            ->assertSee('Admin')
+            ->assertSee('E-Layanan IT Terintegrasi')
+            ->assertSee('.fi-sidebar:not(.fi-sidebar-open):not(:hover) .bbpom-brand-text', false);
     }
 
     public function test_multi_admin_handover_per_status_records_distinct_actors_and_timestamps(): void

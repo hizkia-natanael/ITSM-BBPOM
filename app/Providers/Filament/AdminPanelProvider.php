@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\BackupDatabase;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\TicketStatsOverview;
 use App\Filament\Widgets\TicketTrendChart;
@@ -33,7 +34,14 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('ELITE - E-Layanan IT Terintegrasi BBPOM Semarang')
             ->brandLogo(fn () => view('components.admin-brand-logo'))
             ->brandLogoHeight('2.5rem')
-            ->topNavigation()
+            ->sidebarCollapsibleOnDesktop()
+            ->sidebarWidth('16.5rem')
+            ->collapsedSidebarWidth('4.5rem')
+            ->navigationGroups([
+                'Layanan & Aduan',
+                'Manajemen Data',
+                'Pemeliharaan Sistem',
+            ])
             ->globalSearch(false)
             ->darkMode(false)
             ->colors([
@@ -63,6 +71,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+                BackupDatabase::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([

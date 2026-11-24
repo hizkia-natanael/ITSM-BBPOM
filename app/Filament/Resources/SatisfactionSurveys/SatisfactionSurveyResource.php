@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class SatisfactionSurveyResource extends Resource
 {
@@ -19,11 +20,13 @@ class SatisfactionSurveyResource extends Resource
 
     protected static ?string $navigationLabel = 'Survei Kepuasan';
 
+    protected static string|UnitEnum|null $navigationGroup = 'Layanan & Aduan';
+
     protected static ?string $modelLabel = 'Survei Kepuasan';
 
     protected static ?string $pluralModelLabel = 'Survei Kepuasan';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 2;
 
     public static function canCreate(): bool
     {

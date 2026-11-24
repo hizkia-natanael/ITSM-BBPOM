@@ -57,6 +57,10 @@ class EditTicket extends EditRecord
             $data['resolved_by_id'] = $actorId;
             $data['resolved_at'] = now();
             $data['handled_by_id'] = $actorId;
+            if ($status === 'selesai' && empty($this->record->processed_at) && empty($data['processed_at'])) {
+                $data['processed_at'] = $data['resolved_at'];
+                $data['processed_by_id'] = $this->record->processed_by_id ?: $actorId;
+            }
         } elseif ($status === 'pending') {
             $data['handled_by_id'] = null;
         }
