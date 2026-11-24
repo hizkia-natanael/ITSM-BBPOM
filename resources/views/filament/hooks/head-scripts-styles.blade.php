@@ -247,8 +247,20 @@
                         from { transform: rotate(0deg); }
                         to { transform: rotate(360deg); }
                     }
-                    .bbpom-spinner-rotate {
-                        animation: bbpomSpin 0.85s linear infinite !important;
+                    @layer base {
+                        .bbpom-spinner-rotate,
+                        .bk-spin,
+                        .bk-running-primary > svg:not(.fi-loading-indicator),
+                        .bk-running-refresh > svg:not(.fi-loading-indicator) {
+                            transform-origin: center center !important;
+                            animation: bbpomSpin 0.85s linear infinite !important;
+                            animation-duration: 0.85s !important;
+                            animation-iteration-count: infinite !important;
+                        }
+                    }
+                    .bk-running-primary > svg.fi-loading-indicator,
+                    .bk-running-refresh > svg.fi-loading-indicator {
+                        display: none !important;
                     }
                     .bbpom-highlight-pulse {
                         animation: bbpomHighlightPulse 1.0s ease-out forwards !important;

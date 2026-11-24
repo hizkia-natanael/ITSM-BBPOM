@@ -83,6 +83,8 @@ class BackupDatabase extends Page
         }
 
         $result = $action->execute($user);
+        $this->cachedHeaderActions = [];
+        $this->cacheInteractsWithHeaderActions();
         $notification = Notification::make()->title($result['ok'] ? 'Backup Dijadwalkan' : 'Backup Masih Berjalan')->body($result['message']);
         $result['ok'] ? $notification->success()->send() : $notification->warning()->send();
     }

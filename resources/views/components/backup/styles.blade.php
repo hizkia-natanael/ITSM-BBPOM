@@ -58,10 +58,4 @@
 .bk-error-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.5rem; border-radius: 0.375rem; background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; font-size: 0.6875rem; font-weight: 500; margin-top: 0.35rem; }
 .bk-error-truncate { max-width: 12.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bk-error-detail-btn { background: none; border: none; padding: 0; color: #9f1239; font-weight: 700; text-decoration: underline; cursor: pointer; font-size: 0.6875rem; }
-@keyframes bk-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.bk-spin, .bk-running-primary svg, .bk-running-refresh svg {
-    display: inline-flex !important; align-items: center !important; justify-content: center !important;
-    transform-origin: center center !important; animation: bk-spin 0.85s linear infinite !important;
-    animation-duration: 0.85s !important; animation-iteration-count: infinite !important;
-}
 </style>
