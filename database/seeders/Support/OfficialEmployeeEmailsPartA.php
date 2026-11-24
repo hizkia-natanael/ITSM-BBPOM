@@ -1,0 +1,91 @@
+<?php
+
+namespace Database\Seeders\Support;
+
+class OfficialEmployeeEmailsPartA
+{
+    /**
+     * Daftar email resmi @pom.go.id pegawai BBPOM Semarang (Bagian A: 74 pegawai).
+     *
+     * @return array<string, string> Map NIP => Email Resmi Baru
+     */
+    public static function get(): array
+    {
+        return [
+            '198701302010121005' => 'rizal.permana@pom.go.id',
+            '198703192015021002' => 'adhe.marjuki@pom.go.id',
+            '198308192010121001' => 'agung.wijayanto@pom.go.id',
+            '198608102010122006' => 'agustina.wulandari@pom.go.id',
+            '198209252007121001' => 'anjar.pribadi@pom.go.id',
+            '199504252019032004' => 'annisa.dhinari@pom.go.id',
+            '197009251990032001' => 'arimurti.mugiarsih@pom.go.id',
+            '199506162019032006' => 'arini.dewi@pom.go.id',
+            '197808062005012001' => 'arini.himawati@pom.go.id',
+            '198103242005012002' => 'astiti.kusmaningrum@pom.go.id',
+            '199106222015022003' => 'bias.tiaradini@pom.go.id',
+            '198704012010121004' => 'catur.kurniaji@pom.go.id',
+            '199501032019031003' => 'chandra.setyawan@pom.go.id',
+            '198012112000032001' => 'chusnul.hanifah@pom.go.id',
+            '199008142025211013' => 'dena.santosa@pom.go.id',
+            '199312242025212025' => 'desiana.astuti@pom.go.id',
+            '198512022008122002' => 'desy.anindyasari@pom.go.id',
+            '198608232015022002' => 'dewi.agrigriana@pom.go.id',
+            '198011302006042005' => 'dewi.achmad@pom.go.id',
+            '198408142007122001' => 'dhevi.puspita@pom.go.id',
+            '199011182014022005' => 'dhiah.sari@pom.go.id',
+            '198106172006042004' => 'diah.kusumaningrum@pom.go.id',
+            '199412192024212011' => 'diah.suwanti@pom.go.id',
+            '198403102009122005' => 'dian.cahyaningsih@pom.go.id',
+            '198406012009122002' => 'dian.normawati@pom.go.id',
+            '198206162005012001' => 'dian.purwaningtyas@pom.go.id',
+            '197904102005012001' => 'diana.silawati@pom.go.id',
+            '198808072014022004' => 'diksi.agustin@pom.go.id',
+            '199209272015022003' => 'dinda.noor@pom.go.id',
+            '198001062005012003' => 'dindar.ekowulan@pom.go.id',
+            '196805171995032001' => 'aryanti@pom.go.id',
+            '196812241997032002' => 'daniel.kristini@pom.go.id',
+            '196609091993032002' => 'rustyawati@pom.go.id',
+            '196609201995031001' => 'matheus.kristianto@pom.go.id',
+            '197203211998032002' => 'dwi.erna@pom.go.id',
+            '199011262019032004' => 'dwi.kustiani@pom.go.id',
+            '199606122019032004' => 'dwi.rahmadita@pom.go.id',
+            '198511032010122003' => 'dyah.hapsari@pom.go.id',
+            '197202011992032001' => 'eka.untari@pom.go.id',
+            '198206012006042002' => 'elisa.kesumaesthy@pom.go.id',
+            '197606171997032001' => 'elizabeth.harnawati@pom.go.id',
+            '199102142019032003' => 'elok.atiqoh@pom.go.id',
+            '196902121992032001' => 'elti.haningsih@pom.go.id',
+            '198107172005012001' => 'endah.wahyuni@pom.go.id',
+            '198011282006042020' => 'eny.suryani.80@pom.go.id',
+            '198310052008122001' => 'erna.kurniawati@pom.go.id',
+            '198702282009122001' => 'esther.sibarani@pom.go.id',
+            '198109062007121001' => 'etta.hermawan@pom.go.id',
+            '199308122019032005' => 'fahrun.nisa@pom.go.id',
+            '199210192015022001' => 'farida.malika@pom.go.id',
+            '198504172007122001' => 'faridha.lokana@pom.go.id',
+            '198006122006042005' => 'filia.yunita@pom.go.id',
+            '198106262005012001' => 'fina.utami@pom.go.id',
+            '198501142025211020' => 'firdaus.widodo@pom.go.id',
+            '199003102012122001' => 'firdha.kurniawati@pom.go.id',
+            '198602262009121002' => 'firman.probo@pom.go.id',
+            '198504232025211054' => 'fulal.rachmat@pom.go.id',
+            '198606242010122002' => 'hanum.permana@pom.go.id',
+            '198212042008122001' => 'hayyu.citraningtyas@pom.go.id',
+            '199111102025211031' => 'herdi.pradesa@pom.go.id',
+            '199511212020121001' => 'hilmam.aditama@pom.go.id',
+            '198512172008122001' => 'ida.rosiana@pom.go.id',
+            '198103132006042003' => 'ika.wahyuni@pom.go.id',
+            '198404292008122001' => 'ima.diana@pom.go.id',
+            '199512052022032003' => 'indah.mulyani@pom.go.id',
+            '198203302006042004' => 'indah.fitriani@pom.go.id',
+            '197202071997032001' => 'jety.eny@pom.go.id',
+            '199503192019031004' => 'jihad.afghan@pom.go.id',
+            '197306132000032001' => 'juni.ratnawati@pom.go.id',
+            '198206162006042002' => 'kurnia.widyarini@pom.go.id',
+            '198112192005012001' => 'kurniasanti@pom.go.id',
+            '197511222014061001' => 'kustiyono@pom.go.id',
+            '198312232010122003' => 'laksmi.ardhya@pom.go.id',
+            '198210132007122001' => 'linda.prasetyawati@pom.go.id',
+        ];
+    }
+}

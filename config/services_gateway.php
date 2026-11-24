@@ -64,12 +64,12 @@ return [
         'email_corporate' => [
             'id' => 'email_corporate',
             'name' => 'Email Corporate',
-            'long_name' => 'Email Resmi Pegawai BBPOM (@bbpom.go.id)',
+            'long_name' => 'Email Resmi Pegawai BPOM (@pom.go.id)',
             'group' => 'akun',
             'badge' => 'Komunikasi Resmi',
             'icon' => 'ri-mail-line',
             'description' => 'Pembuatan akun baru, reset password, kuota penyimpanan penuh, serta kendala kirim/terima webmail.',
-            'keywords' => ['email', 'mail', 'corporate', 'webmail', 'password', 'bbpom.go.id', 'kuota', 'inbox'],
+            'keywords' => ['email', 'mail', 'corporate', 'webmail', 'password', 'pom.go.id', 'bbpom.go.id', 'kuota', 'inbox'],
             'color' => 'sky',
             'default_category_id' => 5,
             'subcategories' => [

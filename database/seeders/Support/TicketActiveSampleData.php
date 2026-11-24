@@ -18,7 +18,7 @@ class TicketActiveSampleData
         return [
             [
                 'ticket_number' => 'TIK-BBPOM-001',
-                'user_email' => 'diah.k@bbpom.go.id',
+                'user_email' => 'diah.kusumaningrum@pom.go.id',
                 'handled_by_email' => null,
                 'category_id' => 7,
                 'service_key' => 'internet',
@@ -32,8 +32,8 @@ class TicketActiveSampleData
             ],
             [
                 'ticket_number' => 'TIK-BBPOM-002',
-                'user_email' => 'a.r@bbpom.go.id',
-                'handled_by_email' => 'tri.p@bbpom.go.id',
+                'user_email' => 'rizal.permana@pom.go.id',
+                'handled_by_email' => 'tri.pujiati@pom.go.id',
                 'category_id' => 1,
                 'service_key' => 'sipt',
                 'subcategory' => 'rollback_sampel',
@@ -44,7 +44,7 @@ class TicketActiveSampleData
                 'updated_at' => $now->copy()->subMinutes(40),
                 'responses' => [
                     [
-                        'sender_email' => 'tri.p@bbpom.go.id',
+                        'sender_email' => 'tri.pujiati@pom.go.id',
                         'text' => 'Halo Pak Rizal, permohonan rollback sampel sudah diverifikasi. Proses unlocking database sedang disiapkan.',
                         'minutes_ago' => 35,
                     ],

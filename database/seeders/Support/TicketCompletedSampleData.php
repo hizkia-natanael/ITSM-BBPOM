@@ -14,12 +14,11 @@ class TicketCompletedSampleData
     public static function get(): array
     {
         $now = Carbon::now();
-
         return [
             [
                 'ticket_number' => 'TIK-BBPOM-003',
-                'user_email' => 'a.r@bbpom.go.id',
-                'handled_by_email' => 'tri.p@bbpom.go.id',
+                'user_email' => 'rizal.permana@pom.go.id',
+                'handled_by_email' => 'tri.pujiati@pom.go.id',
                 'category_id' => 2,
                 'service_key' => 'srikandi',
                 'subcategory' => 'sinkronisasi_akun',
@@ -30,7 +29,7 @@ class TicketCompletedSampleData
                 'updated_at' => $now->copy()->subDays(3)->addHours(2),
                 'responses' => [
                     [
-                        'sender_email' => 'tri.p@bbpom.go.id',
+                        'sender_email' => 'tri.pujiati@pom.go.id',
                         'text' => 'Sinkronisasi jabatan pada portal Srikandi Pusat telah berhasil diperbarui.',
                         'minutes_ago' => 4300,
                     ],
@@ -38,8 +37,8 @@ class TicketCompletedSampleData
             ],
             [
                 'ticket_number' => 'TIK-BBPOM-004',
-                'user_email' => 'diah.k@bbpom.go.id',
-                'handled_by_email' => 'rizky.a@bbpom.go.id',
+                'user_email' => 'diah.kusumaningrum@pom.go.id',
+                'handled_by_email' => 'rizky.wardhana@pom.go.id',
                 'category_id' => 5,
                 'service_key' => 'zoom',
                 'subcategory' => 'permintaan_link_zoom',
@@ -50,7 +49,7 @@ class TicketCompletedSampleData
                 'updated_at' => $now->copy()->subDays(2)->addHours(1),
                 'responses' => [
                     [
-                        'sender_email' => 'rizky.a@bbpom.go.id',
+                        'sender_email' => 'rizky.wardhana@pom.go.id',
                         'text' => 'Tautan Zoom Meeting, Passcode, dan Host Key telah aktif dan dikirimkan ke email resmi pemohon.',
                         'minutes_ago' => 2800,
                     ],
@@ -58,8 +57,8 @@ class TicketCompletedSampleData
             ],
             [
                 'ticket_number' => 'TIK-BBPOM-005',
-                'user_email' => 'ima.d@bbpom.go.id',
-                'handled_by_email' => 'windi.p@bbpom.go.id',
+                'user_email' => 'ima.diana@pom.go.id',
+                'handled_by_email' => 'windi.nuraini@pom.go.id',
                 'category_id' => 4,
                 'service_key' => 'sertifikat-bsre',
                 'subcategory' => 'penerbitan_tte',
@@ -70,7 +69,7 @@ class TicketCompletedSampleData
                 'updated_at' => $now->copy()->subHours(6),
                 'responses' => [
                     [
-                        'sender_email' => 'windi.p@bbpom.go.id',
+                        'sender_email' => 'windi.nuraini@pom.go.id',
                         'text' => 'Penerbitan ulang sertifikat TTE BSrE telah disetujui dan token verifikasi sudah terkirim.',
                         'minutes_ago' => 360,
                     ],
@@ -78,8 +77,8 @@ class TicketCompletedSampleData
             ],
             [
                 'ticket_number' => 'TIK-BBPOM-006',
-                'user_email' => 'dian.c@bbpom.go.id',
-                'handled_by_email' => 'rizky.a@bbpom.go.id',
+                'user_email' => 'dian.cahyaningsih@pom.go.id',
+                'handled_by_email' => 'rizky.wardhana@pom.go.id',
                 'category_id' => 3,
                 'service_key' => 'email-corporate',
                 'subcategory' => 'reset_password',
@@ -90,7 +89,7 @@ class TicketCompletedSampleData
                 'updated_at' => $now->copy()->subDays(4)->addMinutes(45),
                 'responses' => [
                     [
-                        'sender_email' => 'rizky.a@bbpom.go.id',
+                        'sender_email' => 'rizky.wardhana@pom.go.id',
                         'text' => 'Kata sandi baru telah diatur dan instruksi login pertama telah dikirimkan ke kontak resmi.',
                         'minutes_ago' => 5700,
                     ],
@@ -98,8 +97,8 @@ class TicketCompletedSampleData
             ],
             [
                 'ticket_number' => 'TIK-BBPOM-007',
-                'user_email' => 'annisa.a@bbpom.go.id',
-                'handled_by_email' => 'windi.p@bbpom.go.id',
+                'user_email' => 'annisa.dhinari@pom.go.id',
+                'handled_by_email' => 'windi.nuraini@pom.go.id',
                 'category_id' => 11,
                 'service_key' => 'lisensi-office',
                 'subcategory' => 'aktivasi_lisensi',
@@ -110,7 +109,7 @@ class TicketCompletedSampleData
                 'updated_at' => $now->copy()->subDays(5)->addHours(3),
                 'responses' => [
                     [
-                        'sender_email' => 'windi.p@bbpom.go.id',
+                        'sender_email' => 'windi.nuraini@pom.go.id',
                         'text' => 'Lisensi Microsoft 365 Enterprise telah diaktifkan pada perangkat pemohon dan verifikasi selesai.',
                         'minutes_ago' => 7100,
                     ],

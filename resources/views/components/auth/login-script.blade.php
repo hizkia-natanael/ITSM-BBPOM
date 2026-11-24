@@ -18,7 +18,8 @@
                 if (q === '') { return this.users; }
                 return this.users.filter(function(u) {
                     return u.name.toLowerCase().indexOf(q) !== -1 ||
-                        (u.nip && u.nip.indexOf(q) !== -1);
+                        (u.nip && u.nip.indexOf(q) !== -1) ||
+                        (u.email && u.email.toLowerCase().indexOf(q) !== -1);
                 });
             },
 

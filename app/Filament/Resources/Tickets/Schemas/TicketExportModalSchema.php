@@ -92,7 +92,7 @@ class TicketExportModalSchema
             'all' => 'Semua Kategori (12 Katalog Lengkap)',
             'sipt' => '1. SIPT (Sistem Informasi Pelaporan Terpadu)',
             'srikandi' => '2. Srikandi (Sistem Kearsipan Dinamis Terintegrasi)',
-            'email_corporate' => '3. Email Corporate (@bbpom.go.id)',
+            'email_corporate' => '3. Email Corporate (@pom.go.id)',
             'sertifikat_bse' => '4. Sertifikat BSrE / TTE',
             'zoom' => '5. Fasilitas Zoom Meeting / Webinar',
             'formulir_kegiatan' => '6. Formulir & Kegiatan (Presensi, QR Code, Survey)',

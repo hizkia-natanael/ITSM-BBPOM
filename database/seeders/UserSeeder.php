@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Services\Users\EmployeeEmailSyncService;
+use Database\Seeders\Support\OfficialEmployeeEmails;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -1363,30 +1365,49 @@ class UserSeeder extends Seeder
             ],
         ];
 
+        // Sinkronisasi email lama -> email resmi @pom.go.id beserta referensi tiket eksisting lebih dulu
+        app(EmployeeEmailSyncService::class)->sync();
+
         foreach ($users as $userData) {
-            $user = User::where('nip', $userData['nip'])
-                ->orWhere('email', $userData['email'])
-                ->first();
+            $resolvedEmail = OfficialEmployeeEmails::resolve((string) $userData['nip'], $userData['email']);
 
-            $attributes = [
-                'name' => $userData['name'],
-                'nip' => $userData['nip'],
-                'email' => $userData['email'],
-                'role' => $userData['role'],
-                'password' => $userData['password'],
-                'email_verified_at' => $user?->email_verified_at ?? now(),
-            ];
-
-            if (isset($userData['nik'])) {
-                $attributes['nik'] = $userData['nik'];
-            }
-            if (isset($userData['phone_number'])) {
-                $attributes['phone_number'] = $userData['phone_number'];
-            }
+            $user = User::where('nip', $userData['nip'])->first()
+                ?? User::where('email', $resolvedEmail)->first()
+                ?? User::where('email', $userData['email'])->first();
 
             if ($user) {
+                $attributes = [
+                    'name' => $userData['name'],
+                    'nip' => $userData['nip'],
+                    'email' => $resolvedEmail,
+                    'email_verified_at' => $user->email_verified_at ?? now(),
+                ];
+
+                if (empty($user->nik) && isset($userData['nik'])) {
+                    $attributes['nik'] = $userData['nik'];
+                }
+                if (empty($user->phone_number) && isset($userData['phone_number'])) {
+                    $attributes['phone_number'] = $userData['phone_number'];
+                }
+
                 $user->update($attributes);
             } else {
+                $attributes = [
+                    'name' => $userData['name'],
+                    'nip' => $userData['nip'],
+                    'email' => $resolvedEmail,
+                    'role' => $userData['role'],
+                    'password' => $userData['password'],
+                    'email_verified_at' => now(),
+                ];
+
+                if (isset($userData['nik'])) {
+                    $attributes['nik'] = $userData['nik'];
+                }
+                if (isset($userData['phone_number'])) {
+                    $attributes['phone_number'] = $userData['phone_number'];
+                }
+
                 User::create($attributes);
             }
         }

@@ -62,7 +62,7 @@
                         name="email" 
                         type="email" 
                         value="{{ old('email', $user->email) }}" 
-                        placeholder="nama@bbpom.go.id" 
+                        placeholder="nama@pom.go.id" 
                         class="mt-1 block w-full rounded-xl text-xs sm:text-sm" 
                         required 
                     />

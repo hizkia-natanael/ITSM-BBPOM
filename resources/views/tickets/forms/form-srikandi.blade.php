@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <x-input-label for="srikandi_email" :value="__('Email')" class="font-semibold text-xs text-slate-700" />
-                    <x-text-input id="srikandi_email" name="srikandi_email" type="email" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="nama@bbpom.go.id..." required />
+                    <x-text-input id="srikandi_email" name="srikandi_email" type="email" class="mt-1 block w-full rounded-xl text-xs sm:text-sm" placeholder="nama@pom.go.id..." required />
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

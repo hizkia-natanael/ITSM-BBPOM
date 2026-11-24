@@ -1,4 +1,4 @@
-<!-- 3. EMAIL CORPORATE (@bbpom.go.id) -->
+<!-- 3. EMAIL CORPORATE (@pom.go.id) -->
 <div class="space-y-6">
     <!-- Subkategori Selector Pills -->
     <div>
@@ -54,7 +54,7 @@
                         type="email" 
                         class="block w-full rounded-xl text-xs sm:text-sm pl-9 pr-28" 
                         value="{{ old('email_corporate', $user->email ?? '') }}" 
-                        placeholder="nama@bbpom.go.id" 
+                        placeholder="nama@pom.go.id" 
                         required 
                     />
                     <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">
