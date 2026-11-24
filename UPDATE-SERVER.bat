@@ -1,27 +1,31 @@
 @echo off
-title Update Server Helpdesk TIK BBPOM
+title Update Server Helpdesk TIK BBPOM (ELITE)
 cd /d "%~dp0"
 
 :MENU
 cls
 echo ========================================================
-echo        PILIHAN PEMBARUAN SERVER HELPDESK TIK BBPOM
+echo      PILIHAN PEMBARUAN SERVER HELPDESK TIK (ELITE)
 echo ========================================================
-echo.
-echo   [1] Update Lengkap (Git Pull + Rebuild + Database + Cache)
-echo   [2] Update Saja (Git Pull + Rebuild + Cache, Tanpa Database)
-echo   [3] Update Database Saja (Migrasi dan Seeder)
-echo   [4] Bersihkan Cache dan Optimize Saja
-echo   [5] Batal / Keluar
-echo.
+echo   [1] Update Lengkap (Pull + Build + Migrasi + Cache + Worker)
+echo   [2] Update Aplikasi Saja (Pull + Build + Cache + Worker)
+echo   [3] Update Database Saja (Migrasi dan UserSeeder)
+echo   [4] Bersihkan Cache, Optimize & Restart Worker
+echo   [5] Restart Semua Container (App, Webserver, Queue, Scheduler)
+echo   [6] Status Container Docker (docker compose ps)
+echo   [0] Keluar
 echo ========================================================
-choice /C 12345 /N /M "Pilih nomor opsi [1-5]: "
+set "pilihan="
+set /p pilihan="Pilih nomor opsi [1-6 / 0]: "
 
-if errorlevel 5 goto KELUAR
-if errorlevel 4 goto OPSI_CACHE_SAJA
-if errorlevel 3 goto OPSI_DB_SAJA
-if errorlevel 2 goto OPSI_UPDATE_SAJA
-if errorlevel 1 goto OPSI_LENGKAP
+if "%pilihan%"=="1" goto OPSI_LENGKAP
+if "%pilihan%"=="2" goto OPSI_UPDATE_SAJA
+if "%pilihan%"=="3" goto OPSI_DB_SAJA
+if "%pilihan%"=="4" goto OPSI_CACHE_SAJA
+if "%pilihan%"=="5" goto OPSI_RESTART
+if "%pilihan%"=="6" goto OPSI_STATUS
+if "%pilihan%"=="0" goto KELUAR
+goto MENU
 
 :OPSI_LENGKAP
 call :DO_PULL
@@ -45,62 +49,63 @@ goto SELESAI
 call :DO_OPTIMIZE
 goto SELESAI
 
+:OPSI_RESTART
+echo.
+echo [RESTART] Merestart app, webserver, queue, scheduler...
+docker compose restart
+goto SELESAI
+
+:OPSI_STATUS
+echo.
+echo [STATUS] Daftar container aktif:
+docker compose ps
+goto SELESAI
+
 :DO_PULL
 echo.
-echo ========================================================
-echo   1. MENARIK UPDATE TERBARU DARI GITHUB
-echo ========================================================
-git pull origin master 2>nul || git pull origin main 2>nul || git pull
+echo [1] Menarik update terbaru dari GitHub...
+git pull
 goto :eof
 
 :DO_CONTAINER
 echo.
-echo ========================================================
-echo   2. MEMPERBARUI CONTAINER DOCKER HELPDESK TIK
-echo ========================================================
-docker compose up -d --build
+echo [2] Build image app dan recreate container (app, webserver, queue, scheduler)...
+docker compose build app
+docker compose up -d --no-build
 goto :eof
 
 :DO_DATABASE
 echo.
-echo ========================================================
-echo   3. MENJALANKAN MIGRASI DATABASE DAN SEEDER
-echo ========================================================
-echo Menjalankan migrasi database...
-docker exec bbpom_helpdesk_app php artisan migrate --force 2>nul
+echo [3] Menjalankan migrasi database dan UserSeeder...
+docker compose exec -T app php artisan migrate --force 2>nul
 if %ERRORLEVEL% neq 0 (
-    echo [INFO] Docker container tidak terdeteksi, mencoba migrasi langsung via PHP lokal...
+    echo [INFO] Docker container tidak terdeteksi, mencoba via PHP lokal...
     call "%~dp0artisan.bat" migrate --force
 )
-echo Menjalankan seeder akun penting...
-docker exec bbpom_helpdesk_app php artisan db:seed --class=UserSeeder --force 2>nul || call "%~dp0artisan.bat" db:seed --class=UserSeeder --force
+docker compose exec -T app php artisan db:seed --class=UserSeeder --force 2>nul || call "%~dp0artisan.bat" db:seed --class=UserSeeder --force
 goto :eof
 
 :DO_OPTIMIZE
 echo.
-echo ========================================================
-echo   4. MEMBERSIHKAN SELURUH CACHE APLIKASI DAN OPTIMIZE
-echo ========================================================
-echo Membersihkan cache bootstrap, view, route, config, dan application data...
-docker exec bbpom_helpdesk_app php artisan optimize:clear 2>nul
-docker exec bbpom_helpdesk_app php artisan cache:clear 2>nul
-docker exec bbpom_helpdesk_app php artisan config:cache 2>nul
-if %ERRORLEVEL% neq 0 (
+echo [4] Optimize cache dan restart worker (queue + scheduler)...
+docker compose exec -T app php artisan optimize:clear 2>nul
+if %ERRORLEVEL% equ 0 (
+    docker compose exec -T app php artisan optimize
+    docker compose restart queue scheduler
+) else (
     echo [INFO] Docker container tidak terdeteksi, membersihkan cache via PHP lokal...
     call "%~dp0artisan.bat" optimize:clear
-    call "%~dp0artisan.bat" cache:clear
-    call "%~dp0artisan.bat" config:cache
+    call "%~dp0artisan.bat" optimize
 )
 goto :eof
 
 :SELESAI
 echo.
 echo ========================================================
-echo [SELESAI] Proses berhasil dijalankan!
-echo   - IP Akses : http://192.168.1.254:8085
+echo [SELESAI] Proses berhasil! Akses: http://192.168.1.254:8085
 echo ========================================================
 pause
-exit /b 0
+goto MENU
 
 :KELUAR
 echo Operasi dibatalkan.
