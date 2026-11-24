@@ -42,6 +42,9 @@ return [
         'mysqldump_path' => env('BACKUP_MYSQLDUMP_PATH'),
         'filename_prefix' => env('BACKUP_FILENAME_PREFIX', 'backup-elite'),
         'include_documents' => filter_var(env('BACKUP_INCLUDE_DOCUMENTS', true), FILTER_VALIDATE_BOOLEAN),
+        'compress_images' => filter_var(env('BACKUP_COMPRESS_IMAGES', true), FILTER_VALIDATE_BOOLEAN),
+        'image_max_dimension' => (int) env('BACKUP_IMAGE_MAX_DIMENSION', 1440),
+        'image_quality' => (int) env('BACKUP_IMAGE_QUALITY', 72),
     ],
 
     'google_drive' => [

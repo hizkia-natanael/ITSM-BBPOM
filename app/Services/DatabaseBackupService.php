@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BackupSetting;
 use App\Models\DatabaseBackup;
+use App\Services\Backup\BackupImageCompressor;
 use App\Services\Backup\MysqlPdoDumper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -17,6 +18,7 @@ class DatabaseBackupService
 {
     public function __construct(
         private readonly GoogleDriveService $googleDriveService,
+        private readonly ?BackupImageCompressor $imageCompressor = null,
     ) {}
 
     public function backupDirectory(): string
@@ -224,7 +226,15 @@ class DatabaseBackupService
                     continue;
                 }
 
-                $zip->addFile($file->getPathname(), "dokumen/{$group}/{$relative}");
+                $entryName = "dokumen/{$group}/{$relative}";
+                $compressor = $this->imageCompressor ?? app(BackupImageCompressor::class);
+                $compressedBytes = $compressor->compressForArchive($file->getPathname());
+
+                if ($compressedBytes !== null) {
+                    $zip->addFromString($entryName, $compressedBytes);
+                } else {
+                    $zip->addFile($file->getPathname(), $entryName);
+                }
             }
         }
     }
