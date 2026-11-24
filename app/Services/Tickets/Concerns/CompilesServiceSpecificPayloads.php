@@ -2,31 +2,14 @@
 
 namespace App\Services\Tickets\Concerns;
 
+use App\Services\Tickets\Compilers\SiptPayloadCompiler;
 use Illuminate\Http\Request;
 
 trait CompilesServiceSpecificPayloads
 {
     private function compileSipt(Request $r, ?string $sub, array &$lines): string
     {
-        if ($sub === 'reset_password') {
-            $lines[] = "* **Username SIPT:** " . ($u = $r->input('sipt_username', '-'));
-            if ($p = $r->input('sipt_password')) $lines[] = "* **Request Password Baru:** {$p}";
-            return "Reset Password ({$u})";
-        }
-        if ($sub === 'rollback_sampel') {
-            array_push($lines, "* **Nomor Sampel:** " . ($no = $r->input('sipt_sample_number', '-')), "* **Komoditi:** " . ($kom = $r->input('sipt_commodity', '-')));
-            return "Rollback Sampel {$no} ({$kom})";
-        }
-        if ($sub === 'perbaikan_sampel') {
-            array_push($lines, "* **Kode Sampel:** " . ($kd = $r->input('sipt_sample_code', '-')), "* **Komoditi:** " . $r->input('sipt_commodity', '-'), "* **Nama Sampel:** " . ($nm = $r->input('sipt_sample_name', '-')), "* **Sebelum Perbaikan:** " . $r->input('sipt_before_repair', '-'), "* **Perbaikan:** " . $r->input('sipt_after_repair', '-'));
-            return "Perbaikan Sampel {$kd} ({$nm})";
-        }
-        if ($sub === 'cek_posisi_sampel') {
-            array_push($lines, "* **Kode Sampel:** " . ($kd = $r->input('sipt_sample_code', '-')), "* **Komoditi:** " . $r->input('sipt_commodity', '-'), "* **Nama Sampel:** " . $r->input('sipt_sample_name', '-'));
-            return "Cek Posisi Sampel {$kd}";
-        }
-        $lines[] = "* **Deskripsi:** " . trim((string) $r->input('service_description', $r->input('description', '-')));
-        return "Kendala SIPT";
+        return SiptPayloadCompiler::compile($r, $sub, $lines);
     }
 
     private function compileSrikandi(Request $r, ?string $sub, array &$lines): string

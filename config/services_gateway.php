@@ -27,7 +27,7 @@ return [
             'badge' => 'Aplikasi Pusat BPOM',
             'icon' => 'ri-file-chart-line',
             'description' => 'Kendala akses pelaporan, input pengujian, validasi data, dan error operasional aplikasi SIPT.',
-            'keywords' => ['sipt', 'laporan', 'pelaporan', 'pengujian', 'data', 'bpom', 'sistem'],
+            'keywords' => ['sipt', 'laporan', 'pelaporan', 'pengujian', 'data', 'bpom', 'sistem', 'hapus', 'sampel', 'sarana'],
             'color' => 'indigo',
             'default_category_id' => 3,
             'subcategories' => [
@@ -35,6 +35,8 @@ return [
                 'rollback_sampel' => 'Rollback Sampel',
                 'perbaikan_sampel' => 'Perbaikan Data Sampel',
                 'cek_posisi_sampel' => 'Cek Posisi Sampel',
+                'hapus_sampel' => 'Hapus Sampel',
+                'hapus_sarana' => 'Hapus Sarana',
                 'lainnya' => 'Lainnya',
             ],
         ],

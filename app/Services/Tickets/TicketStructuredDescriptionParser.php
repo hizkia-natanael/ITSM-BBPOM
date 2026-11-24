@@ -85,6 +85,8 @@ class TicketStructuredDescriptionParser
     {
         $k = strtolower($key);
         $map = [
+            'ri-hashtag' => ['id sarana'],
+            'ri-building-2-line' => ['sarana'],
             'ri-user-3-line' => ['user', 'nama', 'pemohon'],
             'ri-lock-password-line' => ['pass', 'sandi'],
             'ri-test-tube-line' => ['sampel', 'kode'],
@@ -96,7 +98,7 @@ class TicketStructuredDescriptionParser
             'ri-building-4-line' => ['unit', 'seksi', 'bidang'],
             'ri-calendar-event-line' => ['acara', 'kegiatan', 'rapat'],
             'ri-time-line' => ['jam', 'waktu', 'tanggal', 'deadline', 'tenggat'],
-            'ri-price-tag-3-line' => ['tipe', 'kategori', 'jenis'],
+            'ri-price-tag-3-line' => ['tipe', 'kategori', 'jenis', 'komoditi'],
             'ri-aspect-ratio-line' => ['orientasi', 'ukuran'],
             'ri-computer-line' => ['perangkat', 'laptop', 'komputer', 'pc', 'merk'],
             'ri-barcode-line' => ['bmn'],

@@ -1138,6 +1138,18 @@ class HelpdeskTest extends TestCase
                 'sipt_commodity' => 'Kosmetik',
                 'sipt_sample_name' => 'Body Lotion',
             ],
+            'sipt_hapus_sampel' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'hapus_sampel',
+                'sipt_sample_number' => 'SMP-2026-DEL01',
+                'sipt_commodity' => 'Obat Tradisional',
+            ],
+            'sipt_hapus_sarana' => [
+                'service_key' => 'sipt',
+                'subcategory' => 'hapus_sarana',
+                'sipt_facility_id' => 'SRN-3374-00987',
+                'sipt_facility_name' => 'Apotek Sehat Semarang',
+            ],
             'sipt_other' => [
                 'service_key' => 'sipt',
                 'subcategory' => 'lainnya',
