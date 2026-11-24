@@ -456,6 +456,7 @@ class HelpdeskTest extends TestCase
             'tanggal_pengajuan' => '2026-10-01',
             'nama' => $user->name,
             'nama_acara' => 'Bimtek CPPOB UMKM',
+            'tanggal_kegiatan' => '2026-10-15',
             'jam' => '08:00 - 11:30 WIB',
         ]);
 
@@ -467,6 +468,7 @@ class HelpdeskTest extends TestCase
         $this->assertNotNull($ticket1);
         $this->assertNotNull($ticket1->kegiatanDetail);
         $this->assertEquals('Bimtek CPPOB UMKM', $ticket1->kegiatanDetail->nama_acara);
+        $this->assertEquals('2026-10-15', $ticket1->kegiatanDetail->tanggal_kegiatan?->toDateString());
 
         // 2. QR Code
         $response2 = $this->actingAs($user)->post('/tickets', [
@@ -998,6 +1000,7 @@ class HelpdeskTest extends TestCase
                 'tanggal_pengajuan' => '2026-10-02',
                 'nama' => 'Ahmad Pegawai',
                 'nama_acara' => 'Bimtek IT',
+                'tanggal_kegiatan' => '2026-10-05',
                 'jam' => '08:00 - selesai',
             ],
             'internet' => [
@@ -1241,6 +1244,7 @@ class HelpdeskTest extends TestCase
                 'tanggal_pengajuan' => '2026-10-01',
                 'nama' => 'Test Pegawai',
                 'nama_acara' => 'Bimtek Keamanan Pangan Bagi UMKM',
+                'tanggal_kegiatan' => '2026-10-05',
                 'jam' => '08:30 - 15:30 WIB',
             ],
             'kegiatan_qrcode' => [
