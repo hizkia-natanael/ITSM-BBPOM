@@ -2,14 +2,14 @@
     id="bbpom-desktop-push-banner"
     x-data="desktopPushController()"
     x-init="initPush()"
-    style="padding: 0.5rem 0.65rem; border-top: 1px solid #f1f5f9; background-color: #f8fafc; border-radius: 0.5rem; margin-top: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem;"
+    style="padding: 0.5rem 0.65rem; border: 1px solid #e2e8f0; background-color: #f8fafc; border-radius: 0.625rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.45rem; flex-shrink: 0;"
 >
-    <div style="display: flex; align-items: center; gap: 0.35rem;">
+    <div style="display: flex; align-items: center; gap: 0.45rem;">
         <div
-            style="display: flex; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border-radius: 0.35rem;"
+            style="display: flex; align-items: center; justify-content: center; width: 1.65rem; height: 1.65rem; border-radius: 0.45rem; flex-shrink: 0;"
             :style="isSubscribed ? 'background-color: #d1fae5; color: #047857;' : 'background-color: #e2e8f0; color: #64748b;'"
         >
-            <i :class="isSubscribed ? 'ri-notification-3-fill' : 'ri-notification-off-line'" style="font-size: 0.75rem;"></i>
+            <i :class="isSubscribed ? 'ri-notification-3-fill' : 'ri-notification-off-line'" style="font-size: 0.875rem; line-height: 1;"></i>
         </div>
         <div style="font-size: 0.6875rem;">
             <span style="font-weight: 600; color: #475569;">Push Desktop:</span>

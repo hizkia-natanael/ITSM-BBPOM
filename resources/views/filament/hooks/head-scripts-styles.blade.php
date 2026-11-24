@@ -1234,21 +1234,25 @@
                         }
                         .fi-wi-unhandled-tickets-alert {
                             height: 100% !important;
+                            min-height: 0 !important;
                             display: flex !important;
                             flex-direction: column !important;
                         }
                         .fi-wi-unhandled-tickets-alert > .fi-section {
                             height: 100% !important;
+                            min-height: 0 !important;
                             display: flex !important;
                             flex-direction: column !important;
                         }
                         .fi-wi-unhandled-tickets-alert > .fi-section > .fi-section-content-ctn {
                             flex: 1 1 0% !important;
+                            min-height: 0 !important;
                             display: flex !important;
                             flex-direction: column !important;
                         }
                         .fi-wi-unhandled-tickets-alert > .fi-section > .fi-section-content-ctn > .fi-section-content {
                             flex: 1 1 0% !important;
+                            min-height: 0 !important;
                             display: flex !important;
                             flex-direction: column !important;
                             padding: 0.75rem 1rem !important;

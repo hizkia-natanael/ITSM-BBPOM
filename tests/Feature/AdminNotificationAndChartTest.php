@@ -87,6 +87,27 @@ class AdminNotificationAndChartTest extends TestCase
         ]);
     }
 
+    public function test_unhandled_tickets_alert_widget_shows_view_all_bar_when_more_than_six_pending(): void
+    {
+        $this->actingAs($this->admin);
+
+        for ($i = 1; $i <= 7; $i++) {
+            Ticket::create([
+                'user_id' => $this->regularUser->id,
+                'category_id' => $this->category->id,
+                'subject' => "Antrean Aduan {$i}",
+                'description' => 'Testing overflow indicator',
+                'status' => 'pending',
+                'handled_by_id' => null,
+            ]);
+        }
+
+        Livewire::test(UnhandledTicketsAlertWidget::class)
+            ->assertSee('7 Belum Ditangani')
+            ->assertSee('Menampilkan 6 dari 7 aduan')
+            ->assertSee('Lihat semua');
+    }
+
     public function test_non_admin_cannot_access_push_notification_routes(): void
     {
         $this->actingAs($this->regularUser);
