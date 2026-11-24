@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\BackupSetting;
 use App\Models\DatabaseBackup;
+use App\Services\Backup\MysqlPdoDumper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 use Symfony\Component\Process\Process;
@@ -517,6 +519,21 @@ class DatabaseBackupService
      */
     private function dumpMysqlDatabase(array $connection, string $sqlPath): void
     {
+        try {
+            $this->dumpMysqlWithCli($connection, $sqlPath);
+        } catch (\Throwable $e) {
+            Log::warning('mysqldump CLI tidak berhasil ('.$e->getMessage().'), beralih otomatis ke dump internal PDO.');
+            app(MysqlPdoDumper::class)->dump($connection, $sqlPath);
+        }
+    }
+
+    /**
+     * Eksekusi dump via CLI mysqldump / mariadb-dump.
+     *
+     * @param  array<string, mixed>  $connection
+     */
+    private function dumpMysqlWithCli(array $connection, string $sqlPath): void
+    {
         $binary = $this->resolveClientBinary(
             (string) config('services.backup.mysqldump_path', ''),
             [
@@ -559,7 +576,12 @@ class DatabaseBackupService
         $process->run();
 
         if (! $process->isSuccessful()) {
-            $err = trim($process->getErrorOutput() ?: $process->getOutput());
+            $rawErr = trim($process->getErrorOutput() ?: $process->getOutput());
+            $cleanLines = array_filter(
+                explode("\n", str_replace("\r", '', $rawErr)),
+                fn ($line) => ! str_contains($line, 'Deprecated program name') && trim($line) !== ''
+            );
+            $err = trim(implode("\n", $cleanLines)) ?: $rawErr;
 
             throw new RuntimeException('mysqldump gagal: '.$err);
         }

@@ -38,6 +38,16 @@ class BackupDatabase extends Page
 
     public static function getPageData(): array
     {
+        // Tandai antrean backup yang macet lebih dari 15 menit sebagai gagal agar tidak menggantung.
+        DatabaseBackup::whereIn('status', ['pending', 'running'])
+            ->where('created_at', '<', now()->subMinutes(15))
+            ->update([
+                'status' => 'failed',
+                'gdrive_status' => 'failed',
+                'error_message' => 'Proses backup terhenti / timeout (antrean worker tidak aktif atau gagal mengeksekusi).',
+                'completed_at' => now(),
+            ]);
+
         $driveService = app(GoogleDriveService::class);
         $cfg = BackupSetting::effectiveConfig();
 
@@ -75,6 +85,7 @@ class BackupDatabase extends Page
                 'gdrive_folder_name' => $cfg['gdrive_folder_name'],
                 'gdrive_account_email' => $cfg['gdrive_account_email'],
                 'oauth_redirect_uri' => route('admin.backup.google.callback'),
+                'can_download_env' => true,
             ],
             'backups' => $backups,
             'summary' => [

@@ -1,23 +1,21 @@
 <x-filament-panels::page>
     <x-backup.styles />
+    <x-backup.modal-styles />
 
-    <div class="bk-container">
-        {{-- Flash Notification Alerts --}}
+    <div class="bk-container" @if ($summary['has_running_job']) wire:poll.4s @endif>
         <x-backup.flash-alerts />
 
-        {{-- Header Status & Action Bar --}}
         <x-backup.header-banner :summary="$summary" :settings="$settings" />
 
-        {{-- 4 Metric Cards Overview --}}
         <x-backup.stats-overview :summary="$summary" :settings="$settings" />
 
-        {{-- Full-width Card Pengaturan Backup & Google Drive --}}
         <x-backup.settings-card :settings="$settings" />
 
-        {{-- Full-width Riwayat Cadangan Database Table --}}
-        <x-backup.history-table :backups="$backups" />
+        <x-backup.history-table :backups="$backups" :retentionDays="$settings['retention_days']" />
 
-        {{-- Modal Download .env Terenkripsi --}}
         <x-backup.env-download-modal />
+        <x-backup.error-detail-modal />
+        <x-backup.delete-confirm-modal />
+        <x-backup.disconnect-confirm-modal />
     </div>
 </x-filament-panels::page>
