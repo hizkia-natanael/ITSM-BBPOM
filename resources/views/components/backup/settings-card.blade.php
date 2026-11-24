@@ -1,18 +1,14 @@
 @props(['settings'])
 
 <div class="bk-card" x-data="backupSettingsState(@js($settings))">
-    <div class="bk-card-header">
+    <div class="bk-card-header-hero">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div class="bk-icon-box">
+            <div class="bk-hero-icon">
                 <i class="ri-cloud-line"></i>
             </div>
             <div>
-                <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0;">
-                    Jadwal Otomatis, Retensi &amp; Google Drive
-                </h3>
-                <p style="font-size: 0.75rem; color: #64748b; margin: 0.15rem 0 0;">
-                    Atur jam backup harian, retensi lokal server (default 14 hari), dan koneksi Google Drive pribadi.
-                </p>
+                <h3>Jadwal Otomatis, Retensi &amp; Google Drive</h3>
+                <p>Atur jam backup harian, retensi lokal server (default 14 hari), dan koneksi Google Drive pribadi.</p>
             </div>
         </div>
 
@@ -68,10 +64,10 @@
                 </div>
 
                 <div>
-                    <label class="bk-label" for="retention_days">Hapus File Lokal Setelah (Hari)</label>
+                    <label class="bk-label" for="retention_days">Hapus File Lokal (Hari)</label>
                     <input id="retention_days" name="retention_days" type="number" min="1" max="365" required
                         value="{{ old('retention_days', $settings['retention_days']) }}" class="bk-input">
-                    <p class="bk-hint">Default 14 hari (2 minggu). Arsip di GDrive tetap disimpan.</p>
+                    <p class="bk-hint">Default 14 hari. Arsip di GDrive tetap disimpan.</p>
                     @error('retention_days')
                         <p class="bk-error-text">{{ $message }}</p>
                     @enderror

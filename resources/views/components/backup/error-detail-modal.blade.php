@@ -3,7 +3,7 @@
     <div class="bk-modal-card bk-modal-card-lg" @click.stop>
         <div class="bk-modal-header">
             <div style="display: flex; align-items: center; gap: 0.625rem; min-width: 0;">
-                <div class="bk-icon-box" style="width: 2.25rem; height: 2.25rem; background: #fff1f2; border-color: #fecdd3; color: #e11d48; font-size: 1rem;">
+                <div class="bk-hero-icon" style="width: 2.25rem; height: 2.25rem; background: rgba(244, 63, 94, 0.2); border-color: rgba(251, 113, 133, 0.45); color: #fda4af; font-size: 1rem;">
                     <i class="ri-alert-line"></i>
                 </div>
                 <div style="min-width: 0;">

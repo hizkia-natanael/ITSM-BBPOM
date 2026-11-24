@@ -4,7 +4,7 @@
     <div class="bk-modal-card" @click.stop>
         <div class="bk-modal-header">
             <div style="display: flex; align-items: center; gap: 0.625rem;">
-                <div class="bk-icon-box" style="width: 2.25rem; height: 2.25rem; font-size: 1rem;">
+                <div class="bk-hero-icon" style="width: 2.25rem; height: 2.25rem; font-size: 1rem;">
                     <i class="ri-key-2-line"></i>
                 </div>
                 <div>

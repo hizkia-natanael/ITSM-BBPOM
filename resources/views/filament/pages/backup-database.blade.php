@@ -2,14 +2,14 @@
     <x-backup.styles />
     <x-backup.modal-styles />
 
-    <div class="bk-container" @if ($summary['has_running_job']) wire:poll.4s @endif>
+    <div class="bk-container" @if ($summary['has_running_job']) wire:poll.3s @endif>
         <x-backup.flash-alerts />
-
-        <x-backup.header-banner :summary="$summary" :settings="$settings" />
 
         <x-backup.stats-overview :summary="$summary" :settings="$settings" />
 
-        <x-backup.settings-card :settings="$settings" />
+        <div wire:ignore>
+            <x-backup.settings-card :settings="$settings" />
+        </div>
 
         <x-backup.history-table :backups="$backups" :retentionDays="$settings['retention_days']" />
 

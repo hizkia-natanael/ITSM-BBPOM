@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Backup\RunManualBackupAction;
 use App\Http\Controllers\Controller;
-use App\Jobs\RunDatabaseBackupJob;
 use App\Models\BackupSetting;
 use App\Models\DatabaseBackup;
 use App\Models\User;
-use App\Services\DatabaseBackupService;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -39,30 +38,12 @@ class BackupController extends Controller
         return redirect('/admin/backup');
     }
 
-    public function runManual(DatabaseBackupService $backupService): RedirectResponse
+    public function runManual(RunManualBackupAction $action): RedirectResponse
     {
         $user = $this->ensureAdmin();
+        $result = $action->execute($user);
 
-        $alreadyRunning = DatabaseBackup::whereIn('status', ['pending', 'running'])
-            ->where('created_at', '>=', now()->subMinutes(15))
-            ->exists();
-
-        if ($alreadyRunning) {
-            return redirect()->back()->with('error', 'Proses backup masih berjalan. Tunggu beberapa saat lalu muat ulang.');
-        }
-
-        $cfg = BackupSetting::effectiveConfig();
-        $backup = DatabaseBackup::create([
-            'filename' => $backupService->buildFilename('manual', $cfg['filename_prefix']),
-            'trigger_type' => 'manual',
-            'status' => 'pending',
-            'gdrive_status' => 'pending',
-            'created_by' => $user->id,
-        ]);
-
-        RunDatabaseBackupJob::dispatch($backup->id);
-
-        return redirect()->back()->with('success', "Backup manual ({$backup->filename}) telah dijadwalkan ke antrean.");
+        return redirect()->back()->with($result['ok'] ? 'success' : 'error', $result['message']);
     }
 
     public function updateSettings(Request $request): RedirectResponse

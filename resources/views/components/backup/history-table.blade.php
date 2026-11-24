@@ -1,18 +1,14 @@
 @props(['backups', 'retentionDays' => 14])
 
 <div class="bk-card" x-data>
-    <div class="bk-card-header">
+    <div class="bk-card-header-hero">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div class="bk-icon-box">
+            <div class="bk-hero-icon">
                 <i class="ri-hard-drive-2-line"></i>
             </div>
             <div>
-                <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0;">
-                    Riwayat Backup Database (30 Terakhir)
-                </h3>
-                <p style="font-size: 0.75rem; color: #64748b; margin: 0.15rem 0 0;">
-                    File lokal server otomatis terhapus setelah {{ $retentionDays }} hari, sedangkan file di Google Drive tetap tersimpan.
-                </p>
+                <h3>Riwayat Backup Database (30 Terakhir)</h3>
+                <p>File lokal server otomatis terhapus setelah {{ $retentionDays }} hari, sedangkan file di Google Drive tetap tersimpan.</p>
             </div>
         </div>
     </div>
