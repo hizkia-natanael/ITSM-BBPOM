@@ -120,7 +120,7 @@
     border-radius: 0.5rem;
     border: none;
     background: transparent;
-    color: #94a3b8;
+    color: #475569;
     cursor: pointer;
     transition: all 0.15s ease;
     flex-shrink: 0;
@@ -275,8 +275,8 @@
     padding: 0.25rem 0.625rem;
     border-radius: 0.375rem;
     font-size: 0.6875rem;
-    font-weight: 700;
-    background-color: #059669;
+    font-weight: 600;
+    background-color: #047857;
     color: #ffffff;
     border: none;
     cursor: pointer;
@@ -284,7 +284,7 @@
     transition: background-color 0.15s ease;
 }
 .bbpom-admin-claim-btn:hover {
-    background-color: #047857;
+    background-color: #065f46;
 }
 .bbpom-admin-claim-btn:disabled {
     opacity: 0.5;

@@ -44,9 +44,9 @@
             <button
                 type="button"
                 wire:click="remindItTeam({{ $ticket->id }})"
-                style="flex: 1 1 0%; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.35rem 0.65rem; border-radius: 0.45rem; background-color: #d97706; color: #ffffff; font-size: 0.7rem; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); transition: all 0.15s ease;"
-                onmouseover="this.style.backgroundColor='#b45309';"
-                onmouseout="this.style.backgroundColor='#d97706';"
+                style="flex: 1 1 0%; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.35rem 0.65rem; border-radius: 0.45rem; background-color: #b45309; color: #ffffff; font-size: 0.7rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); transition: all 0.15s ease;"
+                onmouseover="this.style.backgroundColor='#92400e';"
+                onmouseout="this.style.backgroundColor='#b45309';"
                 title="Kirimkan notifikasi pengingat ke Tim TI untuk tiket ini"
             >
                 <i class="ri-notification-3-line" style="font-size: 0.775rem;"></i>
@@ -56,9 +56,9 @@
             <button
                 type="button"
                 wire:click="claimTicket({{ $ticket->id }})"
-                style="flex: 1 1 0%; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.35rem 0.65rem; border-radius: 0.45rem; background-color: #059669; color: #ffffff; font-size: 0.7rem; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); transition: all 0.15s ease;"
-                onmouseover="this.style.backgroundColor='#047857';"
-                onmouseout="this.style.backgroundColor='#059669';"
+                style="flex: 1 1 0%; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.35rem 0.65rem; border-radius: 0.45rem; background-color: #047857; color: #ffffff; font-size: 0.7rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); transition: all 0.15s ease;"
+                onmouseover="this.style.backgroundColor='#065f46';"
+                onmouseout="this.style.backgroundColor='#047857';"
                 title="Ambil alih aduan ini langsung ke akun Anda"
             >
                 <i class="ri-hand-coin-line" style="font-size: 0.775rem;"></i>

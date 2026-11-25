@@ -329,8 +329,8 @@
                     }
                     .bbpom-chat-download-btn:hover {
                         transform: scale(1.08) !important;
-                        background-color: #047857 !important;
-                        box-shadow: 0 4px 12px -1px rgba(5, 150, 105, 0.45) !important;
+                        background-color: #065f46 !important;
+                        box-shadow: 0 4px 12px -1px rgba(4, 120, 87, 0.45) !important;
                     }
                     .bbpom-chat-download-btn:active {
                         transform: scale(0.95) !important;
@@ -351,9 +351,9 @@
                         transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, box-shadow 0.15s ease !important;
                     }
                     .bbpom-send-btn:hover:not(:disabled) {
-                        background-color: #047857 !important;
+                        background-color: #065f46 !important;
                         transform: scale(1.06) !important;
-                        box-shadow: 0 4px 12px -1px rgba(5, 150, 105, 0.4) !important;
+                        box-shadow: 0 4px 12px -1px rgba(4, 120, 87, 0.4) !important;
                     }
                     .bbpom-send-btn:active:not(:disabled) {
                         transform: scale(0.95) !important;
@@ -1360,10 +1360,10 @@
                         }
                         .bbpom-chip-pending.is-active,
                         .bbpom-chip-pending:hover {
-                            background-color: #d97706 !important;
+                            background-color: #b45309 !important;
                             color: #ffffff !important;
-                            border-color: #b45309 !important;
-                            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.25) !important;
+                            border-color: #92400e !important;
+                            box-shadow: 0 2px 4px rgba(180, 83, 9, 0.25) !important;
                         }
                         .bbpom-chip-pending.is-active .chip-dot,
                         .bbpom-chip-pending:hover .chip-dot {
@@ -1418,10 +1418,10 @@
                         }
                         .bbpom-chip-selesai.is-active,
                         .bbpom-chip-selesai:hover {
-                            background-color: #059669 !important;
+                            background-color: #047857 !important;
                             color: #ffffff !important;
-                            border-color: #047857 !important;
-                            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.25) !important;
+                            border-color: #065f46 !important;
+                            box-shadow: 0 2px 4px rgba(4, 120, 87, 0.25) !important;
                         }
                         .bbpom-chip-selesai.is-active .chip-dot,
                         .bbpom-chip-selesai:hover .chip-dot {
@@ -1550,60 +1550,7 @@
                             color: #f1f5f9 !important;
                         }
 
-                        /* BBPOM Primary Header Action Buttons (Hijau Gelap BPOM & Teks Putih Terang) */
-                        .bbpom-header-create-btn,
-                        .fi-page-header .fi-btn-color-primary,
-                        .fi-page-header-actions .fi-btn-color-primary,
-                        .fi-header-actions .fi-btn-color-primary,
-                        .fi-page-header a.fi-btn-color-primary,
-                        .fi-page-header button.fi-btn-color-primary {
-                            background: linear-gradient(135deg, #065f46 0%, #064e3b 60%, #022c22 100%) !important;
-                            color: #ffffff !important;
-                            border: 1px solid rgba(52, 211, 153, 0.4) !important;
-                            border-radius: 0.625rem !important;
-                            font-weight: 600 !important;
-                            font-size: 0.8125rem !important;
-                            padding: 0.5rem 1.1rem !important;
-                            box-shadow: 0 4px 12px -2px rgba(6, 78, 59, 0.4), 0 2px 4px -2px rgba(6, 78, 59, 0.2) !important;
-                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                            display: inline-flex !important;
-                            align-items: center !important;
-                            gap: 0.45rem !important;
-                        }
-                        .bbpom-header-create-btn:hover,
-                        .fi-page-header .fi-btn-color-primary:hover,
-                        .fi-page-header-actions .fi-btn-color-primary:hover,
-                        .fi-header-actions .fi-btn-color-primary:hover,
-                        .fi-page-header a.fi-btn-color-primary:hover,
-                        .fi-page-header button.fi-btn-color-primary:hover {
-                            background: linear-gradient(135deg, #047857 0%, #065f46 60%, #064e3b 100%) !important;
-                            color: #ffffff !important;
-                            border-color: rgba(110, 231, 183, 0.7) !important;
-                            transform: translateY(-1px) !important;
-                            box-shadow: 0 6px 18px -2px rgba(6, 95, 70, 0.5), 0 3px 6px -2px rgba(6, 95, 70, 0.25) !important;
-                        }
-                        .bbpom-header-create-btn:active,
-                        .fi-page-header .fi-btn-color-primary:active,
-                        .fi-page-header-actions .fi-btn-color-primary:active,
-                        .fi-header-actions .fi-btn-color-primary:active,
-                        .fi-page-header a.fi-btn-color-primary:active,
-                        .fi-page-header button.fi-btn-color-primary:active {
-                            transform: translateY(0) !important;
-                            box-shadow: 0 2px 6px -1px rgba(6, 78, 59, 0.3) !important;
-                        }
-                        .bbpom-header-create-btn .fi-btn-label,
-                        .bbpom-header-create-btn .fi-btn-icon,
-                        .bbpom-header-create-btn svg,
-                        .bbpom-header-create-btn span,
-                        .fi-page-header .fi-btn-color-primary .fi-btn-label,
-                        .fi-page-header .fi-btn-color-primary .fi-btn-icon,
-                        .fi-page-header .fi-btn-color-primary svg,
-                        .fi-page-header-actions .fi-btn-color-primary .fi-btn-label,
-                        .fi-page-header-actions .fi-btn-color-primary .fi-btn-icon,
-                        .fi-page-header-actions .fi-btn-color-primary svg {
-                            color: #ffffff !important;
-                            stroke: #ffffff !important;
-                        }
+                        /* Primary/Semantic Filament v4 Button styles dikelola di komponen theme admin-button-styles */
 
                         /* Edit Ticket: Unified Master Dossier Card & Hero Gradient Theming */
                         .ticket-left-column {

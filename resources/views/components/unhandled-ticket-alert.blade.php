@@ -39,7 +39,9 @@
                 </div>
             </div>
             <button type="button" wire:click="remindItTeam"
-                style="flex-shrink: 0; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem; border-radius: 0.5rem; background-color: #d97706; color: #ffffff; font-size: 0.7rem; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.08);">
+                style="flex-shrink: 0; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem; border-radius: 0.5rem; background-color: #b45309; color: #ffffff; font-size: 0.7rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.08); transition: background-color 0.15s ease;"
+                onmouseover="this.style.backgroundColor='#92400e';"
+                onmouseout="this.style.backgroundColor='#b45309';">
                 <i class="ri-send-plane-fill" style="font-size: 0.75rem;"></i>
                 <span>Ingatkan Tim TI</span>
             </button>

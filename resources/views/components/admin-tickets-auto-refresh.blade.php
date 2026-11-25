@@ -277,15 +277,15 @@
     padding: 0.375rem 0.85rem !important;
     border-radius: 0.55rem !important;
     font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    background: #059669 !important;
+    font-weight: 600 !important;
+    background: #047857 !important;
     color: #ffffff !important;
     text-decoration: none !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
     transition: background-color 0.15s ease !important;
 }
 .bbpom-toast-btn-primary:hover {
-    background: #047857 !important;
+    background: #065f46 !important;
 }
 .bbpom-toast-btn-primary i {
     font-size: 0.85rem !important;

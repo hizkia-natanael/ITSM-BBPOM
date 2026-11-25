@@ -36,7 +36,7 @@
                 <button
                     type="button"
                     wire:click="setPeriod('bulan')"
-                    style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; {{ $currentPeriod === 'bulan' ? 'background-color: #059669; color: #ffffff; box-shadow: 0 1px 2px rgba(5,150,105,0.25); border: 1px solid #059669;' : 'background-color: transparent; color: #64748b; border: 1px solid transparent;' }}"
+                    style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; {{ $currentPeriod === 'bulan' ? 'background-color: #047857; color: #ffffff; box-shadow: 0 1px 2px rgba(4,120,87,0.25); border: 1px solid #047857;' : 'background-color: transparent; color: #64748b; border: 1px solid transparent;' }}"
                     title="Klik untuk melihat grafik bulanan"
                 >
                     <i class="ri-calendar-line" style="font-size: 0.8125rem;"></i>
@@ -47,7 +47,7 @@
                 <button
                     type="button"
                     wire:click="setPeriod('tahun')"
-                    style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; {{ $currentPeriod === 'tahun' ? 'background-color: #059669; color: #ffffff; box-shadow: 0 1px 2px rgba(5,150,105,0.25); border: 1px solid #059669;' : 'background-color: transparent; color: #64748b; border: 1px solid transparent;' }}"
+                    style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; {{ $currentPeriod === 'tahun' ? 'background-color: #047857; color: #ffffff; box-shadow: 0 1px 2px rgba(4,120,87,0.25); border: 1px solid #047857;' : 'background-color: transparent; color: #64748b; border: 1px solid transparent;' }}"
                     title="Klik untuk melihat grafik tahunan"
                 >
                     <i class="ri-calendar-2-line" style="font-size: 0.8125rem;"></i>
@@ -58,7 +58,7 @@
                 <button
                     type="button"
                     wire:click="setPeriod('custom')"
-                    style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; {{ $currentPeriod === 'custom' ? 'background-color: #059669; color: #ffffff; box-shadow: 0 1px 2px rgba(5,150,105,0.25); border: 1px solid #059669;' : 'background-color: transparent; color: #64748b; border: 1px solid transparent;' }}"
+                    style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; {{ $currentPeriod === 'custom' ? 'background-color: #047857; color: #ffffff; box-shadow: 0 1px 2px rgba(4,120,87,0.25); border: 1px solid #047857;' : 'background-color: transparent; color: #64748b; border: 1px solid transparent;' }}"
                     title="Klik untuk menentukan rentang tanggal kustom"
                 >
                     <i class="ri-calendar-event-line" style="font-size: 0.8125rem;"></i>

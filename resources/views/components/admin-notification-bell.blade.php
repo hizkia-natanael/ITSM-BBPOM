@@ -60,7 +60,7 @@
                 <button
                     type="button"
                     @click.stop="toggleSound()"
-                    class="bbpom-admin-sound-btn inline-flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                    class="bbpom-admin-sound-btn inline-flex items-center justify-center w-7 h-7 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
                     :title="soundEnabled ? 'Suara notifikasi aktif (klik untuk membisukan)' : 'Suara notifikasi nonaktif (klik untuk membunyikan)'"
                     style="flex-shrink: 0;"
                 >
@@ -134,7 +134,7 @@
                                             type="button"
                                             @click.stop="claimTicketDirect(item.raw_id)"
                                             :disabled="isClaiming"
-                                            class="bbpom-admin-claim-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                                            class="bbpom-admin-claim-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-700 text-white hover:bg-emerald-800 shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                                             title="Klaim dan mulai tangani aduan ini"
                                         >
                                             <i class="ri-hand-coin-line" style="font-size: 0.75rem;"></i>

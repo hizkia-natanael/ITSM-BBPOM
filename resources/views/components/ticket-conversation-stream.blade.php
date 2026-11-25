@@ -552,8 +552,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
 }
 .bbpom-chat-download-btn:hover {
     transform: scale(1.08) !important;
-    background-color: #047857 !important;
-    box-shadow: 0 4px 12px -1px rgba(5, 150, 105, 0.45) !important;
+    background-color: #065f46 !important;
+    box-shadow: 0 4px 12px -1px rgba(4, 120, 87, 0.45) !important;
 }
 .bbpom-chat-download-btn:active {
     transform: scale(0.95) !important;
@@ -578,9 +578,9 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
     transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 .bbpom-send-btn:hover:not(:disabled) {
-    background-color: #047857 !important;
+    background-color: #065f46 !important;
     transform: scale(1.06) !important;
-    box-shadow: 0 4px 12px -1px rgba(5, 150, 105, 0.4) !important;
+    box-shadow: 0 4px 12px -1px rgba(4, 120, 87, 0.4) !important;
 }
 .bbpom-send-btn:active:not(:disabled) {
     transform: scale(0.95) !important;
@@ -967,8 +967,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                 <!-- Tombol Unduh WhatsApp -->
                                                 <a 
                                                     href="{{ $att->download_url }}" 
-                                                    class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
-                                                    style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #059669 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(5, 150, 105, 0.35) !important;" 
+                                                    class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
+                                                    style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #047857 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(4, 120, 87, 0.35) !important;" 
                                                     title="Unduh {{ $att->file_name }}"
                                                 >
                                                     <i class="ri-download-2-line text-base" style="font-size: 1rem !important; color: #ffffff !important; line-height: 1 !important;"></i>
@@ -1090,8 +1090,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                 <!-- Tombol Unduh WhatsApp -->
                                                 <a 
                                                     href="{{ $att->download_url }}" 
-                                                    class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
-                                                    style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #059669 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(5, 150, 105, 0.35) !important;" 
+                                                    class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95" 
+                                                    style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #047857 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(4, 120, 87, 0.35) !important;" 
                                                     title="Unduh {{ $att->file_name }}"
                                                 >
                                                     <i class="ri-download-2-line text-base" style="font-size: 1rem !important; color: #ffffff !important; line-height: 1 !important;"></i>
@@ -1215,8 +1215,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                 </div>
                                             </a>
                                             <a :href="att.download_url"
-                                               class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95"
-                                               style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #059669 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(5, 150, 105, 0.35) !important;"
+                                               class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95"
+                                               style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #047857 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(4, 120, 87, 0.35) !important;"
                                                :title="'Unduh ' + att.file_name">
                                                 <i class="ri-download-2-line text-base" style="font-size: 1rem !important; color: #ffffff !important; line-height: 1 !important;"></i>
                                             </a>
@@ -1327,8 +1327,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                                                 </div>
                                             </a>
                                             <a :href="att.download_url"
-                                               class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95"
-                                               style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #059669 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(5, 150, 105, 0.35) !important;"
+                                               class="bbpom-chat-download-btn shrink-0 w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center transition-all shadow-xs hover:scale-105 active:scale-95"
+                                               style="width: 2.25rem !important; height: 2.25rem !important; border-radius: 9999px !important; background-color: #047857 !important; color: #ffffff !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-left: 0.5rem !important; text-decoration: none !important; box-shadow: 0 2px 5px -1px rgba(4, 120, 87, 0.35) !important;"
                                                :title="'Unduh ' + att.file_name">
                                                 <i class="ri-download-2-line text-base" style="font-size: 1rem !important; color: #ffffff !important; line-height: 1 !important;"></i>
                                             </a>
@@ -1463,7 +1463,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                             <button 
                                 type="button" 
                                 @click="setMode('compressed')" 
-                                :style="isCompressedMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
+                                :style="isCompressedMode() ? 'background-color: #047857 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
                                 class="bbpom-mode-pill"
                                 title="Kompresi cerdas hemat kapasitas penyimpanan database & server"
                             >
@@ -1473,7 +1473,7 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                             <button 
                                 type="button" 
                                 @click="setMode('original')" 
-                                :style="isOriginalMode() ? 'background-color: #059669 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
+                                :style="isOriginalMode() ? 'background-color: #047857 !important; color: #ffffff !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;' : 'background-color: transparent !important; color: #475569 !important;'"
                                 class="bbpom-mode-pill"
                                 title="Kirim ukuran & resolusi asli tanpa kompresi"
                             >
@@ -1555,8 +1555,8 @@ window.bbpomTicketConversation = function bbpomTicketConversation(config) {
                 type="button" 
                 @click="submitReply($event)" 
                 :disabled="isSubmitting"
-                class="bbpom-send-btn w-11 h-11 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                style="width: 2.75rem; height: 2.75rem; border-radius: 9999px; background-color: #059669; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"
+                class="bbpom-send-btn w-11 h-11 rounded-full bg-emerald-700 text-white flex items-center justify-center shadow-xs shrink-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                style="width: 2.75rem; height: 2.75rem; border-radius: 9999px; background-color: #047857; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"
                 title="Kirim Pesan"
             >
                 <i x-show="!isSubmitting" class="ri-send-plane-fill text-lg" style="font-size: 1.125rem; color: #ffffff !important; line-height: 1; display: inline-flex; align-items: center; justify-content: center;"></i>
